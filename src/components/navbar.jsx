@@ -1,22 +1,26 @@
-"use client"
+'use client';
 
-import { useState } from "react"
-import { Link, useLocation } from "react-router-dom"
-import { Button } from "./ui/button"
-import { Github, Menu, X } from "lucide-react"
-import { ModeToggle } from "./mode-toggle"
+import { useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { Button } from './ui/button';
+import { Github, Menu, X } from 'lucide-react';
+import { ModeToggle } from './mode-toggle';
 
 export default function Navbar() {
-  const location = useLocation()
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const location = useLocation();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  const isLoggedIn = location.pathname !== "/" && location.pathname !== "/login"
+  const isLoggedIn =
+    location.pathname !== '/' && location.pathname !== '/login';
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-14 items-center">
+      <div className="max-w-none container flex h-14 items-center">
         <div className="flex items-center gap-2 mr-4">
-          <Link to={isLoggedIn ? "/dashboard" : "/"} className="flex items-center gap-1">
+          <Link
+            to={isLoggedIn ? '/dashboard' : '/'}
+            className="flex items-center gap-1"
+          >
             <span className="font-bold text-xl bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-indigo-600">
               Aissue
             </span>
@@ -30,15 +34,23 @@ export default function Navbar() {
                 <Link
                   to="/"
                   className={`transition-colors hover:text-foreground/80 ${
-                    location.pathname === "/" ? "text-foreground font-medium" : "text-foreground/60"
+                    location.pathname === '/'
+                      ? 'text-foreground font-medium'
+                      : 'text-foreground/60'
                   }`}
                 >
                   홈
                 </Link>
-                <a href="/#features" className="transition-colors text-foreground/60 hover:text-foreground/80">
+                <a
+                  href="/#features"
+                  className="transition-colors text-foreground/60 hover:text-foreground/80"
+                >
                   기능
                 </a>
-                <a href="/#pricing" className="transition-colors text-foreground/60 hover:text-foreground/80">
+                <a
+                  href="/#pricing"
+                  className="transition-colors text-foreground/60 hover:text-foreground/80"
+                >
                   가격 정책
                 </a>
               </>
@@ -73,8 +85,17 @@ export default function Navbar() {
 
         <div className="md:hidden flex flex-1 items-center justify-end">
           <ModeToggle />
-          <Button variant="ghost" size="icon" className="ml-2" onClick={() => setIsMenuOpen(!isMenuOpen)}>
-            {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="ml-2"
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+          >
+            {isMenuOpen ? (
+              <X className="h-5 w-5" />
+            ) : (
+              <Menu className="h-5 w-5" />
+            )}
           </Button>
         </div>
       </div>
@@ -89,7 +110,9 @@ export default function Navbar() {
                   <Link
                     to="/"
                     className={`transition-colors hover:text-foreground/80 ${
-                      location.pathname === "/" ? "text-foreground font-medium" : "text-foreground/60"
+                      location.pathname === '/'
+                        ? 'text-foreground font-medium'
+                        : 'text-foreground/60'
                     }`}
                     onClick={() => setIsMenuOpen(false)}
                   >
@@ -132,5 +155,5 @@ export default function Navbar() {
         </div>
       )}
     </header>
-  )
+  );
 }
