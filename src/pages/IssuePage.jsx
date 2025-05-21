@@ -1,5 +1,4 @@
 "use client"
-
 import { Link, useParams } from "react-router-dom"
 import { Button } from "../components/ui/button"
 import { Badge } from "../components/ui/badge"
@@ -9,8 +8,7 @@ import DashboardLayout from "../components/dashboard-layout"
 import { mockIssueDetails } from "../lib/mock-data"
 
 export default function IssuePage() {
-  const { id, issueId } = useParams()
-  const repoId = id
+  const { id: repoId, issueId } = useParams()
   const issue = mockIssueDetails
 
   return (

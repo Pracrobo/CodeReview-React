@@ -7,18 +7,23 @@ const ThemeContext = createContext({
   setTheme: () => null,
 })
 
-export function ThemeProvider({ children, defaultTheme = "light", storageKey = "theme" }) {
-  const [theme, setTheme] = useState(() => {
-    // Check for stored theme
+export function ThemeProvider({
+  children,
+  defaultTheme = "light",
+  enableSystem = false,
+  disableTransitionOnChange = false,
+  ...props
+}) {
+  const [theme, setThemeState] = useState(() => {
     if (typeof window !== "undefined") {
-      const storedTheme = localStorage.getItem(storageKey)
+      const storedTheme = window.localStorage.getItem("theme")
       if (storedTheme) {
         return storedTheme
       }
 
-      // Check for system preference
-      if (defaultTheme === "system") {
-        return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"
+      if (enableSystem) {
+        const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"
+        return systemTheme
       }
     }
 
@@ -30,19 +35,30 @@ export function ThemeProvider({ children, defaultTheme = "light", storageKey = "
     root.classList.remove("light", "dark")
     root.classList.add(theme)
 
-    if (typeof window !== "undefined") {
-      localStorage.setItem(storageKey, theme)
+    if (disableTransitionOnChange) {
+      root.classList.add("no-transition")
+      window.setTimeout(() => {
+        root.classList.remove("no-transition")
+      }, 0)
     }
-  }, [theme, storageKey])
+
+    localStorage.setItem("theme", theme)
+  }, [theme, disableTransitionOnChange])
+
+  const setTheme = (newTheme) => {
+    setThemeState(newTheme)
+  }
 
   const value = {
     theme,
-    setTheme: (newTheme) => {
-      setTheme(newTheme)
-    },
+    setTheme,
   }
 
-  return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>
+  return (
+    <ThemeContext.Provider value={value} {...props}>
+      {children}
+    </ThemeContext.Provider>
+  )
 }
 
 export const useTheme = () => {

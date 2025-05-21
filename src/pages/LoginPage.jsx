@@ -7,11 +7,9 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Github } from "lucide-react"
 import Navbar from "../components/navbar"
 import Footer from "../components/footer"
-import { useAuth } from "../contexts/AuthContext"
 
 export default function LoginPage() {
   const navigate = useNavigate()
-  const { login } = useAuth()
   const [isLoading, setIsLoading] = useState(false)
 
   const handleGithubLogin = () => {
@@ -19,12 +17,6 @@ export default function LoginPage() {
 
     // 실제로는 GitHub OAuth 인증을 처리하지만, 현재는 테스트를 위해 바로 대시보드로 이동
     setTimeout(() => {
-      login({
-        name: "홍길동",
-        username: "honggildong",
-        email: "honggildong@example.com",
-        avatar: "HG",
-      })
       navigate("/dashboard")
     }, 1500)
   }

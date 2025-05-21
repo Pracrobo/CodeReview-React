@@ -15,7 +15,9 @@ const Switch = React.forwardRef(({ className, checked, onCheckedChange, ...props
   const handleChange = () => {
     const newValue = !isChecked
     setIsChecked(newValue)
-    onCheckedChange?.(newValue)
+    if (onCheckedChange) {
+      onCheckedChange(newValue)
+    }
   }
 
   return (
@@ -41,7 +43,6 @@ const Switch = React.forwardRef(({ className, checked, onCheckedChange, ...props
     </button>
   )
 })
-
 Switch.displayName = "Switch"
 
 export { Switch }

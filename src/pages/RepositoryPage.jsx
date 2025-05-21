@@ -1,10 +1,10 @@
 "use client"
-
 import { Link, useParams } from "react-router-dom"
 import { Button } from "../components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs"
 import { Badge } from "../components/ui/badge"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card"
+import { Input } from "../components/ui/input"
 import {
   AlertCircle,
   ArrowLeft,
@@ -19,11 +19,9 @@ import {
 } from "lucide-react"
 import DashboardLayout from "../components/dashboard-layout"
 import { mockRepositoryDetails, mockIssues } from "../lib/mock-data"
-import { Input } from "../components/ui/input"
 
 export default function RepositoryPage() {
-  const { id } = useParams()
-  const repoId = id
+  const { id: repoId } = useParams()
   const repo = mockRepositoryDetails
 
   // 라이선스 정보 및 의무사항
