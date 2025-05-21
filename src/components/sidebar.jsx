@@ -7,17 +7,24 @@ import { ScrollText, LayoutDashboard, Settings, User, AlertCircle, ChevronLeft, 
 import { useMobile } from "../hooks/use-mobile"
 
 export default function Sidebar() {
-  const location = useLocation()
-  const isMobile = useMobile()
-  const [collapsed, setCollapsed] = useState(false)
+  const location = useLocation();
+  const isMobile = useMobile();
+  // const [collapsed, setCollapsed] = useState(false)
+  //사이드바 호출할때마다 collapsed가 false로 초기화됨으로 인해 순간적으로 사이드바가 펼쳐짐
+  const [collapsed, setCollapsed] = useState(() => {
+  const saved = localStorage.getItem("sidebar-collapsed")
+  return saved === "true"
+})
+  //Sidebar가 호출될때 false로 초기화 하지 말고 함수형 초기값(내부 플래그 값)으로 변경
+  
 
   // 사이드바 상태를 로컬 스토리지에 저장
-  useEffect(() => {
-    const savedState = localStorage.getItem("sidebar-collapsed")
-    if (savedState !== null) {
-      setCollapsed(savedState === "true")
-    }
-  }, [])
+  // useEffect(() => {
+  //   const savedState = localStorage.getItem("sidebar-collapsed")
+  //   if (savedState !== null) {
+  //     setCollapsed(savedState === "true")
+  //   }
+  // }, [])
 
   const toggleSidebar = () => {
     const newState = !collapsed
