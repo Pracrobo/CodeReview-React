@@ -101,20 +101,28 @@ export default function SettingsPage() {
             </Button>
             <Button
               variant="destructive"
-              onClick={() => {
-                // 1. 새 창을 변수에 저장
-                const win = window.open('https://github.com/logout', '_blank', 'width=900,height=600');
-                // 2. 정보 삭제
+              onClick={async () => {
+                const token = localStorage.getItem("token");
+                try {
+                  const res = await fetch("http://localhost:3001/auth/github/logout", {
+                    method: "POST",
+                    headers: { Authorization: `Bearer ${token}` },
+                    credentials: "include"
+                  });
+                  if (!res.ok) {
+                    const data = await res.json();
+                    alert("연동 해제 실패: " + (data?.message || "Unknown error"));
+                    return;
+                  }
+                } catch (e) {
+                  alert("연동 해제 중 오류가 발생했습니다.");
+                  return;
+                }
                 localStorage.removeItem("token");
                 localStorage.removeItem("username");
                 localStorage.removeItem("email");
                 localStorage.removeItem("avatar_url");
-                fetch("/auth/github/logout", { method: "GET", credentials: "include" });
-
-                setTimeout(() => {
-                  if (win && !win.closed) win.close();
-                  window.location.href = "/";
-                }, 3000);
+                window.location.href = "/";
               }}
             >
               연동 해제

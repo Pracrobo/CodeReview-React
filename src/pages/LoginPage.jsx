@@ -1,16 +1,16 @@
 "use client"
 
-import { useState } from "react"
-import { Link, useNavigate } from "react-router-dom"
-import { Button } from "../components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../components/ui/card"
-import { Github } from "lucide-react"
-import Navbar from "../components/navbar"
-import Footer from "../components/footer"
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { Button } from "../components/ui/button";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../components/ui/card";
+import { Github } from "lucide-react";
+import Navbar from "../components/navbar";
+import Footer from "../components/footer";
 
 export default function LoginPage() {
-  const navigate = useNavigate()
-  const [isLoading, setIsLoading] = useState(false)
+  const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleGithubLogin = () => {
     // 기존 토큰/정보 삭제
@@ -84,5 +84,5 @@ export default function LoginPage() {
 
       <Footer />
     </div>
-  )
+  );
 }
