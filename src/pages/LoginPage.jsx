@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Button } from "../components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../components/ui/card";
 import { Github } from "lucide-react";
@@ -9,7 +9,6 @@ import Navbar from "../components/navbar";
 import Footer from "../components/footer";
 
 export default function LoginPage() {
-  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
 
   const handleGithubLogin = () => {
@@ -30,7 +29,9 @@ export default function LoginPage() {
         <Card className="w-full max-w-md mx-4">
           <CardHeader className="space-y-1">
             <CardTitle className="text-2xl font-bold text-center">로그인</CardTitle>
-            <CardDescription className="text-center">GitHub 계정으로 로그인하여 Aissue를 이용하세요</CardDescription>
+            <CardDescription className="text-center">
+              GitHub 계정으로 로그인하여 Aissue를 이용하세요
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <Button
@@ -52,7 +53,9 @@ export default function LoginPage() {
             </div>
 
             <div className="space-y-2">
-              <p className="text-center text-sm text-gray-500">Aissue는 GitHub 계정을 통한 로그인만 지원합니다.</p>
+              <p className="text-center text-sm text-gray-500">
+                Aissue는 GitHub 계정을 통한 로그인만 지원합니다.
+              </p>
               <p className="text-center text-sm text-gray-500">
                 GitHub 계정이 없으신가요?{" "}
                 <a

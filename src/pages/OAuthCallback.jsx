@@ -10,16 +10,18 @@ export default function OAuthCallback() {
     const username = params.get("username");
     const email = params.get("email");
     const avatar_url = params.get("avatar_url");
+
     if (token) {
       localStorage.setItem("token", token);
-      localStorage.setItem("username", username);
-      localStorage.setItem("email", email);
-      localStorage.setItem("avatar_url", avatar_url);
+      if (username) localStorage.setItem("username", username);
+      if (email) localStorage.setItem("email", email);
+      if (avatar_url) localStorage.setItem("avatar_url", avatar_url);
       navigate("/dashboard", { replace: true });
     } else {
       navigate("/login", { replace: true });
     }
   }, [navigate]);
 
-  return;
+  // 콜백 처리 중에는 아무것도 렌더링하지 않음
+  return null;
 }

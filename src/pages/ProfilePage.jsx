@@ -1,38 +1,35 @@
 "use client"
 
-import { useState } from "react"
-import { Button } from "../components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs"
-import { Badge } from "../components/ui/badge"
-import { Input } from "../components/ui/input"
-import { AlertCircle, CreditCard, Github, LogOut, User, Check, X } from "lucide-react"
-import { Alert, AlertDescription, AlertTitle } from "../components/ui/alert"
-import DashboardLayout from "../components/dashboard-layout"
+import { useState } from "react";
+import { Button } from "../components/ui/button";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
+import { Badge } from "../components/ui/badge";
+import { Input } from "../components/ui/input";
+import { AlertCircle, CreditCard, Github, LogOut, User, Check, X } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "../components/ui/alert";
+import DashboardLayout from "../components/dashboard-layout";
 
 export default function ProfilePage() {
-  const [currentPlan, setCurrentPlan] = useState("free")
-  const username = localStorage.getItem("username") || "사용자"
-  const email = localStorage.getItem("email") || "이메일"
-  const avatar_url = localStorage.getItem("avatar_url") || ""
+  const [currentPlan, setCurrentPlan] = useState("free");
+  const username = localStorage.getItem("username") || "사용자";
+  const email = localStorage.getItem("email") || "이메일";
+  const avatar_url = localStorage.getItem("avatar_url") || "";
 
   const handleLogout = async () => {
-    // localStorage에서 정보 삭제
-    localStorage.removeItem("token")
-    localStorage.removeItem("username")
-    localStorage.removeItem("email")
-    localStorage.removeItem("avatar_url")
+    localStorage.removeItem("token");
+    localStorage.removeItem("username");
+    localStorage.removeItem("email");
+    localStorage.removeItem("avatar_url");
 
-    // 백엔드 로그아웃 엔드포인트 호출
     try {
       await fetch("/auth/github/logout", { method: "GET", credentials: "include" });
     } catch (e) {
       // 실패해도 무시
     }
 
-    // 메인 페이지로 이동
-    window.location.href = "/"
-  }
+    window.location.href = "/";
+  };
 
   return (
     <DashboardLayout>
@@ -80,7 +77,7 @@ export default function ProfilePage() {
                       <label htmlFor="email" className="text-sm font-medium">
                         이메일
                       </label>
-                      <Input id="email" value={`${email}`} readOnly />
+                      <Input id="email" value={email} readOnly />
                     </div>
                     <div className="space-y-1">
                       <label htmlFor="github" className="text-sm font-medium">
@@ -336,5 +333,5 @@ export default function ProfilePage() {
         </Tabs>
       </div>
     </DashboardLayout>
-  )
+  );
 }

@@ -1,17 +1,17 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Button } from "../components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../components/ui/card"
-import { Badge } from "../components/ui/badge"
-import { Switch } from "../components/ui/switch"
-import { Label } from "../components/ui/label"
-import { Github } from "lucide-react"
-import DashboardLayout from "../components/dashboard-layout"
+import { useState } from "react";
+import { Button } from "../components/ui/button";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../components/ui/card";
+import { Badge } from "../components/ui/badge";
+import { Switch } from "../components/ui/switch";
+import { Label } from "../components/ui/label";
+import { Github } from "lucide-react";
+import DashboardLayout from "../components/dashboard-layout";
 
 export default function SettingsPage() {
-  const [emailNotifications, setEmailNotifications] = useState(true)
-  const username = localStorage.getItem("username") || "githubuser"
+  const [emailNotifications, setEmailNotifications] = useState(true);
+  const username = localStorage.getItem("username") || "githubuser";
 
   return (
     <DashboardLayout>
@@ -31,15 +31,22 @@ export default function SettingsPage() {
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
                 <Label htmlFor="email-notifications">이메일 알림</Label>
-                <p className="text-sm text-muted-foreground">새로운 분석 결과 및 업데이트 알림을 이메일로 받습니다</p>
+                <p className="text-sm text-muted-foreground">
+                  새로운 분석 결과 및 업데이트 알림을 이메일로 받습니다
+                </p>
               </div>
-              <Switch id="email-notifications" checked={emailNotifications} onCheckedChange={setEmailNotifications} />
+              <Switch
+                id="email-notifications"
+                checked={emailNotifications}
+                onCheckedChange={setEmailNotifications}
+              />
             </div>
-
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
                 <Label htmlFor="browser-notifications">브라우저 알림</Label>
-                <p className="text-sm text-muted-foreground">저장소 분석 완료 시 브라우저 알림을 받습니다</p>
+                <p className="text-sm text-muted-foreground">
+                  저장소 분석 완료 시 브라우저 알림을 받습니다
+                </p>
               </div>
               <Switch id="browser-notifications" defaultChecked />
             </div>
@@ -139,8 +146,7 @@ export default function SettingsPage() {
           <CardContent className="space-y-4">
             <div className="pt-2">
               <p className="text-sm text-muted-foreground mb-4">
-                계정 데이터를 삭제하면 모든 분석 결과, 설정 및 개인 정보가 영구적으로 제거됩니다. 이 작업은 되돌릴 수
-                없습니다.
+                계정 데이터를 삭제하면 모든 분석 결과, 설정 및 개인 정보가 영구적으로 제거됩니다. 이 작업은 되돌릴 수 없습니다.
               </p>
               <Button variant="destructive" className="w-full justify-center">
                 계정 데이터 삭제
@@ -150,5 +156,5 @@ export default function SettingsPage() {
         </Card>
       </div>
     </DashboardLayout>
-  )
+  );
 }
