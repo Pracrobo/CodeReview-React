@@ -42,7 +42,7 @@ export default function HomePage() {
       </section>
 
       {/* 기능 소개 섹션 */}
-      <section id="features" className="py-24 bg-white">
+      <section id="features" className="py-24 bg-gray-200">
         <div className="container px-4 mx-auto">
           <h2 className="text-3xl font-bold text-center text-gray-900 sm:text-4xl mb-14">Aissue의 주요 기능</h2>
 
@@ -74,7 +74,7 @@ export default function HomePage() {
             </div>
             <div className="flex-1 bg-gray-100 rounded-xl overflow-hidden shadow-lg">
               <img
-                src="/placeholder.svg?height=400&width=600"
+                src="/이슈목록.png?height=400&width=600"
                 alt="이슈-코드 매칭 기능 예시"
                 className="w-full h-auto"
               />
@@ -109,7 +109,8 @@ export default function HomePage() {
             </div>
             <div className="flex-1 bg-gray-100 rounded-xl overflow-hidden shadow-lg">
               <img
-                src="/placeholder.svg?height=400&width=600"
+                // src="/placeholder.svg?height=400&width=600"
+                src="/저장소-AI챗봇.png?height=400&width=600"
                 alt="컨트리뷰션 가이드 AI 챗봇 예시"
                 className="w-full h-auto"
               />
@@ -144,7 +145,7 @@ export default function HomePage() {
             </div>
             <div className="flex-1 bg-gray-100 rounded-xl overflow-hidden shadow-lg">
               <img
-                src="/placeholder.svg?height=400&width=600"
+                src="/이슈 디테일.png?height=400&width=600"
                 alt="다국어 한글화 지원 예시"
                 className="w-full h-auto"
               />
@@ -179,7 +180,7 @@ export default function HomePage() {
             </div>
             <div className="flex-1 bg-gray-100 rounded-xl overflow-hidden shadow-lg">
               <img
-                src="/placeholder.svg?height=400&width=600"
+                src="/저장소-이슈목록.png?height=400&width=600"
                 alt="저장소 분석 및 요약 예시"
                 className="w-full h-auto"
               />
