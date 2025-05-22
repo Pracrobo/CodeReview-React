@@ -13,13 +13,14 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false)
 
   const handleGithubLogin = () => {
-    setIsLoading(true)
-
-    // 실제로는 GitHub OAuth 인증을 처리하지만, 현재는 테스트를 위해 바로 대시보드로 이동
-    setTimeout(() => {
-      navigate("/dashboard")
-    }, 1500)
-  }
+    // 기존 토큰/정보 삭제
+    localStorage.removeItem("token");
+    localStorage.removeItem("username");
+    localStorage.removeItem("email");
+    localStorage.removeItem("avatar_url");
+    // 실제 GitHub OAuth 인증 시작
+    window.location.href = "http://localhost:5000/auth/github/login";
+  };
 
   return (
     <div className="flex flex-col min-h-screen">

@@ -11,6 +11,7 @@ import DashboardLayout from "../components/dashboard-layout"
 
 export default function SettingsPage() {
   const [emailNotifications, setEmailNotifications] = useState(true)
+  const username = localStorage.getItem("username") || "githubuser"
 
   return (
     <DashboardLayout>
@@ -60,7 +61,9 @@ export default function SettingsPage() {
                     연동됨
                   </Badge>
                 </div>
-                <p className="text-sm text-muted-foreground">@honggildong 계정과 연동되어 있습니다</p>
+                <p className="text-sm text-muted-foreground">
+                  @{username} 계정과 연동되어 있습니다
+                </p>
               </div>
               <Button variant="outline" size="sm">
                 재연동

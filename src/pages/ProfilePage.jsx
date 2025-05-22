@@ -12,6 +12,27 @@ import DashboardLayout from "../components/dashboard-layout"
 
 export default function ProfilePage() {
   const [currentPlan, setCurrentPlan] = useState("free")
+  const username = localStorage.getItem("username") || "사용자"
+  const email = localStorage.getItem("email") || "이메일"
+  const avatar_url = localStorage.getItem("avatar_url") || ""
+
+  const handleLogout = async () => {
+    // localStorage에서 정보 삭제
+    localStorage.removeItem("token")
+    localStorage.removeItem("username")
+    localStorage.removeItem("email")
+    localStorage.removeItem("avatar_url")
+
+    // 백엔드 로그아웃 엔드포인트 호출
+    try {
+      await fetch("/auth/github/logout", { method: "GET", credentials: "include" });
+    } catch (e) {
+      // 실패해도 무시
+    }
+
+    // 메인 페이지로 이동
+    window.location.href = "/"
+  }
 
   return (
     <DashboardLayout>
@@ -36,12 +57,20 @@ export default function ProfilePage() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-center gap-4">
-                  <div className="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center">
-                    <User className="w-8 h-8 text-gray-500" />
+                  <div className="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
+                    {avatar_url ? (
+                      <img
+                        src={avatar_url}
+                        alt={username}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <User className="w-8 h-8 text-gray-500" />
+                    )}
                   </div>
                   <div>
-                    <h3 className="font-medium">홍길동</h3>
-                    <p className="text-sm text-muted-foreground">@honggildong</p>
+                    <h3 className="font-medium">{username}</h3>
+                    <p className="text-sm text-muted-foreground">@{username}</p>
                   </div>
                 </div>
 
@@ -51,16 +80,16 @@ export default function ProfilePage() {
                       <label htmlFor="email" className="text-sm font-medium">
                         이메일
                       </label>
-                      <Input id="email" value="honggildong@example.com" readOnly />
+                      <Input id="email" value={`${email}`} readOnly />
                     </div>
                     <div className="space-y-1">
                       <label htmlFor="github" className="text-sm font-medium">
                         GitHub 계정
                       </label>
                       <div className="flex">
-                        <Input id="github" value="@honggildong" readOnly className="rounded-r-none" />
+                        <Input id="github" value={`@${username}`} readOnly className="rounded-r-none" />
                         <Button variant="outline" className="rounded-l-none border-l-0" asChild>
-                          <a href="https://github.com/honggildong" target="_blank" rel="noopener noreferrer">
+                          <a href={`https://github.com/${username}`} target="_blank" rel="noopener noreferrer">
                             <Github className="w-4 h-4" />
                           </a>
                         </Button>
@@ -70,7 +99,7 @@ export default function ProfilePage() {
                 </div>
               </CardContent>
               <CardFooter className="flex justify-between">
-                <Button variant="outline" className="gap-1">
+                <Button variant="outline" className="gap-1" onClick={handleLogout}>
                   <LogOut className="w-4 h-4" />
                   로그아웃
                 </Button>
@@ -78,12 +107,22 @@ export default function ProfilePage() {
               </CardFooter>
             </Card>
 
-            <Alert>
-              <AlertCircle className="h-4 w-4" />
-              <AlertTitle>알림</AlertTitle>
-              <AlertDescription>
-                계정 정보는 GitHub 계정과 연동되어 있습니다. 일부 정보는 GitHub에서만 변경할 수 있습니다.
-              </AlertDescription>
+            <Alert className="mt-8 p-6 bg-gray-50 border border-gray-200 flex items-center gap-4">
+              <AlertCircle className="h-6 w-6 text-gray-500 mr-2" />
+              <div>
+                <AlertTitle className="font-semibold mb-1">알림</AlertTitle>
+                <AlertDescription className="text-sm text-gray-700">
+                  계정 정보는 <span className="font-medium text-gray-900">GitHub 계정</span>과 연동되어 있습니다.<br />
+                  일부 정보(프로필 사진, 닉네임, 이메일 등)는 GitHub에서만 변경할 수 있습니다.<br />
+                  <span className="text-gray-500">
+                    <ul className="list-disc ml-5 mt-2 space-y-1">
+                      <li>프로필 이미지를 변경하려면 GitHub에서 이미지를 수정하세요.</li>
+                      <li>이메일, 닉네임 등 개인정보도 GitHub에서 변경 후 다시 로그인하면 반영됩니다.</li>
+                      <li>계정 연동 해제 시, 서비스 이용이 제한될 수 있습니다.</li>
+                    </ul>
+                  </span>
+                </AlertDescription>
+              </div>
             </Alert>
           </TabsContent>
 

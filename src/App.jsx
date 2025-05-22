@@ -11,6 +11,7 @@ import SettingsPage from "./pages/SettingsPage"
 import PrivacyPolicyPage from "./pages/PrivacyPolicyPage"
 import TermsOfServicePage from "./pages/TermsOfServicePage"
 import CookiePolicyPage from "./pages/CookiePolicyPage"
+import OAuthCallback from "./pages/OAuthCallback";
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
       <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
       <Route path="/terms-of-service" element={<TermsOfServicePage />} />
       <Route path="/cookie-policy" element={<CookiePolicyPage />} />
+      <Route path="/oauth/callback" element={<OAuthCallback />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   )
