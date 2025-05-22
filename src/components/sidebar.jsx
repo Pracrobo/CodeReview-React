@@ -11,10 +11,11 @@ export default function Sidebar() {
   const isMobile = useMobile();
   // const [collapsed, setCollapsed] = useState(false)
   //사이드바 호출할때마다 collapsed가 false로 초기화됨으로 인해 순간적으로 사이드바가 펼쳐짐
+  
   const [collapsed, setCollapsed] = useState(() => {
-  const saved = localStorage.getItem("sidebar-collapsed")
-  return saved === "true"
-})
+    const saved = localStorage.getItem("sidebar-collapsed")
+    return saved === "true"
+  })
   //Sidebar가 호출될때 false로 초기화 하지 말고 함수형 초기값(내부 플래그 값)으로 변경
   
 
@@ -50,7 +51,7 @@ export default function Sidebar() {
           aria-label={collapsed ? "사이드바 펼치기" : "사이드바 접기"}
         >
           {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
-          {!collapsed && <span className="ml-2">사이드바 접기</span>}
+          {!collapsed && <span className="ml-2 whitespace-nowrap">사이드바 접기</span>}
         </Button>
       </div>
 
@@ -63,7 +64,7 @@ export default function Sidebar() {
           >
             <Link to="/dashboard">
               <LayoutDashboard className="mr-2 h-4 w-4 flex-shrink-0" />
-              {!collapsed && <span>대시보드</span>}
+              {!collapsed && <span className="ml-2 whitespace-nowrap">대시보드</span>}
             </Link>
           </Button>
 
@@ -78,7 +79,7 @@ export default function Sidebar() {
           >
             <Link to="/repositories">
               <ScrollText className="mr-2 h-4 w-4 flex-shrink-0" />
-              {!collapsed && <span>저장소</span>}
+              {!collapsed && <span className="ml-2 whitespace-nowrap">저장소</span>}
             </Link>
           </Button>
 
@@ -89,7 +90,7 @@ export default function Sidebar() {
           >
             <Link to="/issues">
               <AlertCircle className="mr-2 h-4 w-4 flex-shrink-0" />
-              {!collapsed && <span>이슈</span>}
+              {!collapsed && <span className="ml-2 whitespace-nowrap">이슈</span>}
             </Link>
           </Button>
         </nav>
@@ -104,7 +105,7 @@ export default function Sidebar() {
           >
             <Link to="/profile">
               <User className="mr-2 h-4 w-4 flex-shrink-0" />
-              {!collapsed && <span>내 프로필</span>}
+              {!collapsed && <span className="whitespace-nowrap">내 프로필</span>}
             </Link>
           </Button>
 
@@ -115,7 +116,7 @@ export default function Sidebar() {
           >
             <Link to="/settings">
               <Settings className="mr-2 h-4 w-4 flex-shrink-0" />
-              {!collapsed && <span>설정</span>}
+              {!collapsed && <span className="whitespace-nowrap">설정</span>}
             </Link>
           </Button>
         </nav>
