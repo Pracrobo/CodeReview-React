@@ -99,7 +99,26 @@ export default function SettingsPage() {
               <Github className="h-4 w-4" />
               GitHub 권한 관리
             </Button>
-            <Button variant="destructive">연동 해제</Button>
+            <Button
+              variant="destructive"
+              onClick={() => {
+                // 1. 새 창을 변수에 저장
+                const win = window.open('https://github.com/logout', '_blank', 'width=900,height=600');
+                // 2. 정보 삭제
+                localStorage.removeItem("token");
+                localStorage.removeItem("username");
+                localStorage.removeItem("email");
+                localStorage.removeItem("avatar_url");
+                fetch("/auth/github/logout", { method: "GET", credentials: "include" });
+
+                setTimeout(() => {
+                  if (win && !win.closed) win.close();
+                  window.location.href = "/";
+                }, 3000);
+              }}
+            >
+              연동 해제
+            </Button>
           </CardFooter>
         </Card>
 

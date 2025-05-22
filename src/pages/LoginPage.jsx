@@ -19,7 +19,7 @@ export default function LoginPage() {
     localStorage.removeItem("email");
     localStorage.removeItem("avatar_url");
     // 실제 GitHub OAuth 인증 시작
-    window.location.href = "http://localhost:5000/auth/github/login";
+    window.location.href = "http://localhost:3001/auth/github/login";
   };
 
   return (
