@@ -3,15 +3,17 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from './ui/button';
-import { Github, Menu, X } from 'lucide-react';
+import { Github, Menu, X, User } from 'lucide-react';
 import { ModeToggle } from './mode-toggle';
 
 export default function Navbar() {
   const location = useLocation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  const isLoggedIn =
-    location.pathname !== '/' && location.pathname !== '/login';
+  const token = localStorage.getItem("token");
+  const username = localStorage.getItem("username");
+  const avatarUrl = localStorage.getItem("avatar_url");
+  const isLoggedIn = !!token;
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -62,8 +64,16 @@ export default function Navbar() {
             {isLoggedIn ? (
               <Button asChild variant="ghost" size="icon">
                 <Link to="/profile">
-                  <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-xs font-medium">
-                    HG
+                  <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
+                    {avatarUrl ? (
+                      <img
+                        src={avatarUrl}
+                        alt={username}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <User className="w-5 h-5 text-gray-500" />
+                    )}
                   </div>
                 </Link>
               </Button>
