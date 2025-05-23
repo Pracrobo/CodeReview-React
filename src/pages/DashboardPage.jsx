@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useRef, useEffect } from "react"
 import { Link } from "react-router-dom"
 import { Button } from "../components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card"
@@ -18,6 +18,14 @@ export default function DashboardPage() {
   const [showError, setShowError] = useState(false)
   const [analyzingRepositories, setAnalyzingRepositories] = useState(mockAnalyzingRepositories)
   const [newRepositories, setNewRepositories] = useState(mockRepositories.filter((repo) => repo.isNew))
+
+  const inputRef = useRef(null)
+
+  useEffect(() => {
+    inputRef.current?.focus()
+  }, [])
+
+
 
   const handleAnalyzeRepo = (e) => {
     e.preventDefault()
@@ -79,6 +87,7 @@ export default function DashboardPage() {
               <div className="relative flex-1">
                 <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input
+                  ref={inputRef}
                   type="text"
                   placeholder="GitHub 저장소 URL 입력 (예: https://github.com/username/repo)"
                   className="pl-9"
