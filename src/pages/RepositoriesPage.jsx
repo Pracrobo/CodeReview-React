@@ -133,15 +133,15 @@ export default function RepositoriesPage() {
 
                 <Card className="h-full border-dashed">
                   <CardContent className="flex flex-col items-center justify-center h-full p-6">
+                    <Button asChild variant="outline">
+                      <Link to="/dashboard" state={{ from: "repositories" }}>저장소 추가하기</Link>
+                    </Button>
                     <div className="rounded-full bg-purple-100 p-3 mb-4">
                       <Plus className="h-6 w-6 text-purple-600" />
                     </div>
                     <p className="text-center text-muted-foreground mb-4">
                       새 GitHub 저장소를 분석하고 AI의 도움을 받아보세요
                     </p>
-                    <Button asChild variant="outline">
-                      <Link to="/dashboard">저장소 추가하기</Link>
-                    </Button>
                   </CardContent>
                 </Card>
               </div>

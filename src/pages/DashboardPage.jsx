@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useRef, useEffect } from "react"
-import { Link } from "react-router-dom"
+import { Link, useLocation } from "react-router-dom"
 import { Button } from "../components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card"
 import { Input } from "../components/ui/input"
@@ -20,10 +20,13 @@ export default function DashboardPage() {
   const [newRepositories, setNewRepositories] = useState(mockRepositories.filter((repo) => repo.isNew))
 
   const inputRef = useRef(null)
+  const location = useLocation()
 
   useEffect(() => {
-    inputRef.current?.focus()
-  }, [])
+      if (location.state?.from === "repositories") {
+        inputRef.current?.focus()
+      }
+  }, [location])
 
 
 
