@@ -221,6 +221,14 @@ export const mockRecentIssues = [
     repoId: "1",
     viewedAt: "2023-05-20",
     isPinned: true,
+    body: "Next.js 앱에서 useQuery를 사용할 때 SSR 중에 데이터를 가져오지 못하는 문제가 있습니다. 서버 컴포넌트에서 사용할 때 특히 문제가 됩니다.",
+    state: "open",
+    user: "user123",
+    labels: [
+      { name: "bug", color: "#d73a4a" },
+      { name: "help wanted", color: "#0e8a16" },
+    ],
+
   },
   {
     id: "201",
@@ -230,6 +238,13 @@ export const mockRecentIssues = [
     repoId: "2",
     viewedAt: "2023-05-19",
     isPinned: true,
+    body: "Next.js 13 App Router에서 기존 Pages Router의 getStaticProps를 대체하는 방법에 대한 명확한 문서가 필요합니다.",
+    state: "open",
+    user: "nextUser123",
+    labels: [
+      { name: "documentation", color: "#0075ca" },
+      { name: "app-router", color: "#fbca04" },
+    ],
   },
   {
     id: "102",
@@ -239,6 +254,13 @@ export const mockRecentIssues = [
     repoId: "1",
     viewedAt: "2023-05-18",
     isPinned: false,
+    body: "useMutation 훅의 타입 추론을 개선하여 더 나은 개발자 경험을 제공하면 좋겠습니다. 현재는 복잡한 제네릭 타입을 직접 지정해야 하는 경우가 많습니다.",
+    state: "open",
+    user: "devUser456",
+    labels: [
+      { name: "enhancement", color: "#a2eeef" },
+      { name: "typescript", color: "#3178c6" },
+    ],
   },
   {
     id: "103",
@@ -248,6 +270,13 @@ export const mockRecentIssues = [
     repoId: "1",
     viewedAt: "2023-05-17",
     isPinned: false,
+      body: "React 18의 새로운 기능과 함께 React Query를 사용하는 방법에 대한 문서가 필요합니다. 특히 Suspense와의 통합에 대한 가이드가 있으면 좋겠습니다.",
+    state: "open",
+    user: "docWriter789",
+    labels: [
+      { name: "documentation", color: "#0075ca" },
+      { name: "good first issue", color: "#7057ff" },
+    ],
   },
 ]
 

@@ -91,6 +91,12 @@ export default function IssuesPage() {
                             <Badge variant="outline" className="bg-gray-100">
                               {issue.repoName}
                             </Badge>
+                            <Badge
+                              variant={issue.state === "open" ? "default" : "secondary"}
+                              className={issue.state === "open" ? "bg-green-500" : ""}
+                            >
+                              {issue.state === "open" ? "열림" : "닫힘"}
+                            </Badge>
                             <CardDescription>#{issue.number}</CardDescription>
                           </div>
                           <Link to={`/repository/${issue.repoId}/issue/${issue.number}`}>
@@ -117,6 +123,19 @@ export default function IssuesPage() {
                       </div>
                     </CardHeader>
                     <CardContent className="text-xs text-muted-foreground">
+                      <p className="text-sm text-muted-foreground line-clamp-2 mb-3">{issue.body}</p>
+                      <div className="flex flex-wrap gap-1 mb-2">
+                        {issue.labels.map((label) => (
+                          <Badge
+                            key={label.name}
+                            variant="outline"
+                            className="bg-opacity-10"
+                            style={{ backgroundColor: `${label.color}20`, borderColor: label.color }}
+                          >
+                            {label.name}
+                          </Badge>
+                        ))}
+                      </div>
                       <div className="flex items-center gap-1">
                         <Clock className="h-3.5 w-3.5" />
                         <span>마지막 조회: {issue.viewedAt}</span>
