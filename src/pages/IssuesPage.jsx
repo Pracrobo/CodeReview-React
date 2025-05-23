@@ -52,6 +52,7 @@ export default function IssuesPage() {
   }
 
   const sortedRecentIssues = sortIssues(recentIssues)
+  const sortedAllIssues = sortIssues(filteredIssues)
 
   return (
     <DashboardLayout>
@@ -62,7 +63,7 @@ export default function IssuesPage() {
             <p className="text-muted-foreground">최근 본 이슈와 모든 이슈를 확인하고 관리하세요</p>
           </div>
           <div className="relative w-full sm:w-64">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground"/>
             <Input
               type="text"
               placeholder="이슈 검색"
@@ -142,9 +143,9 @@ export default function IssuesPage() {
             )}
           </TabsContent>
           <TabsContent value="all" className="space-y-4">
-            {filteredIssues.length > 0 ? (
+            {sortedAllIssues.length > 0 ? (
               <div className="grid grid-cols-1 gap-4">
-                {filteredIssues.map((issue) => (
+                {sortedAllIssues.map((issue) => (
                   <Card key={issue.id} className="transition-all hover:shadow-md">
                     <CardHeader className="pb-2">
                       <div className="flex justify-between items-start">
