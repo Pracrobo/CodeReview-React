@@ -1,58 +1,72 @@
-"use client"
+"use client";
 
-import { useState, useMemo } from "react"
-import { Link } from "react-router-dom"
-import { Button } from "../components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card"
-import { Badge } from "../components/ui/badge"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs"
-import { Input } from "../components/ui/input"
-import { AlertCircle, Clock, Pin, PinOff, Search } from "lucide-react"
-import DashboardLayout from "../components/dashboard-layout"
-import { mockIssues, mockRecentIssues } from "../lib/mock-data"
+import { useState, useMemo } from "react";
+import { Link } from "react-router-dom";
+import { Button } from "../components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/card";
+import { Badge } from "../components/ui/badge";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "../components/ui/tabs";
+import { Input } from "../components/ui/input";
+import { AlertCircle, Clock, Pin, PinOff, Search } from "lucide-react";
+import DashboardLayout from "../components/dashboard-layout";
+import { mockIssues, mockRecentIssues } from "../lib/mock-data";
 
 export default function IssuesPage() {
-  const [searchQuery, setSearchQuery] = useState("")
-  const [recentIssues, setRecentIssues] = useState(mockRecentIssues)
-  const [allIssues, setAllIssues] = useState(mockIssues)
+  const [searchQuery, setSearchQuery] = useState("");
+  const [recentIssues, setRecentIssues] = useState(mockRecentIssues);
+  const [allIssues, setAllIssues] = useState(mockIssues);
 
   const togglePin = (issueId) => {
     // 최근 본 이슈 목록 업데이트
     const updatedRecentIssues = recentIssues.map((issue) => {
       if (issue.id === issueId) {
-        return { ...issue, isPinned: !issue.isPinned }
+        return { ...issue, isPinned: !issue.isPinned };
       }
-      return issue
-    })
-    setRecentIssues(updatedRecentIssues)
+      return issue;
+    });
+    setRecentIssues(updatedRecentIssues);
 
     // 전체 이슈 목록 업데이트
     const updatedAllIssues = allIssues.map((issue) => {
       if (issue.id === issueId) {
-        return { ...issue, isPinned: !issue.isPinned }
+        return { ...issue, isPinned: !issue.isPinned };
       }
-      return issue
-    })
-    setAllIssues(updatedAllIssues)
-  }
+      return issue;
+    });
+    setAllIssues(updatedAllIssues);
+  };
 
   const filteredIssues = allIssues.filter(
     (issue) =>
       issue.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      issue.repoName.toLowerCase().includes(searchQuery.toLowerCase()),
-  )
+      issue.repoName.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   // 고정된 이슈를 상단에 표시하기 위한 정렬 함수
   const sortIssues = (issues) => {
     return [...issues].sort((a, b) => {
-      if (a.isPinned && !b.isPinned) return -1
-      if (!a.isPinned && b.isPinned) return 1
-      return new Date(b.viewedAt).getTime() - new Date(a.viewedAt).getTime()
-    })
-  }
+      if (a.isPinned && !b.isPinned) return -1;
+      if (!a.isPinned && b.isPinned) return 1;
+      return new Date(b.viewedAt).getTime() - new Date(a.viewedAt).getTime();
+    });
+  };
 
-  const sortedRecentIssues = sortIssues(recentIssues)
-  const sortedAllIssues =  useMemo(() => sortIssues(filteredIssues), [filteredIssues])
+  const sortedRecentIssues = sortIssues(recentIssues);
+  const sortedAllIssues = useMemo(
+    () => sortIssues(filteredIssues),
+    [filteredIssues]
+  );
 
   return (
     <DashboardLayout>
@@ -60,10 +74,12 @@ export default function IssuesPage() {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <h1 className="text-2xl font-bold tracking-tight">이슈</h1>
-            <p className="text-muted-foreground">최근 본 이슈와 모든 이슈를 확인하고 관리하세요</p>
+            <p className="text-muted-foreground">
+              최근 본 이슈와 모든 이슈를 확인하고 관리하세요
+            </p>
           </div>
           <div className="relative w-full sm:w-64">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground"/>
+            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
               type="text"
               placeholder="이슈 검색"
@@ -83,7 +99,10 @@ export default function IssuesPage() {
             {sortedRecentIssues.length > 0 ? (
               <div className="grid grid-cols-1 gap-4">
                 {sortedRecentIssues.map((issue) => (
-                  <Card key={issue.id} className="transition-all hover:shadow-md">
+                  <Card
+                    key={issue.id}
+                    className="transition-all hover:shadow-md"
+                  >
                     <CardHeader className="pb-2">
                       <div className="flex justify-between items-start">
                         <div>
@@ -92,15 +111,23 @@ export default function IssuesPage() {
                               {issue.repoName}
                             </Badge>
                             <Badge
-                              variant={issue.state === "open" ? "default" : "secondary"}
-                              className={issue.state === "open" ? "bg-green-500" : ""}
+                              variant={
+                                issue.state === "open" ? "default" : "secondary"
+                              }
+                              className={
+                                issue.state === "open" ? "bg-green-500" : ""
+                              }
                             >
                               {issue.state === "open" ? "열림" : "닫힘"}
                             </Badge>
                             <CardDescription>#{issue.number}</CardDescription>
                           </div>
-                          <Link to={`/repository/${issue.repoId}/issue/${issue.number}`}>
-                            <CardTitle className="text-base font-medium hover:text-primary">{issue.title}</CardTitle>
+                          <Link
+                            to={`/repository/${issue.repoId}/issue/${issue.number}`}
+                          >
+                            <CardTitle className="text-base font-medium hover:text-primary">
+                              {issue.title}
+                            </CardTitle>
                           </Link>
                         </div>
                         <div className="flex items-center gap-2">
@@ -109,8 +136,8 @@ export default function IssuesPage() {
                             size="icon"
                             className="h-8 w-8"
                             onClick={(e) => {
-                              e.preventDefault()
-                              togglePin(issue.id)
+                              e.preventDefault();
+                              togglePin(issue.id);
                             }}
                           >
                             {issue.isPinned ? (
@@ -123,14 +150,19 @@ export default function IssuesPage() {
                       </div>
                     </CardHeader>
                     <CardContent className="text-xs text-muted-foreground">
-                      <p className="text-sm text-muted-foreground line-clamp-2 mb-3">{issue.body}</p>
+                      <p className="text-sm text-muted-foreground line-clamp-2 mb-3">
+                        {issue.body}
+                      </p>
                       <div className="flex flex-wrap gap-1 mb-2">
                         {issue.labels.map((label) => (
                           <Badge
                             key={label.name}
                             variant="outline"
                             className="bg-opacity-10"
-                            style={{ backgroundColor: `${label.color}20`, borderColor: label.color }}
+                            style={{
+                              backgroundColor: `${label.color}20`,
+                              borderColor: label.color,
+                            }}
                           >
                             {label.name}
                           </Badge>
@@ -150,7 +182,9 @@ export default function IssuesPage() {
                   <div className="rounded-full bg-purple-100 p-3 mb-4">
                     <AlertCircle className="h-6 w-6 text-purple-600" />
                   </div>
-                  <h3 className="text-xl font-medium mb-2">최근 본 이슈가 없습니다</h3>
+                  <h3 className="text-xl font-medium mb-2">
+                    최근 본 이슈가 없습니다
+                  </h3>
                   <p className="text-center text-muted-foreground mb-4">
                     저장소에서 이슈를 확인하면 이 곳에 표시됩니다
                   </p>
@@ -165,7 +199,10 @@ export default function IssuesPage() {
             {sortedAllIssues.length > 0 ? (
               <div className="grid grid-cols-1 gap-4">
                 {sortedAllIssues.map((issue) => (
-                  <Card key={issue.id} className="transition-all hover:shadow-md">
+                  <Card
+                    key={issue.id}
+                    className="transition-all hover:shadow-md"
+                  >
                     <CardHeader className="pb-2">
                       <div className="flex justify-between items-start">
                         <div>
@@ -174,15 +211,23 @@ export default function IssuesPage() {
                               {issue.repoName}
                             </Badge>
                             <Badge
-                              variant={issue.state === "open" ? "default" : "secondary"}
-                              className={issue.state === "open" ? "bg-green-500" : ""}
+                              variant={
+                                issue.state === "open" ? "default" : "secondary"
+                              }
+                              className={
+                                issue.state === "open" ? "bg-green-500" : ""
+                              }
                             >
                               {issue.state === "open" ? "열림" : "닫힘"}
                             </Badge>
                             <CardDescription>#{issue.number}</CardDescription>
                           </div>
-                          <Link to={`/repository/${issue.repoId}/issue/${issue.number}`}>
-                            <CardTitle className="text-base font-medium hover:text-primary">{issue.title}</CardTitle>
+                          <Link
+                            to={`/repository/${issue.repoId}/issue/${issue.number}`}
+                          >
+                            <CardTitle className="text-base font-medium hover:text-primary">
+                              {issue.title}
+                            </CardTitle>
                           </Link>
                         </div>
                         <div className="flex items-center gap-2">
@@ -191,8 +236,8 @@ export default function IssuesPage() {
                             size="icon"
                             className="h-8 w-8"
                             onClick={(e) => {
-                              e.preventDefault()
-                              togglePin(issue.id)
+                              e.preventDefault();
+                              togglePin(issue.id);
                             }}
                           >
                             {issue.isPinned ? (
@@ -205,14 +250,19 @@ export default function IssuesPage() {
                       </div>
                     </CardHeader>
                     <CardContent>
-                      <p className="text-sm text-muted-foreground line-clamp-2 mb-3">{issue.body}</p>
+                      <p className="text-sm text-muted-foreground line-clamp-2 mb-3">
+                        {issue.body}
+                      </p>
                       <div className="flex flex-wrap gap-1 mb-2">
                         {issue.labels.map((label) => (
                           <Badge
                             key={label.name}
                             variant="outline"
                             className="bg-opacity-10"
-                            style={{ backgroundColor: `${label.color}20`, borderColor: label.color }}
+                            style={{
+                              backgroundColor: `${label.color}20`,
+                              borderColor: label.color,
+                            }}
                           >
                             {label.name}
                           </Badge>
@@ -233,8 +283,12 @@ export default function IssuesPage() {
                   <div className="rounded-full bg-purple-100 p-3 mb-4">
                     <AlertCircle className="h-6 w-6 text-purple-600" />
                   </div>
-                  <h3 className="text-xl font-medium mb-2">검색 결과가 없습니다</h3>
-                  <p className="text-center text-muted-foreground mb-4">다른 검색어로 다시 시도해보세요</p>
+                  <h3 className="text-xl font-medium mb-2">
+                    검색 결과가 없습니다
+                  </h3>
+                  <p className="text-center text-muted-foreground mb-4">
+                    다른 검색어로 다시 시도해보세요
+                  </p>
                 </CardContent>
               </Card>
             )}
@@ -242,5 +296,5 @@ export default function IssuesPage() {
         </Tabs>
       </div>
     </DashboardLayout>
-  )
+  );
 }

@@ -1,58 +1,85 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Link } from "react-router-dom"
-import { Button } from "../components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../components/ui/card"
-import { Input } from "../components/ui/input"
-import { Badge } from "../components/ui/badge"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs"
-import { AlertCircle, Github, Plus, Search, Star, GitFork, Clock } from "lucide-react"
-import DashboardLayout from "../components/dashboard-layout"
-import { mockRepositories, mockStarredRepositories } from "../lib/mock-data"
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import { Button } from "../components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/card";
+import { Input } from "../components/ui/input";
+import { Badge } from "../components/ui/badge";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "../components/ui/tabs";
+import {
+  AlertCircle,
+  Github,
+  Plus,
+  Search,
+  Star,
+  GitFork,
+  Clock,
+} from "lucide-react";
+import DashboardLayout from "../components/dashboard-layout";
+import { mockRepositories, mockStarredRepositories } from "../lib/mock-data";
 
 export default function RepositoriesPage() {
-  const [searchQuery, setSearchQuery] = useState("")
-  const [repositories, setRepositories] = useState(mockRepositories)
-  const [starredRepositories, setStarredRepositories] = useState(mockStarredRepositories)
+  const [searchQuery, setSearchQuery] = useState("");
+  const [repositories, setRepositories] = useState(mockRepositories);
+  const [starredRepositories, setStarredRepositories] = useState(
+    mockStarredRepositories
+  );
 
   const toggleStar = (e, repoId) => {
-    e.preventDefault()
-    e.stopPropagation()
+    e.preventDefault();
+    e.stopPropagation();
 
     // 저장소 목록 업데이트
     const updatedRepositories = repositories.map((repo) => {
       if (repo.id === repoId) {
-        return { ...repo, isStarred: !repo.isStarred }
+        return { ...repo, isStarred: !repo.isStarred };
       }
-      return repo
-    })
-    setRepositories(updatedRepositories)
+      return repo;
+    });
+    setRepositories(updatedRepositories);
 
     // 즐겨찾기 목록 업데이트
-    const repo = repositories.find((r) => r.id === repoId)
+    const repo = repositories.find((r) => r.id === repoId);
     if (repo) {
       if (repo.isStarred) {
         // 즐겨찾기 해제
-        setStarredRepositories(starredRepositories.filter((r) => r.id !== repoId))
+        setStarredRepositories(
+          starredRepositories.filter((r) => r.id !== repoId)
+        );
       } else {
         // 즐겨찾기 추가
-        setStarredRepositories([...starredRepositories, { ...repo, isStarred: true }])
+        setStarredRepositories([
+          ...starredRepositories,
+          { ...repo, isStarred: true },
+        ]);
       }
     }
-  }
+  };
 
   const filteredRepositories = repositories.filter(
     (repo) =>
       repo.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      repo.description.toLowerCase().includes(searchQuery.toLowerCase()),
-  )
+      repo.description.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   const filteredStarredRepositories = starredRepositories.filter(
     (repo) =>
       repo.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      repo.description.toLowerCase().includes(searchQuery.toLowerCase()),
-  )
+      repo.description.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   const renderRepositoryCard = (repo) => (
     <Card key={repo.id} className="h-full transition-all hover:shadow-md">
@@ -64,13 +91,26 @@ export default function RepositoriesPage() {
             {repo.isNew && <Badge className="bg-green-500">NEW</Badge>}
           </div>
           <div className="flex items-center gap-2">
-            <Badge variant={repo.isPrivate ? "outline" : "secondary"}>{repo.isPrivate ? "비공개" : "공개"}</Badge>
-            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={(e) => toggleStar(e, repo.id)}>
-              <Star className={`h-4 w-4 ${repo.isStarred ? "fill-yellow-400 text-yellow-400" : ""}`} />
+            <Badge variant={repo.isPrivate ? "outline" : "secondary"}>
+              {repo.isPrivate ? "비공개" : "공개"}
+            </Badge>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8"
+              onClick={(e) => toggleStar(e, repo.id)}
+            >
+              <Star
+                className={`h-4 w-4 ${
+                  repo.isStarred ? "fill-yellow-400 text-yellow-400" : ""
+                }`}
+              />
             </Button>
           </div>
         </div>
-        <CardDescription className="line-clamp-2 h-10">{repo.description}</CardDescription>
+        <CardDescription className="line-clamp-2 h-10">
+          {repo.description}
+        </CardDescription>
       </CardHeader>
       <CardContent className="pb-2">
         <div className="flex items-center gap-4 text-sm text-muted-foreground">
@@ -95,7 +135,7 @@ export default function RepositoriesPage() {
         </div>
       </CardFooter>
     </Card>
-  )
+  );
 
   return (
     <DashboardLayout>
@@ -103,7 +143,9 @@ export default function RepositoriesPage() {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <h1 className="text-2xl font-bold tracking-tight">저장소</h1>
-            <p className="text-muted-foreground">분석한 GitHub 저장소 목록을 확인하세요</p>
+            <p className="text-muted-foreground">
+              분석한 GitHub 저장소 목록을 확인하세요
+            </p>
           </div>
           <div className="relative w-full sm:w-64">
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -134,7 +176,9 @@ export default function RepositoriesPage() {
                 <Card className="h-full border-dashed">
                   <Link to="/dashboard" state={{ from: "repositories" }}>
                     <CardContent className="flex flex-col items-center justify-center h-full p-6 pt-4">
-                      <h3 className="text-xl font-semibold leading-none tracking-tight pb-4">저장소 추가하기</h3>
+                      <h3 className="text-xl font-semibold leading-none tracking-tight pb-4">
+                        저장소 추가하기
+                      </h3>
                       <div className="rounded-full bg-purple-100 p-3">
                         <Plus className="h-6 w-6 text-purple-600" />
                       </div>
@@ -152,7 +196,9 @@ export default function RepositoriesPage() {
                     <Github className="h-6 w-6 text-purple-600" />
                   </div>
                   <h3 className="text-xl font-medium mb-2">
-                    {searchQuery ? "검색 결과가 없습니다" : "아직 분석한 저장소가 없습니다"}
+                    {searchQuery
+                      ? "검색 결과가 없습니다"
+                      : "아직 분석한 저장소가 없습니다"}
                   </h3>
                   <p className="text-center text-muted-foreground mb-4">
                     {searchQuery
@@ -184,7 +230,9 @@ export default function RepositoriesPage() {
                     <Star className="h-6 w-6 text-amber-600" />
                   </div>
                   <h3 className="text-xl font-medium mb-2">
-                    {searchQuery ? "검색 결과가 없습니다" : "즐겨찾기한 저장소가 없습니다"}
+                    {searchQuery
+                      ? "검색 결과가 없습니다"
+                      : "즐겨찾기한 저장소가 없습니다"}
                   </h3>
                   <p className="text-center text-muted-foreground mb-4">
                     {searchQuery
@@ -198,5 +246,5 @@ export default function RepositoriesPage() {
         </Tabs>
       </div>
     </DashboardLayout>
-  )
+  );
 }

@@ -27,11 +27,11 @@ export default function Sidebar() {
 
   // 사이드바 상태를 로컬 스토리지에 저장
   // TODO: 사이드바를 state로 저장하며, rendering 시 초기화된 후 값이 변경되는 문제를 해결
-    const toggleSidebar = () => {
-    const newState = !collapsed
-    setCollapsed(newState)
-    localStorage.setItem("sidebar-collapsed", String(newState))
-  }
+  const toggleSidebar = () => {
+    const newState = !collapsed;
+    setCollapsed(newState);
+    localStorage.setItem("sidebar-collapsed", String(newState));
+  };
 
   if (isMobile) return null;
 

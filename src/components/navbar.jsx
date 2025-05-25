@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { Button } from './ui/button';
-import { Github, Menu, X, User } from 'lucide-react';
-import { ModeToggle } from './mode-toggle';
+import { useState } from "react";
+import { Link, useLocation } from "react-router-dom";
+import { Button } from "./ui/button";
+import { Github, Menu, X, User } from "lucide-react";
+import { ModeToggle } from "./mode-toggle";
 
 export default function Navbar() {
   const location = useLocation();
@@ -20,7 +20,7 @@ export default function Navbar() {
       <div className="max-w-none container flex h-14 items-center">
         <div className="flex items-center gap-2 mr-4">
           <Link
-            to={isLoggedIn ? '/dashboard' : '/'}
+            to={isLoggedIn ? "/dashboard" : "/"}
             className="flex items-center gap-1"
           >
             <span className="font-bold text-xl bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-indigo-600">
@@ -36,9 +36,9 @@ export default function Navbar() {
                 <Link
                   to="/"
                   className={`transition-colors hover:text-foreground/80 ${
-                    location.pathname === '/'
-                      ? 'text-foreground font-medium'
-                      : 'text-foreground/60'
+                    location.pathname === "/"
+                      ? "text-foreground font-medium"
+                      : "text-foreground/60"
                   }`}
                 >
                   홈
@@ -120,9 +120,9 @@ export default function Navbar() {
                   <Link
                     to="/"
                     className={`transition-colors hover:text-foreground/80 ${
-                      location.pathname === '/'
-                        ? 'text-foreground font-medium'
-                        : 'text-foreground/60'
+                      location.pathname === "/"
+                        ? "text-foreground font-medium"
+                        : "text-foreground/60"
                     }`}
                     onClick={() => setIsMenuOpen(false)}
                   >

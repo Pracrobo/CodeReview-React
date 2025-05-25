@@ -1,5 +1,5 @@
-import { Link } from "react-router-dom"
-import { Github } from "lucide-react"
+import { Link } from "react-router-dom";
+import { Github } from "lucide-react";
 
 export default function Footer() {
   return (
@@ -13,8 +13,9 @@ export default function Footer() {
               </span>
             </Link>
             <p className="text-sm text-muted-foreground mb-4 max-w-md">
-              AI를 활용하여 GitHub 저장소의 이슈 분석, 코드 추천 및 컨트리뷰션 가이드를 제공하는 웹 서비스입니다.
-              개발자의 생산성 향상과 오픈소스 참여 장벽 완화를 목표로 합니다.
+              AI를 활용하여 GitHub 저장소의 이슈 분석, 코드 추천 및 컨트리뷰션
+              가이드를 제공하는 웹 서비스입니다. 개발자의 생산성 향상과 오픈소스
+              참여 장벽 완화를 목표로 합니다.
             </p>
             <div className="flex items-center gap-4">
               <a
@@ -32,12 +33,18 @@ export default function Footer() {
             <h3 className="font-medium mb-4">제품</h3>
             <ul className="space-y-2 text-sm">
               <li>
-                <a href="/#features" className="text-muted-foreground hover:text-foreground">
+                <a
+                  href="/#features"
+                  className="text-muted-foreground hover:text-foreground"
+                >
                   기능
                 </a>
               </li>
               <li>
-                <a href="/#pricing" className="text-muted-foreground hover:text-foreground">
+                <a
+                  href="/#pricing"
+                  className="text-muted-foreground hover:text-foreground"
+                >
                   가격 정책
                 </a>
               </li>
@@ -63,5 +70,5 @@ export default function Footer() {
         </div>
       </div>
     </footer>
-  )
+  );
 }
