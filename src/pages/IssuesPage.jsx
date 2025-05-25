@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import { Link } from "react-router-dom"
 import { Button } from "../components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card"
@@ -52,7 +52,7 @@ export default function IssuesPage() {
   }
 
   const sortedRecentIssues = sortIssues(recentIssues)
-  const sortedAllIssues = sortIssues(filteredIssues)
+  const sortedAllIssues =  useMemo(() => sortIssues(filteredIssues), [filteredIssues])
 
   return (
     <DashboardLayout>
