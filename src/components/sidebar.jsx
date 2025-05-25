@@ -20,14 +20,7 @@ export default function Sidebar() {
   
 
   // 사이드바 상태를 로컬 스토리지에 저장
-  // useEffect(() => {
-  //   const savedState = localStorage.getItem("sidebar-collapsed")
-  //   if (savedState !== null) {
-  //     setCollapsed(savedState === "true")
-  //   }
-  // }, [])
-
-  const toggleSidebar = () => {
+    const toggleSidebar = () => {
     const newState = !collapsed
     setCollapsed(newState)
     localStorage.setItem("sidebar-collapsed", String(newState))
