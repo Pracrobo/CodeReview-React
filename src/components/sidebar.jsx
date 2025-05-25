@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { Link, useLocation } from "react-router-dom"
 import { Button } from "./ui/button"
 import { ScrollText, LayoutDashboard, Settings, User, AlertCircle, ChevronLeft, ChevronRight } from "lucide-react"
@@ -9,7 +9,6 @@ import { useMobile } from "../hooks/use-mobile"
 export default function Sidebar() {
   const location = useLocation();
   const isMobile = useMobile();
-  // const [collapsed, setCollapsed] = useState(false)
   //사이드바 호출할때마다 collapsed가 false로 초기화됨으로 인해 순간적으로 사이드바가 펼쳐짐
   
   const [collapsed, setCollapsed] = useState(() => {
