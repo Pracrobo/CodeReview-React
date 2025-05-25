@@ -145,7 +145,7 @@ export default function HomePage() {
             </div>
             <div className="flex-1 bg-gray-100 rounded-xl overflow-hidden shadow-lg">
               <img
-                src="/이슈 디테일.png?height=400&width=600"
+                src="/이슈디테일.png?height=400&width=600"
                 alt="다국어 한글화 지원 예시"
                 className="w-full h-auto"
               />
