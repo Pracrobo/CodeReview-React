@@ -39,7 +39,7 @@ export const mockRepositories = [
     isStarred: false,
     isNew: true,
   },
-]
+];
 
 // 분석 중인 저장소 목록
 export const mockAnalyzingRepositories = [
@@ -47,7 +47,8 @@ export const mockAnalyzingRepositories = [
     id: "4",
     name: "typescript",
     fullName: "microsoft/typescript",
-    description: "TypeScript는 JavaScript의 슈퍼셋으로, 타입을 추가한 프로그래밍 언어입니다.",
+    description:
+      "TypeScript는 JavaScript의 슈퍼셋으로, 타입을 추가한 프로그래밍 언어입니다.",
     progress: 65,
     startedAt: "2023-05-20T10:30:00Z",
     estimatedCompletion: "2023-05-20T11:15:00Z",
@@ -61,7 +62,7 @@ export const mockAnalyzingRepositories = [
     startedAt: "2023-05-20T10:45:00Z",
     estimatedCompletion: "2023-05-20T11:30:00Z",
   },
-]
+];
 
 // 즐겨찾기한 저장소 목록
 export const mockStarredRepositories = [
@@ -91,7 +92,7 @@ export const mockStarredRepositories = [
     isStarred: true,
     isNew: false,
   },
-]
+];
 
 // 저장소 상세 페이지에서 사용할 저장소 상세 데이터
 export const mockRepositoryDetails = {
@@ -125,7 +126,7 @@ export const mockRepositoryDetails = {
     "낙관적 업데이트 및 롤백",
     "자동 가비지 컬렉션 및 캐시 관리",
   ],
-}
+};
 
 // 이슈 목록 페이지에서 사용할 이슈 목록 데이터
 export const mockIssues = [
@@ -209,7 +210,7 @@ export const mockIssues = [
       { name: "app-router", color: "#fbca04" },
     ],
   },
-]
+];
 
 // 최근 본 이슈 목록
 export const mockRecentIssues = [
@@ -221,6 +222,13 @@ export const mockRecentIssues = [
     repoId: "1",
     viewedAt: "2023-05-20",
     isPinned: true,
+    body: "Next.js 앱에서 useQuery를 사용할 때 SSR 중에 데이터를 가져오지 못하는 문제가 있습니다. 서버 컴포넌트에서 사용할 때 특히 문제가 됩니다.",
+    state: "open",
+    user: "user123",
+    labels: [
+      { name: "bug", color: "#d73a4a" },
+      { name: "help wanted", color: "#0e8a16" },
+    ],
   },
   {
     id: "201",
@@ -230,6 +238,13 @@ export const mockRecentIssues = [
     repoId: "2",
     viewedAt: "2023-05-19",
     isPinned: true,
+    body: "Next.js 13 App Router에서 기존 Pages Router의 getStaticProps를 대체하는 방법에 대한 명확한 문서가 필요합니다.",
+    state: "open",
+    user: "nextUser123",
+    labels: [
+      { name: "documentation", color: "#0075ca" },
+      { name: "app-router", color: "#fbca04" },
+    ],
   },
   {
     id: "102",
@@ -239,6 +254,13 @@ export const mockRecentIssues = [
     repoId: "1",
     viewedAt: "2023-05-18",
     isPinned: false,
+    body: "useMutation 훅의 타입 추론을 개선하여 더 나은 개발자 경험을 제공하면 좋겠습니다. 현재는 복잡한 제네릭 타입을 직접 지정해야 하는 경우가 많습니다.",
+    state: "open",
+    user: "devUser456",
+    labels: [
+      { name: "enhancement", color: "#a2eeef" },
+      { name: "typescript", color: "#3178c6" },
+    ],
   },
   {
     id: "103",
@@ -248,8 +270,15 @@ export const mockRecentIssues = [
     repoId: "1",
     viewedAt: "2023-05-17",
     isPinned: false,
+    body: "React 18의 새로운 기능과 함께 React Query를 사용하는 방법에 대한 문서가 필요합니다. 특히 Suspense와의 통합에 대한 가이드가 있으면 좋겠습니다.",
+    state: "open",
+    user: "docWriter789",
+    labels: [
+      { name: "documentation", color: "#0075ca" },
+      { name: "good first issue", color: "#7057ff" },
+    ],
   },
-]
+];
 
 // 이슈 상세 페이지에서 사용할 이슈 상세 데이터
 export const mockIssueDetails = {
@@ -319,4 +348,4 @@ export const mockIssueDetails = {
     suggestion:
       "이 문제를 해결하기 위해서는 Next.js 13 앱 라우터에서 'use client' 지시문을 사용하여 클라이언트 컴포넌트를 명시적으로 선언하고, 그 안에서 useQuery를 사용해야 합니다. 또는 서버 컴포넌트에서 사용할 수 있는 별도의 데이터 페칭 API를 개발하는 것이 좋을 것 같습니다.",
   },
-}
+};

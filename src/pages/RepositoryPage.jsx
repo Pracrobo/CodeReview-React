@@ -1,10 +1,21 @@
-"use client"
-import { Link, useParams } from "react-router-dom"
-import { Button } from "../components/ui/button"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs"
-import { Badge } from "../components/ui/badge"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card"
-import { Input } from "../components/ui/input"
+"use client";
+import { Link, useParams } from "react-router-dom";
+import { Button } from "../components/ui/button";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "../components/ui/tabs";
+import { Badge } from "../components/ui/badge";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/card";
+import { Input } from "../components/ui/input";
 import {
   AlertCircle,
   ArrowLeft,
@@ -16,19 +27,20 @@ import {
   Info,
   Shield,
   FileText,
-} from "lucide-react"
-import DashboardLayout from "../components/dashboard-layout"
-import { mockRepositoryDetails, mockIssues } from "../lib/mock-data"
+} from "lucide-react";
+import DashboardLayout from "../components/dashboard-layout";
+import { mockRepositoryDetails, mockIssues } from "../lib/mock-data";
 
 export default function RepositoryPage() {
-  const { id: repoId } = useParams()
-  const repo = mockRepositoryDetails
+  const { id: repoId } = useParams();
+  const repo = mockRepositoryDetails;
 
   // 라이선스 정보 및 의무사항
   const licenseInfo = {
     MIT: {
       fullName: "MIT License",
-      description: "간단하고 관대한 라이선스로, 저작권 및 라이선스 고지만 필요합니다.",
+      description:
+        "간단하고 관대한 라이선스로, 저작권 및 라이선스 고지만 필요합니다.",
       permissions: ["상업적 사용", "수정", "배포", "개인 사용"],
       conditions: ["라이선스 및 저작권 고지 포함"],
       limitations: ["책임 면제", "보증 없음"],
@@ -36,7 +48,8 @@ export default function RepositoryPage() {
     },
     Apache: {
       fullName: "Apache License 2.0",
-      description: "특허권 부여와 함께 사용자에게 자유를 제공하는 라이선스입니다.",
+      description:
+        "특허권 부여와 함께 사용자에게 자유를 제공하는 라이선스입니다.",
       permissions: ["상업적 사용", "수정", "배포", "특허권 사용", "개인 사용"],
       conditions: ["라이선스 및 저작권 고지 포함", "상태 변경 명시"],
       limitations: ["상표권 사용 금지", "책임 면제", "보증 없음"],
@@ -44,16 +57,22 @@ export default function RepositoryPage() {
     },
     GPL: {
       fullName: "GNU General Public License v3.0",
-      description: "수정된 코드를 동일한 라이선스로 공개해야 하는 강력한 카피레프트 라이선스입니다.",
+      description:
+        "수정된 코드를 동일한 라이선스로 공개해야 하는 강력한 카피레프트 라이선스입니다.",
       permissions: ["상업적 사용", "수정", "배포", "특허권 사용", "개인 사용"],
-      conditions: ["소스 코드 공개", "라이선스 및 저작권 고지 포함", "동일한 라이선스 사용", "상태 변경 명시"],
+      conditions: [
+        "소스 코드 공개",
+        "라이선스 및 저작권 고지 포함",
+        "동일한 라이선스 사용",
+        "상태 변경 명시",
+      ],
       limitations: ["책임 면제", "보증 없음"],
       color: "green",
     },
-  }
+  };
 
   // 현재 저장소의 라이선스 정보 (예시로 MIT 사용)
-  const currentLicense = licenseInfo.MIT
+  const currentLicense = licenseInfo.MIT;
 
   return (
     <DashboardLayout>
@@ -68,7 +87,9 @@ export default function RepositoryPage() {
             <div className="flex items-center gap-2">
               <Github className="h-5 w-5" />
               <h1 className="text-2xl font-bold tracking-tight">{repo.name}</h1>
-              <Badge variant={repo.isPrivate ? "outline" : "secondary"}>{repo.isPrivate ? "비공개" : "공개"}</Badge>
+              <Badge variant={repo.isPrivate ? "outline" : "secondary"}>
+                {repo.isPrivate ? "비공개" : "공개"}
+              </Badge>
             </div>
           </div>
           <div className="flex items-center gap-4 text-sm text-muted-foreground">
@@ -89,7 +110,11 @@ export default function RepositoryPage() {
               <span>마지막 분석: {repo.lastAnalyzed}</span>
             </div>
             <Button variant="ghost" size="sm" className="gap-1" asChild>
-              <a href={`https://github.com/${repo.fullName}`} target="_blank" rel="noopener noreferrer">
+              <a
+                href={`https://github.com/${repo.fullName}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 GitHub에서 보기
                 <ExternalLink className="h-3.5 w-3.5" />
               </a>
@@ -110,7 +135,9 @@ export default function RepositoryPage() {
               <Card className="md:col-span-2">
                 <CardHeader>
                   <CardTitle>README 요약</CardTitle>
-                  <CardDescription>AI가 분석한 저장소의 README 요약입니다</CardDescription>
+                  <CardDescription>
+                    AI가 분석한 저장소의 README 요약입니다
+                  </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="prose prose-sm max-w-none">
@@ -149,9 +176,15 @@ export default function RepositoryPage() {
                             key={lang.name}
                             variant="outline"
                             className="bg-opacity-10"
-                            style={{ backgroundColor: `${lang.color}20`, borderColor: lang.color }}
+                            style={{
+                              backgroundColor: `${lang.color}20`,
+                              borderColor: lang.color,
+                            }}
                           >
-                            <span className="w-2 h-2 rounded-full mr-1" style={{ backgroundColor: lang.color }}></span>
+                            <span
+                              className="w-2 h-2 rounded-full mr-1"
+                              style={{ backgroundColor: lang.color }}
+                            ></span>
                             {lang.name} {lang.percentage}%
                           </Badge>
                         ))}
@@ -175,7 +208,9 @@ export default function RepositoryPage() {
                           </Badge>
                         </div>
 
-                        <p className="text-xs text-muted-foreground mb-3">{currentLicense.description}</p>
+                        <p className="text-xs text-muted-foreground mb-3">
+                          {currentLicense.description}
+                        </p>
 
                         <div className="space-y-2">
                           <div>
@@ -184,15 +219,17 @@ export default function RepositoryPage() {
                               <span>허용 사항</span>
                             </div>
                             <div className="flex flex-wrap gap-1">
-                              {currentLicense.permissions.map((permission, index) => (
-                                <Badge
-                                  key={index}
-                                  variant="outline"
-                                  className="text-xs bg-green-50 text-green-700 border-green-200"
-                                >
-                                  {permission}
-                                </Badge>
-                              ))}
+                              {currentLicense.permissions.map(
+                                (permission, index) => (
+                                  <Badge
+                                    key={index}
+                                    variant="outline"
+                                    className="text-xs bg-green-50 text-green-700 border-green-200"
+                                  >
+                                    {permission}
+                                  </Badge>
+                                )
+                              )}
                             </div>
                           </div>
 
@@ -202,15 +239,17 @@ export default function RepositoryPage() {
                               <span>조건</span>
                             </div>
                             <div className="flex flex-wrap gap-1">
-                              {currentLicense.conditions.map((condition, index) => (
-                                <Badge
-                                  key={index}
-                                  variant="outline"
-                                  className="text-xs bg-amber-50 text-amber-700 border-amber-200"
-                                >
-                                  {condition}
-                                </Badge>
-                              ))}
+                              {currentLicense.conditions.map(
+                                (condition, index) => (
+                                  <Badge
+                                    key={index}
+                                    variant="outline"
+                                    className="text-xs bg-amber-50 text-amber-700 border-amber-200"
+                                  >
+                                    {condition}
+                                  </Badge>
+                                )
+                              )}
                             </div>
                           </div>
 
@@ -220,15 +259,17 @@ export default function RepositoryPage() {
                               <span>제한 사항</span>
                             </div>
                             <div className="flex flex-wrap gap-1">
-                              {currentLicense.limitations.map((limitation, index) => (
-                                <Badge
-                                  key={index}
-                                  variant="outline"
-                                  className="text-xs bg-red-50 text-red-700 border-red-200"
-                                >
-                                  {limitation}
-                                </Badge>
-                              ))}
+                              {currentLicense.limitations.map(
+                                (limitation, index) => (
+                                  <Badge
+                                    key={index}
+                                    variant="outline"
+                                    className="text-xs bg-red-50 text-red-700 border-red-200"
+                                  >
+                                    {limitation}
+                                  </Badge>
+                                )
+                              )}
                             </div>
                           </div>
                         </div>
@@ -249,7 +290,9 @@ export default function RepositoryPage() {
 
                     <div>
                       <div className="text-sm font-medium">최근 업데이트</div>
-                      <div className="text-sm text-muted-foreground mt-1">{repo.lastUpdated}</div>
+                      <div className="text-sm text-muted-foreground mt-1">
+                        {repo.lastUpdated}
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
@@ -261,19 +304,28 @@ export default function RepositoryPage() {
                   <CardContent className="space-y-2">
                     <div className="flex justify-between items-center">
                       <span className="text-sm">열린 이슈</span>
-                      <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+                      <Badge
+                        variant="outline"
+                        className="bg-green-50 text-green-700 border-green-200"
+                      >
                         {repo.openIssues}
                       </Badge>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-sm">닫힌 이슈</span>
-                      <Badge variant="outline" className="bg-gray-50 text-gray-700 border-gray-200">
+                      <Badge
+                        variant="outline"
+                        className="bg-gray-50 text-gray-700 border-gray-200"
+                      >
                         {repo.closedIssues}
                       </Badge>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-sm">Pull Requests</span>
-                      <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200">
+                      <Badge
+                        variant="outline"
+                        className="bg-purple-50 text-purple-700 border-purple-200"
+                      >
                         {repo.pullRequests}
                       </Badge>
                     </div>
@@ -287,7 +339,10 @@ export default function RepositoryPage() {
           <TabsContent value="issues" className="space-y-4">
             <div className="grid grid-cols-1 gap-4">
               {mockIssues.map((issue) => (
-                <Link to={`/repository/${repoId}/issue/${issue.number}`} key={issue.id}>
+                <Link
+                  to={`/repository/${repoId}/issue/${issue.number}`}
+                  key={issue.id}
+                >
                   <Card className="transition-all hover:shadow-md">
                     <CardHeader className="pb-2">
                       <div className="flex justify-between items-start">
@@ -295,8 +350,12 @@ export default function RepositoryPage() {
                           #{issue.number} {issue.title}
                         </CardTitle>
                         <Badge
-                          variant={issue.state === "open" ? "default" : "secondary"}
-                          className={issue.state === "open" ? "bg-green-500" : ""}
+                          variant={
+                            issue.state === "open" ? "default" : "secondary"
+                          }
+                          className={
+                            issue.state === "open" ? "bg-green-500" : ""
+                          }
                         >
                           {issue.state === "open" ? "열림" : "닫힘"}
                         </Badge>
@@ -306,14 +365,19 @@ export default function RepositoryPage() {
                       </CardDescription>
                     </CardHeader>
                     <CardContent className="pb-2">
-                      <p className="text-sm text-muted-foreground line-clamp-2">{issue.body}</p>
+                      <p className="text-sm text-muted-foreground line-clamp-2">
+                        {issue.body}
+                      </p>
                       <div className="flex flex-wrap gap-1 mt-3">
                         {issue.labels.map((label) => (
                           <Badge
                             key={label.name}
                             variant="outline"
                             className="bg-opacity-10"
-                            style={{ backgroundColor: `${label.color}20`, borderColor: label.color }}
+                            style={{
+                              backgroundColor: `${label.color}20`,
+                              borderColor: label.color,
+                            }}
                           >
                             {label.name}
                           </Badge>
@@ -331,26 +395,36 @@ export default function RepositoryPage() {
             <Card>
               <CardHeader>
                 <CardTitle>컨트리뷰션 가이드 AI 챗봇</CardTitle>
-                <CardDescription>저장소의 컨트리뷰션 문서를 학습한 AI 챗봇에게 질문하세요</CardDescription>
+                <CardDescription>
+                  저장소의 컨트리뷰션 문서를 학습한 AI 챗봇에게 질문하세요
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="bg-muted p-4 rounded-lg mb-4 h-[400px] overflow-y-auto flex flex-col space-y-4">
                   <div className="bg-primary-foreground p-3 rounded-lg max-w-[80%] self-start">
                     <p className="text-sm">
-                      안녕하세요! {repo.name} 저장소에 대해 어떤 것이든 물어보세요. 컨트리뷰션 방법, 코딩 컨벤션, PR
-                      작성 방법 등에 대해 답변해 드릴 수 있습니다.
+                      안녕하세요! {repo.name} 저장소에 대해 어떤 것이든
+                      물어보세요. 컨트리뷰션 방법, 코딩 컨벤션, PR 작성 방법
+                      등에 대해 답변해 드릴 수 있습니다.
                     </p>
                   </div>
 
                   <div className="bg-primary p-3 rounded-lg max-w-[80%] text-primary-foreground self-end">
-                    <p className="text-sm">이 프로젝트에 기여하려면 어떻게 해야 하나요?</p>
+                    <p className="text-sm">
+                      이 프로젝트에 기여하려면 어떻게 해야 하나요?
+                    </p>
                   </div>
 
                   <div className="bg-primary-foreground p-3 rounded-lg max-w-[80%] self-start">
-                    <p className="text-sm">{repo.name} 프로젝트에 기여하는 방법은 다음과 같습니다:</p>
+                    <p className="text-sm">
+                      {repo.name} 프로젝트에 기여하는 방법은 다음과 같습니다:
+                    </p>
                     <ol className="list-decimal list-inside text-sm mt-2 space-y-1">
                       <li>저장소를 포크(Fork)하세요.</li>
-                      <li>새 브랜치를 생성하세요 (예: `feature/your-feature-name`).</li>
+                      <li>
+                        새 브랜치를 생성하세요 (예:
+                        `feature/your-feature-name`).
+                      </li>
                       <li>변경사항을 커밋하세요.</li>
                       <li>브랜치를 푸시하세요.</li>
                       <li>Pull Request를 생성하세요.</li>
@@ -371,16 +445,21 @@ export default function RepositoryPage() {
                 </div>
 
                 <div className="flex gap-2">
-                  <Input placeholder="질문을 입력하세요..." className="flex-1" />
+                  <Input
+                    placeholder="질문을 입력하세요..."
+                    className="flex-1"
+                  />
                   <Button>전송</Button>
                 </div>
 
-                <p className="text-xs text-muted-foreground mt-2">무료 플랜: 이번 달 남은 메시지 82/100</p>
+                <p className="text-xs text-muted-foreground mt-2">
+                  무료 플랜: 이번 달 남은 메시지 82/100
+                </p>
               </CardContent>
             </Card>
           </TabsContent>
         </Tabs>
       </div>
     </DashboardLayout>
-  )
+  );
 }

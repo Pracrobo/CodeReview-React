@@ -2,7 +2,14 @@
 
 import { useState } from "react";
 import { Button } from "../components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/card";
 import { Badge } from "../components/ui/badge";
 import { Switch } from "../components/ui/switch";
 import { Label } from "../components/ui/label";
@@ -18,14 +25,18 @@ export default function SettingsPage() {
       <div className="space-y-6 max-w-3xl mx-auto">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">설정</h1>
-          <p className="text-muted-foreground">계정 설정 및 환경 설정을 관리합니다</p>
+          <p className="text-muted-foreground">
+            계정 설정 및 환경 설정을 관리합니다
+          </p>
         </div>
 
         {/* 알림 설정 */}
         <Card>
           <CardHeader>
             <CardTitle>알림 설정</CardTitle>
-            <CardDescription>알림 및 이메일 수신 설정을 관리하세요</CardDescription>
+            <CardDescription>
+              알림 및 이메일 수신 설정을 관리하세요
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between">
@@ -57,14 +68,19 @@ export default function SettingsPage() {
         <Card>
           <CardHeader>
             <CardTitle>GitHub 연동 설정</CardTitle>
-            <CardDescription>GitHub 계정 연동 및 권한 설정을 관리하세요</CardDescription>
+            <CardDescription>
+              GitHub 계정 연동 및 권한 설정을 관리하세요
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
                 <div className="flex items-center gap-2">
                   <Label>GitHub 계정 연동</Label>
-                  <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+                  <Badge
+                    variant="outline"
+                    className="bg-green-50 text-green-700 border-green-200"
+                  >
                     연동됨
                   </Badge>
                 </div>
@@ -82,19 +98,28 @@ export default function SettingsPage() {
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <span className="text-sm">저장소 읽기 권한</span>
-                  <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+                  <Badge
+                    variant="outline"
+                    className="bg-green-50 text-green-700 border-green-200"
+                  >
                     허용됨
                   </Badge>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-sm">이슈 읽기 권한</span>
-                  <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+                  <Badge
+                    variant="outline"
+                    className="bg-green-50 text-green-700 border-green-200"
+                  >
                     허용됨
                   </Badge>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-sm">이슈 쓰기 권한</span>
-                  <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200">
+                  <Badge
+                    variant="outline"
+                    className="bg-red-50 text-red-700 border-red-200"
+                  >
                     거부됨
                   </Badge>
                 </div>
@@ -111,14 +136,19 @@ export default function SettingsPage() {
               onClick={async () => {
                 const token = localStorage.getItem("token");
                 try {
-                  const res = await fetch("http://localhost:3001/auth/github/logout", {
-                    method: "POST",
-                    headers: { Authorization: `Bearer ${token}` },
-                    credentials: "include"
-                  });
+                  const res = await fetch(
+                    "http://localhost:3001/auth/github/logout",
+                    {
+                      method: "POST",
+                      headers: { Authorization: `Bearer ${token}` },
+                      credentials: "include",
+                    }
+                  );
                   if (!res.ok) {
                     const data = await res.json();
-                    alert("연동 해제 실패: " + (data?.message || "Unknown error"));
+                    alert(
+                      "연동 해제 실패: " + (data?.message || "Unknown error")
+                    );
                     return;
                   }
                 } catch (e) {
@@ -146,7 +176,8 @@ export default function SettingsPage() {
           <CardContent className="space-y-4">
             <div className="pt-2">
               <p className="text-sm text-muted-foreground mb-4">
-                계정 데이터를 삭제하면 모든 분석 결과, 설정 및 개인 정보가 영구적으로 제거됩니다. 이 작업은 되돌릴 수 없습니다.
+                계정 데이터를 삭제하면 모든 분석 결과, 설정 및 개인 정보가
+                영구적으로 제거됩니다. 이 작업은 되돌릴 수 없습니다.
               </p>
               <Button variant="destructive" className="w-full justify-center">
                 계정 데이터 삭제

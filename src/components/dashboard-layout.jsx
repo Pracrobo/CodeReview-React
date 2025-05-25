@@ -1,5 +1,5 @@
-import Navbar from "./navbar"
-import Sidebar from "./sidebar"
+import Navbar from "./navbar";
+import Sidebar from "./sidebar";
 
 export default function DashboardLayout({ children }) {
   return (
@@ -11,5 +11,5 @@ export default function DashboardLayout({ children }) {
         <main className="flex-1 p-6 md:p-8 overflow-auto">{children}</main>
       </div>
     </div>
-  )
+  );
 }

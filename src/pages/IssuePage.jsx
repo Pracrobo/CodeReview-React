@@ -1,15 +1,28 @@
-"use client"
-import { Link, useParams } from "react-router-dom"
-import { Button } from "../components/ui/button"
-import { Badge } from "../components/ui/badge"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs"
-import { ArrowLeft, Github, MessageSquare, ThumbsUp, Code, Copy, ExternalLink } from "lucide-react"
-import DashboardLayout from "../components/dashboard-layout"
-import { mockIssueDetails } from "../lib/mock-data"
+"use client";
+import { Link, useParams } from "react-router-dom";
+import { Button } from "../components/ui/button";
+import { Badge } from "../components/ui/badge";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "../components/ui/tabs";
+import {
+  ArrowLeft,
+  Github,
+  MessageSquare,
+  ThumbsUp,
+  Code,
+  Copy,
+  ExternalLink,
+} from "lucide-react";
+import DashboardLayout from "../components/dashboard-layout";
+import { mockIssueDetails } from "../lib/mock-data";
 
 export default function IssuePage() {
-  const { id: repoId, issueId } = useParams()
-  const issue = mockIssueDetails
+  const { id: repoId, issueId } = useParams();
+  const issue = mockIssueDetails;
 
   return (
     <DashboardLayout>
@@ -42,14 +55,18 @@ export default function IssuePage() {
               <div className="flex items-center gap-2">
                 <Badge
                   variant={issue.state === "open" ? "default" : "secondary"}
-                  className={`px-3 py-1 ${issue.state === "open" ? "bg-green-600" : ""}`}
+                  className={`px-3 py-1 ${
+                    issue.state === "open" ? "bg-green-600" : ""
+                  }`}
                 >
                   {issue.state === "open" ? "열림" : "닫힘"}
                 </Badge>
                 <h2 className="text-xl font-semibold">{issue.title}</h2>
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-sm text-muted-foreground">#{issueId}</span>
+                <span className="text-sm text-muted-foreground">
+                  #{issueId}
+                </span>
                 <Button variant="outline" size="sm" className="gap-1" asChild>
                   <a
                     href={`https://github.com/${issue.repoFullName}/issues/${issueId}`}
@@ -72,13 +89,17 @@ export default function IssuePage() {
                 <div className="flex p-4">
                   <div className="flex-shrink-0 mr-3">
                     <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
-                      <span className="text-sm font-medium text-gray-600">{issue.user.charAt(0).toUpperCase()}</span>
+                      <span className="text-sm font-medium text-gray-600">
+                        {issue.user.charAt(0).toUpperCase()}
+                      </span>
                     </div>
                   </div>
                   <div className="flex-grow">
                     <div className="flex items-center">
                       <span className="font-medium mr-2">{issue.user}</span>
-                      <span className="text-sm text-muted-foreground">작성일: {issue.createdAt}</span>
+                      <span className="text-sm text-muted-foreground">
+                        작성일: {issue.createdAt}
+                      </span>
                     </div>
                     <div className="mt-2 prose prose-sm max-w-none">
                       {issue.body.split("\n\n").map((paragraph, idx) => (
@@ -94,7 +115,10 @@ export default function IssuePage() {
                           key={label.name}
                           variant="outline"
                           className="bg-opacity-10"
-                          style={{ backgroundColor: `${label.color}20`, borderColor: label.color }}
+                          style={{
+                            backgroundColor: `${label.color}20`,
+                            borderColor: label.color,
+                          }}
                         >
                           {label.name}
                         </Badge>
@@ -106,7 +130,9 @@ export default function IssuePage() {
 
               {/* 댓글 섹션 */}
               <div className="p-4">
-                <h3 className="text-sm font-medium mb-4">댓글 ({issue.comments.length})</h3>
+                <h3 className="text-sm font-medium mb-4">
+                  댓글 ({issue.comments.length})
+                </h3>
                 <div className="space-y-4">
                   {issue.comments.map((comment, index) => (
                     <div key={index} className="border rounded-lg">
@@ -117,9 +143,13 @@ export default function IssuePage() {
                               {comment.user.charAt(0).toUpperCase()}
                             </span>
                           </div>
-                          <span className="text-sm font-medium">{comment.user}</span>
+                          <span className="text-sm font-medium">
+                            {comment.user}
+                          </span>
                         </div>
-                        <span className="text-xs text-muted-foreground">{comment.createdAt}</span>
+                        <span className="text-xs text-muted-foreground">
+                          {comment.createdAt}
+                        </span>
                       </div>
                       <div className="p-4">
                         <p className="text-sm">{comment.body}</p>
@@ -163,7 +193,9 @@ export default function IssuePage() {
               <div className="space-y-6">
                 <div>
                   <h3 className="text-sm font-medium mb-2">AI 분석 요약</h3>
-                  <p className="text-sm text-muted-foreground">{issue.aiAnalysis.summary}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {issue.aiAnalysis.summary}
+                  </p>
                 </div>
 
                 <div>
@@ -180,7 +212,9 @@ export default function IssuePage() {
                           <Code className="h-3.5 w-3.5" />
                           <span>{file.path}</span>
                         </a>
-                        <p className="text-xs text-muted-foreground mt-0.5">관련도: {file.relevance}%</p>
+                        <p className="text-xs text-muted-foreground mt-0.5">
+                          관련도: {file.relevance}%
+                        </p>
                       </li>
                     ))}
                   </ul>
@@ -201,7 +235,11 @@ export default function IssuePage() {
                     <TabsContent value="snippet1" className="mt-2">
                       <div className="relative">
                         <div className="absolute top-2 right-2">
-                          <Button variant="ghost" size="icon" className="h-6 w-6">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-6 w-6"
+                          >
                             <Copy className="h-3.5 w-3.5" />
                           </Button>
                         </div>
@@ -211,8 +249,13 @@ export default function IssuePage() {
                           </pre>
                         </div>
                         <div className="flex justify-between items-center mt-2 text-xs">
-                          <span className="text-muted-foreground">{issue.aiAnalysis.codeSnippets[0].file}</span>
-                          <span className="text-primary">관련도: {issue.aiAnalysis.codeSnippets[0].relevance}%</span>
+                          <span className="text-muted-foreground">
+                            {issue.aiAnalysis.codeSnippets[0].file}
+                          </span>
+                          <span className="text-primary">
+                            관련도: {issue.aiAnalysis.codeSnippets[0].relevance}
+                            %
+                          </span>
                         </div>
                       </div>
                     </TabsContent>
@@ -220,7 +263,11 @@ export default function IssuePage() {
                     <TabsContent value="snippet2" className="mt-2">
                       <div className="relative">
                         <div className="absolute top-2 right-2">
-                          <Button variant="ghost" size="icon" className="h-6 w-6">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-6 w-6"
+                          >
                             <Copy className="h-3.5 w-3.5" />
                           </Button>
                         </div>
@@ -230,8 +277,13 @@ export default function IssuePage() {
                           </pre>
                         </div>
                         <div className="flex justify-between items-center mt-2 text-xs">
-                          <span className="text-muted-foreground">{issue.aiAnalysis.codeSnippets[1].file}</span>
-                          <span className="text-primary">관련도: {issue.aiAnalysis.codeSnippets[1].relevance}%</span>
+                          <span className="text-muted-foreground">
+                            {issue.aiAnalysis.codeSnippets[1].file}
+                          </span>
+                          <span className="text-primary">
+                            관련도: {issue.aiAnalysis.codeSnippets[1].relevance}
+                            %
+                          </span>
                         </div>
                       </div>
                     </TabsContent>
@@ -240,7 +292,9 @@ export default function IssuePage() {
 
                 <div>
                   <h3 className="text-sm font-medium mb-2">AI 해결 제안</h3>
-                  <p className="text-sm text-muted-foreground mb-4">{issue.aiAnalysis.suggestion}</p>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    {issue.aiAnalysis.suggestion}
+                  </p>
                   <Button size="sm" className="w-full">
                     AI 코드 수정 제안 보기
                   </Button>
@@ -251,5 +305,5 @@ export default function IssuePage() {
         </div>
       </div>
     </DashboardLayout>
-  )
+  );
 }
