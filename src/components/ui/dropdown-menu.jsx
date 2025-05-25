@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import React, {
   createContext,
@@ -6,8 +6,8 @@ import React, {
   useState,
   useRef,
   useEffect,
-} from "react";
-import { cn } from "../../lib/utils";
+} from 'react';
+import { cn } from '../../lib/utils';
 
 const DropdownMenuContext = createContext({
   open: false,
@@ -21,7 +21,7 @@ const DropdownMenu = ({ children }) => {
 
   return (
     <DropdownMenuContext.Provider value={{ open, setOpen, triggerRef }}>
-      {children}
+      <div className="relative">{children}</div>
     </DropdownMenuContext.Provider>
   );
 };
@@ -32,7 +32,7 @@ const DropdownMenuTrigger = React.forwardRef(
 
     const combinedRef = (node) => {
       if (ref) {
-        if (typeof ref === "function") ref(node);
+        if (typeof ref === 'function') ref(node);
         else ref.current = node;
       }
       triggerRef.current = node;
@@ -46,6 +46,8 @@ const DropdownMenuTrigger = React.forwardRef(
           children.props.onClick?.(e);
           setOpen(!open);
         },
+        'aria-expanded': open,
+        'data-state': open ? 'open' : 'closed',
         ...restProps,
       });
     }
@@ -53,17 +55,19 @@ const DropdownMenuTrigger = React.forwardRef(
     return (
       <button
         ref={combinedRef}
-        className={cn("", className)}
+        className={cn('', className)}
         onClick={() => setOpen(!open)}
+        aria-expanded={open}
+        data-state={open ? 'open' : 'closed'}
         {...props}
       />
     );
   }
 );
-DropdownMenuTrigger.displayName = "DropdownMenuTrigger";
+DropdownMenuTrigger.displayName = 'DropdownMenuTrigger';
 
 const DropdownMenuContent = React.forwardRef(
-  ({ className, align = "center", ...props }, ref) => {
+  ({ className, align = 'end', sideOffset = 4, ...props }, ref) => {
     const { open, setOpen, triggerRef } = useContext(DropdownMenuContext);
     const contentRef = useRef(null);
 
@@ -80,9 +84,18 @@ const DropdownMenuContent = React.forwardRef(
         }
       };
 
-      document.addEventListener("mousedown", handleClickOutside);
+      const handleEscape = (event) => {
+        if (event.key === 'Escape' && open) {
+          setOpen(false);
+        }
+      };
+
+      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener('keydown', handleEscape);
+
       return () => {
-        document.removeEventListener("mousedown", handleClickOutside);
+        document.removeEventListener('mousedown', handleClickOutside);
+        document.removeEventListener('keydown', handleEscape);
       };
     }, [open, setOpen]);
 
@@ -92,37 +105,47 @@ const DropdownMenuContent = React.forwardRef(
       <div
         ref={(node) => {
           if (ref) {
-            if (typeof ref === "function") ref(node);
+            if (typeof ref === 'function') ref(node);
             else ref.current = node;
           }
           contentRef.current = node;
         }}
         className={cn(
-          "z-50 min-w-[8rem] overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-md",
-          align === "end"
-            ? "origin-top-right right-0"
-            : "origin-top-left left-0",
+          'z-50 min-w-[8rem] overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-md data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2',
+          align === 'end' ? 'right-0' : 'left-0',
           className
         )}
-        style={{ position: "absolute", top: "100%", marginTop: "8px" }}
+        style={{
+          position: 'absolute',
+          top: '100%',
+          marginTop: sideOffset + 'px',
+          transform: open ? 'scale(1)' : 'scale(0.95)',
+          opacity: open ? 1 : 0,
+          transition: 'all 0.15s ease-out',
+        }}
+        data-state={open ? 'open' : 'closed'}
+        data-side="bottom"
         {...props}
       />
     );
   }
 );
-DropdownMenuContent.displayName = "DropdownMenuContent";
+DropdownMenuContent.displayName = 'DropdownMenuContent';
 
-const DropdownMenuItem = React.forwardRef(({ className, ...props }, ref) => (
-  <button
-    ref={ref}
-    className={cn(
-      "relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground hover:bg-accent hover:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 w-full text-left",
-      className
-    )}
-    {...props}
-  />
-));
-DropdownMenuItem.displayName = "DropdownMenuItem";
+const DropdownMenuItem = React.forwardRef(
+  ({ className, inset, ...props }, ref) => (
+    <div
+      ref={ref}
+      className={cn(
+        'relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 hover:bg-accent hover:text-accent-foreground',
+        inset && 'pl-8',
+        className
+      )}
+      {...props}
+    />
+  )
+);
+DropdownMenuItem.displayName = 'DropdownMenuItem';
 
 export {
   DropdownMenu,
