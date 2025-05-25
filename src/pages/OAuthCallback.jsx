@@ -10,12 +10,14 @@ export default function OAuthCallback() {
     const username = params.get("username");
     const email = params.get("email");
     const avatar_url = params.get("avatar_url");
+    const access_token = params.get("access_token");
 
     if (token) {
       localStorage.setItem("token", token);
       if (username) localStorage.setItem("username", username);
       if (email) localStorage.setItem("email", email);
       if (avatar_url) localStorage.setItem("avatar_url", avatar_url);
+      if (access_token) localStorage.setItem("access_token", access_token);
       navigate("/dashboard", { replace: true });
     } else {
       navigate("/login", { replace: true });

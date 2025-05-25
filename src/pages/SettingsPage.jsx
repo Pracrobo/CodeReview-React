@@ -110,11 +110,16 @@ export default function SettingsPage() {
               variant="destructive"
               onClick={async () => {
                 const token = localStorage.getItem("token");
+                const accessToken = localStorage.getItem("access_token");
                 try {
                   const res = await fetch("http://localhost:3001/auth/github/logout", {
                     method: "POST",
-                    headers: { Authorization: `Bearer ${token}` },
-                    credentials: "include"
+                    headers: {
+                      "Content-Type": "application/json",
+                      Authorization: `Bearer ${token}`,
+                    },
+                    credentials: "include",
+                    body: JSON.stringify({ access_token: accessToken }),
                   });
                   if (!res.ok) {
                     const data = await res.json();
@@ -148,7 +153,34 @@ export default function SettingsPage() {
               <p className="text-sm text-muted-foreground mb-4">
                 계정 데이터를 삭제하면 모든 분석 결과, 설정 및 개인 정보가 영구적으로 제거됩니다. 이 작업은 되돌릴 수 없습니다.
               </p>
-              <Button variant="destructive" className="w-full justify-center">
+              <Button
+                variant="destructive"
+                className="w-full justify-center"
+                onClick={async () => {
+                  const token = localStorage.getItem("token");
+                  if (!window.confirm("정말로 계정 데이터를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.")) return;
+                  try {
+                    const res = await fetch("http://localhost:3001/auth/github/delete", {
+                      method: "DELETE",
+                      headers: { Authorization: `Bearer ${token}` },
+                      credentials: "include"
+                    });
+                    if (!res.ok) {
+                      const data = await res.json();
+                      alert("계정 삭제 실패: " + (data?.message || "Unknown error"));
+                      return;
+                    }
+                  } catch (e) {
+                    alert("계정 삭제 중 오류가 발생했습니다.");
+                    return;
+                  }
+                  localStorage.removeItem("token");
+                  localStorage.removeItem("username");
+                  localStorage.removeItem("email");
+                  localStorage.removeItem("avatar_url");
+                  window.location.href = "/";
+                }}
+              >
                 계정 데이터 삭제
               </Button>
             </div>
