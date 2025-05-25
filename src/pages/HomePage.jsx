@@ -109,7 +109,6 @@ export default function HomePage() {
             </div>
             <div className="flex-1 bg-gray-100 rounded-xl overflow-hidden shadow-lg">
               <img
-                // src="/placeholder.svg?height=400&width=600"
                 src="/저장소-AI챗봇.png?height=400&width=600"
                 alt="컨트리뷰션 가이드 AI 챗봇 예시"
                 className="w-full h-auto"
