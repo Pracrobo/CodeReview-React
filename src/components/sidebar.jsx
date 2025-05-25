@@ -1,31 +1,38 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Link, useLocation } from "react-router-dom"
-import { Button } from "./ui/button"
-import { ScrollText, LayoutDashboard, Settings, User, AlertCircle, ChevronLeft, ChevronRight } from "lucide-react"
-import { useMobile } from "../hooks/use-mobile"
+import { useState } from "react";
+import { Link, useLocation } from "react-router-dom";
+import { Button } from "./ui/button";
+import {
+  ScrollText,
+  LayoutDashboard,
+  Settings,
+  User,
+  AlertCircle,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
+import { useMobile } from "../hooks/use-mobile";
 
 export default function Sidebar() {
   const location = useLocation();
   const isMobile = useMobile();
   //사이드바 호출할때마다 collapsed가 false로 초기화됨으로 인해 순간적으로 사이드바가 펼쳐짐
-  
+
   const [collapsed, setCollapsed] = useState(() => {
-    const saved = localStorage.getItem("sidebar-collapsed")
-    return saved === "true"
-  })
+    const saved = localStorage.getItem("sidebar-collapsed");
+    return saved === "true";
+  });
   //Sidebar가 호출될때 false로 초기화 하지 말고 함수형 초기값(내부 플래그 값)으로 변경
-  
 
   // 사이드바 상태를 로컬 스토리지에 저장
-    const toggleSidebar = () => {
-    const newState = !collapsed
-    setCollapsed(newState)
-    localStorage.setItem("sidebar-collapsed", String(newState))
-  }
+  const toggleSidebar = () => {
+    const newState = !collapsed;
+    setCollapsed(newState);
+    localStorage.setItem("sidebar-collapsed", String(newState));
+  };
 
-  if (isMobile) return null
+  if (isMobile) return null;
 
   return (
     <div
@@ -42,8 +49,14 @@ export default function Sidebar() {
           onClick={toggleSidebar}
           aria-label={collapsed ? "사이드바 펼치기" : "사이드바 접기"}
         >
-          {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
-          {!collapsed && <span className="ml-2 whitespace-nowrap">사이드바 접기</span>}
+          {collapsed ? (
+            <ChevronRight className="h-4 w-4" />
+          ) : (
+            <ChevronLeft className="h-4 w-4" />
+          )}
+          {!collapsed && (
+            <span className="ml-2 whitespace-nowrap">사이드바 접기</span>
+          )}
         </Button>
       </div>
 
@@ -56,13 +69,16 @@ export default function Sidebar() {
           >
             <Link to="/dashboard">
               <LayoutDashboard className="mr-2 h-4 w-4 flex-shrink-0" />
-              {!collapsed && <span className="ml-2 whitespace-nowrap">대시보드</span>}
+              {!collapsed && (
+                <span className="ml-2 whitespace-nowrap">대시보드</span>
+              )}
             </Link>
           </Button>
 
           <Button
             variant={
-              location.pathname === "/repositories" || location.pathname.startsWith("/repository")
+              location.pathname === "/repositories" ||
+              location.pathname.startsWith("/repository")
                 ? "secondary"
                 : "ghost"
             }
@@ -71,18 +87,24 @@ export default function Sidebar() {
           >
             <Link to="/repositories">
               <ScrollText className="mr-2 h-4 w-4 flex-shrink-0" />
-              {!collapsed && <span className="ml-2 whitespace-nowrap">저장소</span>}
+              {!collapsed && (
+                <span className="ml-2 whitespace-nowrap">저장소</span>
+              )}
             </Link>
           </Button>
 
           <Button
-            variant={location.pathname.startsWith("/issues") ? "secondary" : "ghost"}
+            variant={
+              location.pathname.startsWith("/issues") ? "secondary" : "ghost"
+            }
             className="w-full justify-start"
             asChild
           >
             <Link to="/issues">
               <AlertCircle className="mr-2 h-4 w-4 flex-shrink-0" />
-              {!collapsed && <span className="ml-2 whitespace-nowrap">이슈</span>}
+              {!collapsed && (
+                <span className="ml-2 whitespace-nowrap">이슈</span>
+              )}
             </Link>
           </Button>
         </nav>
@@ -97,7 +119,9 @@ export default function Sidebar() {
           >
             <Link to="/profile">
               <User className="mr-2 h-4 w-4 flex-shrink-0" />
-              {!collapsed && <span className="whitespace-nowrap">내 프로필</span>}
+              {!collapsed && (
+                <span className="whitespace-nowrap">내 프로필</span>
+              )}
             </Link>
           </Button>
 
@@ -114,5 +138,5 @@ export default function Sidebar() {
         </nav>
       </div>
     </div>
-  )
+  );
 }
