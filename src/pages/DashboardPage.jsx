@@ -1,25 +1,25 @@
-"use client";
+'use client';
 
-import { useState, useRef, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
-import { Button } from "../components/ui/button";
+import { useState, useRef, useEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { Button } from '../components/ui/button';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "../components/ui/card";
-import { Input } from "../components/ui/input";
-import { Progress } from "../components/ui/progress";
-import { Badge } from "../components/ui/badge";
-import { AlertCircle, Clock, Search } from "lucide-react";
-import { Alert, AlertDescription, AlertTitle } from "../components/ui/alert";
-import DashboardLayout from "../components/dashboard-layout";
-import { mockAnalyzingRepositories, mockRepositories } from "../lib/mock-data";
+} from '../components/ui/card';
+import { Input } from '../components/ui/input';
+import { Progress } from '../components/ui/progress';
+import { Badge } from '../components/ui/badge';
+import { AlertCircle, Clock, Search } from 'lucide-react';
+import { Alert, AlertDescription, AlertTitle } from '../components/ui/alert';
+import DashboardLayout from '../components/dashboard-layout';
+import { mockAnalyzingRepositories, mockRepositories } from '../lib/mock-data';
 
 export default function DashboardPage() {
-  const [repoUrl, setRepoUrl] = useState("");
+  const [repoUrl, setRepoUrl] = useState('');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [showError, setShowError] = useState(false);
   const [analyzingRepositories, setAnalyzingRepositories] = useState(
@@ -33,7 +33,7 @@ export default function DashboardPage() {
   const location = useLocation();
 
   useEffect(() => {
-    if (location.state?.from === "repositories") {
+    if (location.state?.from === 'repositories') {
       inputRef.current?.focus();
     }
   }, [location]);
@@ -41,7 +41,7 @@ export default function DashboardPage() {
   const handleAnalyzeRepo = (e) => {
     e.preventDefault();
 
-    if (!repoUrl.trim() || !repoUrl.includes("github.com")) {
+    if (!repoUrl.trim() || !repoUrl.includes('github.com')) {
       setShowError(true);
       return;
     }
@@ -52,15 +52,15 @@ export default function DashboardPage() {
     // 실제로는 저장소 분석 API를 호출하지만, 현재는 테스트를 위해 타이머 후 상태 변경
     setTimeout(() => {
       setIsAnalyzing(false);
-      setRepoUrl("");
+      setRepoUrl('');
 
       // 분석 중인 저장소에 추가
-      const repoName = repoUrl.split("/").pop() || "unknown-repo";
+      const repoName = repoUrl.split('/').pop() || 'unknown-repo';
       const newRepo = {
         id: `new-${Date.now()}`,
         name: repoName,
-        fullName: repoUrl.replace("https://github.com/", ""),
-        description: "분석 중인 저장소",
+        fullName: repoUrl.replace('https://github.com/', ''),
+        description: '분석 중인 저장소',
         progress: 5,
         startedAt: new Date().toISOString(),
         estimatedCompletion: new Date(Date.now() + 30 * 60000).toISOString(), // 30분 후
@@ -73,7 +73,7 @@ export default function DashboardPage() {
   // 남은 시간 계산 함수
   const getRemainingTime = (estimatedCompletion) => {
     const remaining = new Date(estimatedCompletion).getTime() - Date.now();
-    if (remaining <= 0) return "완료 예정";
+    if (remaining <= 0) return '완료 예정';
 
     const minutes = Math.floor(remaining / 60000);
     return `약 ${minutes}분 남음`;
@@ -111,7 +111,7 @@ export default function DashboardPage() {
                 />
               </div>
               <Button type="submit" disabled={isAnalyzing}>
-                {isAnalyzing ? "분석 중..." : "분석하기"}
+                {isAnalyzing ? '분석 중...' : '분석하기'}
               </Button>
             </form>
 
@@ -160,7 +160,7 @@ export default function DashboardPage() {
                         </span>
                       </div>
                       <Progress value={repo.progress} className="h-2" />
-                      <p className="text-xs text-muted-foreground mt-2">
+                      <p className="text-xs text-gray-600 mt-2">
                         분석이 완료되면 알림을 보내드립니다.
                       </p>
                     </div>
@@ -188,9 +188,9 @@ export default function DashboardPage() {
                           <Badge className="bg-green-500">NEW</Badge>
                         </div>
                         <Badge
-                          variant={repo.isPrivate ? "outline" : "secondary"}
+                          variant={repo.isPrivate ? 'outline' : 'secondary'}
                         >
-                          {repo.isPrivate ? "비공개" : "공개"}
+                          {repo.isPrivate ? '비공개' : '공개'}
                         </Badge>
                       </div>
                       <CardDescription className="line-clamp-2 h-10">
@@ -223,7 +223,7 @@ export default function DashboardPage() {
               <p className="text-center text-muted-foreground mb-4">
                 GitHub 저장소 URL을 입력하여 AI 분석을 시작해보세요
               </p>
-              <Button onClick={() => document.querySelector("input").focus()}>
+              <Button onClick={() => document.querySelector('input').focus()}>
                 첫 저장소 분석하기
               </Button>
             </CardContent>

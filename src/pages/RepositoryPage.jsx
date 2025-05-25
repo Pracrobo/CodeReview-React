@@ -1,21 +1,21 @@
-"use client";
-import { Link, useParams } from "react-router-dom";
-import { Button } from "../components/ui/button";
+'use client';
+import { Link, useParams } from 'react-router-dom';
+import { Button } from '../components/ui/button';
 import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
-} from "../components/ui/tabs";
-import { Badge } from "../components/ui/badge";
+} from '../components/ui/tabs';
+import { Badge } from '../components/ui/badge';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "../components/ui/card";
-import { Input } from "../components/ui/input";
+} from '../components/ui/card';
+import { Input } from '../components/ui/input';
 import {
   AlertCircle,
   ArrowLeft,
@@ -27,9 +27,9 @@ import {
   Info,
   Shield,
   FileText,
-} from "lucide-react";
-import DashboardLayout from "../components/dashboard-layout";
-import { mockRepositoryDetails, mockIssues } from "../lib/mock-data";
+} from 'lucide-react';
+import DashboardLayout from '../components/dashboard-layout';
+import { mockRepositoryDetails, mockIssues } from '../lib/mock-data';
 
 export default function RepositoryPage() {
   const { id: repoId } = useParams();
@@ -38,36 +38,36 @@ export default function RepositoryPage() {
   // 라이선스 정보 및 의무사항
   const licenseInfo = {
     MIT: {
-      fullName: "MIT License",
+      fullName: 'MIT License',
       description:
-        "간단하고 관대한 라이선스로, 저작권 및 라이선스 고지만 필요합니다.",
-      permissions: ["상업적 사용", "수정", "배포", "개인 사용"],
-      conditions: ["라이선스 및 저작권 고지 포함"],
-      limitations: ["책임 면제", "보증 없음"],
-      color: "blue",
+        '간단하고 관대한 라이선스로, 저작권 및 라이선스 고지만 필요합니다.',
+      permissions: ['상업적 사용', '수정', '배포', '개인 사용'],
+      conditions: ['라이선스 및 저작권 고지 포함'],
+      limitations: ['책임 면제', '보증 없음'],
+      color: 'blue',
     },
     Apache: {
-      fullName: "Apache License 2.0",
+      fullName: 'Apache License 2.0',
       description:
-        "특허권 부여와 함께 사용자에게 자유를 제공하는 라이선스입니다.",
-      permissions: ["상업적 사용", "수정", "배포", "특허권 사용", "개인 사용"],
-      conditions: ["라이선스 및 저작권 고지 포함", "상태 변경 명시"],
-      limitations: ["상표권 사용 금지", "책임 면제", "보증 없음"],
-      color: "orange",
+        '특허권 부여와 함께 사용자에게 자유를 제공하는 라이선스입니다.',
+      permissions: ['상업적 사용', '수정', '배포', '특허권 사용', '개인 사용'],
+      conditions: ['라이선스 및 저작권 고지 포함', '상태 변경 명시'],
+      limitations: ['상표권 사용 금지', '책임 면제', '보증 없음'],
+      color: 'orange',
     },
     GPL: {
-      fullName: "GNU General Public License v3.0",
+      fullName: 'GNU General Public License v3.0',
       description:
-        "수정된 코드를 동일한 라이선스로 공개해야 하는 강력한 카피레프트 라이선스입니다.",
-      permissions: ["상업적 사용", "수정", "배포", "특허권 사용", "개인 사용"],
+        '수정된 코드를 동일한 라이선스로 공개해야 하는 강력한 카피레프트 라이선스입니다.',
+      permissions: ['상업적 사용', '수정', '배포', '특허권 사용', '개인 사용'],
       conditions: [
-        "소스 코드 공개",
-        "라이선스 및 저작권 고지 포함",
-        "동일한 라이선스 사용",
-        "상태 변경 명시",
+        '소스 코드 공개',
+        '라이선스 및 저작권 고지 포함',
+        '동일한 라이선스 사용',
+        '상태 변경 명시',
       ],
-      limitations: ["책임 면제", "보증 없음"],
-      color: "green",
+      limitations: ['책임 면제', '보증 없음'],
+      color: 'green',
     },
   };
 
@@ -87,8 +87,8 @@ export default function RepositoryPage() {
             <div className="flex items-center gap-2">
               <Github className="h-5 w-5" />
               <h1 className="text-2xl font-bold tracking-tight">{repo.name}</h1>
-              <Badge variant={repo.isPrivate ? "outline" : "secondary"}>
-                {repo.isPrivate ? "비공개" : "공개"}
+              <Badge variant={repo.isPrivate ? 'outline' : 'secondary'}>
+                {repo.isPrivate ? '비공개' : '공개'}
               </Badge>
             </div>
           </div>
@@ -202,13 +202,13 @@ export default function RepositoryPage() {
                         <div className="flex items-center gap-2 mb-2">
                           <Badge
                             variant="outline"
-                            className={`bg-${currentLicense.color}-50 text-${currentLicense.color}-700 border-${currentLicense.color}-200`}
+                            className="bg-blue-50 text-blue-700 border-blue-200"
                           >
                             {currentLicense.fullName}
                           </Badge>
                         </div>
 
-                        <p className="text-xs text-muted-foreground mb-3">
+                        <p className="text-xs text-gray-600 mb-3">
                           {currentLicense.description}
                         </p>
 
@@ -351,13 +351,13 @@ export default function RepositoryPage() {
                         </CardTitle>
                         <Badge
                           variant={
-                            issue.state === "open" ? "default" : "secondary"
+                            issue.state === 'open' ? 'default' : 'secondary'
                           }
                           className={
-                            issue.state === "open" ? "bg-green-500" : ""
+                            issue.state === 'open' ? 'bg-green-500' : ''
                           }
                         >
-                          {issue.state === "open" ? "열림" : "닫힘"}
+                          {issue.state === 'open' ? '열림' : '닫힘'}
                         </Badge>
                       </div>
                       <CardDescription>
@@ -430,7 +430,7 @@ export default function RepositoryPage() {
                       <li>Pull Request를 생성하세요.</li>
                     </ol>
                     <p className="text-sm mt-2">
-                      자세한 내용은{" "}
+                      자세한 내용은{' '}
                       <a
                         href={`https://github.com/${repo.fullName}/blob/main/CONTRIBUTING.md`}
                         target="_blank"
@@ -438,7 +438,7 @@ export default function RepositoryPage() {
                         className="text-primary hover:underline"
                       >
                         CONTRIBUTING.md
-                      </a>{" "}
+                      </a>{' '}
                       파일을 참고하세요.
                     </p>
                   </div>

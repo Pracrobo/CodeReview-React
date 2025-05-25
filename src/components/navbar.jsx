@@ -42,7 +42,7 @@ export default function Navbar() {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="max-w-none container flex h-14 items-center">
         <div className="flex items-center gap-2 mr-4">
           <Link
@@ -91,7 +91,7 @@ export default function Navbar() {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="icon" className="relative">
-                    <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden transition-all hover:ring-2 hover:ring-purple-500 hover:ring-offset-2">
+                    <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center overflow-hidden transition-all hover:ring-2 hover:ring-primary hover:ring-offset-2 dark:hover:ring-offset-background">
                       {avatarUrl ? (
                         <img
                           src={avatarUrl}
@@ -99,14 +99,14 @@ export default function Navbar() {
                           className="w-full h-full object-cover"
                         />
                       ) : (
-                        <User className="w-5 h-5 text-gray-500" />
+                        <User className="w-5 h-5 text-muted-foreground" />
                       )}
                     </div>
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
-                  <div className="flex items-center gap-2 p-2 border-b">
-                    <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
+                  <div className="flex items-center gap-2 p-2 border-b border-border/50">
+                    <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center overflow-hidden">
                       {avatarUrl ? (
                         <img
                           src={avatarUrl}
@@ -114,7 +114,7 @@ export default function Navbar() {
                           className="w-full h-full object-cover"
                         />
                       ) : (
-                        <User className="w-5 h-5 text-gray-500" />
+                        <User className="w-5 h-5 text-muted-foreground" />
                       )}
                     </div>
                     <div className="flex-1 min-w-0">
@@ -163,7 +163,7 @@ export default function Navbar() {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className="ml-2">
-                  <div className="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
+                  <div className="w-6 h-6 rounded-full bg-muted flex items-center justify-center overflow-hidden">
                     {avatarUrl ? (
                       <img
                         src={avatarUrl}
@@ -171,14 +171,14 @@ export default function Navbar() {
                         className="w-full h-full object-cover"
                       />
                     ) : (
-                      <User className="w-4 h-4 text-gray-500" />
+                      <User className="w-4 h-4 text-muted-foreground" />
                     )}
                   </div>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">
-                <div className="flex items-center gap-2 p-2 border-b">
-                  <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
+                <div className="flex items-center gap-2 p-2 border-b border-border/50">
+                  <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center overflow-hidden">
                     {avatarUrl ? (
                       <img
                         src={avatarUrl}
@@ -186,7 +186,7 @@ export default function Navbar() {
                         className="w-full h-full object-cover"
                       />
                     ) : (
-                      <User className="w-5 h-5 text-gray-500" />
+                      <User className="w-5 h-5 text-muted-foreground" />
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
@@ -229,7 +229,7 @@ export default function Navbar() {
 
       {/* 모바일 메뉴 */}
       {isMenuOpen && (
-        <div className="md:hidden border-t">
+        <div className="md:hidden border-t border-border/40">
           <div className="container py-4 space-y-4">
             <nav className="flex flex-col space-y-4">
               {!isLoggedIn && (
