@@ -27,20 +27,18 @@ import {
 } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '../components/ui/alert';
 import DashboardLayout from '../components/dashboard-layout';
-import { useNavigate } from 'react-router-dom'; // useNavigate 임포트
+import { useNavigate } from 'react-router-dom';
+import { removeAuthStorage } from '../utils/auth';
 
 export default function ProfilePage() {
   const [currentPlan, _] = useState('free');
   const username = localStorage.getItem('username') || '사용자';
   const email = localStorage.getItem('email') || '이메일';
-  const avatar_url = localStorage.getItem('avatar_url') || '';
-  const navigate = useNavigate(); // useNavigate 사용
+  const avatarUrl = localStorage.getItem('avatarUrl') || '';
+  const navigate = useNavigate();
 
   const handleLogout = async () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('username');
-    localStorage.removeItem('email');
-    localStorage.removeItem('avatar_url');
+    removeAuthStorage();
 
     try {
       await fetch('/auth/github/logout', {
@@ -51,7 +49,7 @@ export default function ProfilePage() {
       console.error('로그아웃 중 오류 발생:', e);
     }
 
-    navigate('/'); // navigate로 변경
+    navigate('/');
   };
 
   return (
@@ -82,9 +80,9 @@ export default function ProfilePage() {
               <CardContent className="space-y-4">
                 <div className="flex items-center gap-4">
                   <div className="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
-                    {avatar_url ? (
+                    {avatarUrl ? (
                       <img
-                        src={avatar_url}
+                        src={avatarUrl}
                         alt={username}
                         className="w-full h-full object-cover"
                       />

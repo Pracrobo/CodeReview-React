@@ -1,5 +1,3 @@
-'use client';
-
 import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Button } from './ui/button';
@@ -19,7 +17,7 @@ export default function Navbar({ scrollToTop, scrollToSection }) {
 
   const token = localStorage.getItem('token');
   const username = localStorage.getItem('username');
-  const avatarUrl = localStorage.getItem('avatar_url');
+  const avatarUrl = localStorage.getItem('avatarUrl');
   const isLoggedIn = !!token;
 
   // 네비게이션 메뉴 항목들
