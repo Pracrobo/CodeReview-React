@@ -22,6 +22,50 @@ export default function Navbar({ scrollToTop, scrollToSection }) {
   const avatarUrl = localStorage.getItem('avatar_url');
   const isLoggedIn = !!token;
 
+  // 네비게이션 메뉴 항목들
+  const navigationItems = [
+    {
+      key: 'home',
+      label: '홈',
+      action: () => handleNavigateToHome(),
+    },
+    {
+      key: 'features',
+      label: '기능',
+      action: () => handleNavigateToSection('features'),
+    },
+    {
+      key: 'pricing',
+      label: '가격정책',
+      action: () => handleNavigateToSection('pricing'),
+    },
+  ];
+
+  // 메뉴 항목 렌더링 함수 (데스크톱)
+  const renderDesktopMenuItem = (item) => (
+    <button
+      key={item.key}
+      onClick={item.action}
+      className="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors cursor-pointer"
+    >
+      {item.label}
+    </button>
+  );
+
+  // 메뉴 항목 렌더링 함수 (모바일)
+  const renderMobileMenuItem = (item) => (
+    <button
+      key={item.key}
+      onClick={() => {
+        setIsMenuOpen(false);
+        item.action();
+      }}
+      className="block text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors w-full text-left cursor-pointer"
+    >
+      {item.label}
+    </button>
+  );
+
   // 로그아웃 처리 함수
   const handleLogout = async () => {
     localStorage.removeItem('token');
@@ -64,13 +108,32 @@ export default function Navbar({ scrollToTop, scrollToSection }) {
     }
   };
 
+  // 섹션으로 이동하는 함수 (다른 페이지에서 홈페이지 섹션으로 이동)
+  const handleNavigateToSection = (sectionId) => {
+    if (isHomePage) {
+      handleScrollToSection(sectionId);
+    } else {
+      // 다른 페이지에서는 홈페이지로 이동하면서 해시 추가
+      navigate(`/#${sectionId}`);
+    }
+  };
+
+  // 홈으로 이동하는 함수 (다른 페이지에서 홈페이지로 이동)
+  const handleNavigateToHome = () => {
+    if (isHomePage) {
+      handleScrollToTop();
+    } else {
+      navigate('/');
+    }
+  };
+
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="max-w-none container flex h-14 items-center">
         <div className="flex items-center gap-2 mr-4">
           <button
-            onClick={handleScrollToTop}
-            className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+            onClick={handleNavigateToHome}
+            className="flex items-center gap-2 hover:opacity-80 transition-opacity cursor-pointer"
           >
             <span className="font-bold text-xl bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-indigo-600">
               AIssue
@@ -80,53 +143,7 @@ export default function Navbar({ scrollToTop, scrollToSection }) {
 
         <div className="hidden md:flex flex-1 items-center justify-between">
           <nav className="flex items-center gap-6 text-sm">
-            {isHomePage ? (
-              <button
-                onClick={handleScrollToTop}
-                className="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors"
-              >
-                홈
-              </button>
-            ) : (
-              <Link
-                to="/"
-                className="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors"
-              >
-                홈
-              </Link>
-            )}
-
-            {isHomePage ? (
-              <button
-                onClick={() => handleScrollToSection('features')}
-                className="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors"
-              >
-                기능
-              </button>
-            ) : (
-              <Link
-                to="/#features"
-                className="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors"
-              >
-                기능
-              </Link>
-            )}
-
-            {isHomePage ? (
-              <button
-                onClick={() => handleScrollToSection('pricing')}
-                className="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors"
-              >
-                가격정책
-              </button>
-            ) : (
-              <Link
-                to="/#pricing"
-                className="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors"
-              >
-                가격정책
-              </Link>
-            )}
+            {navigationItems.map(renderDesktopMenuItem)}
           </nav>
 
           <div className="flex items-center gap-2">
@@ -276,56 +293,7 @@ export default function Navbar({ scrollToTop, scrollToSection }) {
         <div className="md:hidden border-t border-border/40">
           <div className="container py-4 space-y-4">
             <nav className="flex flex-col space-y-4">
-              {isHomePage ? (
-                <button
-                  onClick={handleScrollToTop}
-                  className="block text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors w-full text-left"
-                >
-                  홈
-                </button>
-              ) : (
-                <Link
-                  to="/"
-                  className="block text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  홈
-                </Link>
-              )}
-
-              {isHomePage ? (
-                <button
-                  onClick={() => handleScrollToSection('features')}
-                  className="block text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors w-full text-left"
-                >
-                  기능
-                </button>
-              ) : (
-                <Link
-                  to="/#features"
-                  className="block text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  기능
-                </Link>
-              )}
-
-              {isHomePage ? (
-                <button
-                  onClick={() => handleScrollToSection('pricing')}
-                  className="block text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors w-full text-left"
-                >
-                  가격정책
-                </button>
-              ) : (
-                <Link
-                  to="/#pricing"
-                  className="block text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  가격정책
-                </Link>
-              )}
+              {navigationItems.map(renderMobileMenuItem)}
             </nav>
 
             {!isLoggedIn && (
