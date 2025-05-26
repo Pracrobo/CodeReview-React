@@ -35,7 +35,7 @@ export default function Navbar({ scrollToTop, scrollToSection }) {
         credentials: 'include',
       });
     } catch (e) {
-      // 실패해도 무시
+      console.error('로그아웃 중 오류 발생:', e);
     }
 
     navigate('/');
