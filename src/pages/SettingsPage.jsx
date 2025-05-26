@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { Button } from "../components/ui/button";
+import { useState } from 'react';
+import { Button } from '../components/ui/button';
 import {
   Card,
   CardContent,
@@ -9,16 +9,18 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "../components/ui/card";
-import { Badge } from "../components/ui/badge";
-import { Switch } from "../components/ui/switch";
-import { Label } from "../components/ui/label";
-import { Github } from "lucide-react";
-import DashboardLayout from "../components/dashboard-layout";
+} from '../components/ui/card';
+import { Badge } from '../components/ui/badge';
+import { Switch } from '../components/ui/switch';
+import { Label } from '../components/ui/label';
+import { Github } from 'lucide-react';
+import DashboardLayout from '../components/dashboard-layout';
+import { useNavigate } from 'react-router-dom';
 
 export default function SettingsPage() {
   const [emailNotifications, setEmailNotifications] = useState(true);
-  const username = localStorage.getItem("username") || "githubuser";
+  const username = localStorage.getItem('username') || 'githubuser';
+  const navigate = useNavigate();
 
   return (
     <DashboardLayout>
@@ -134,32 +136,33 @@ export default function SettingsPage() {
             <Button
               variant="destructive"
               onClick={async () => {
-                const token = localStorage.getItem("token");
+                const token = localStorage.getItem('token');
                 try {
                   const res = await fetch(
-                    "http://localhost:3001/auth/github/logout",
+                    'http://localhost:3001/auth/github/logout',
                     {
-                      method: "POST",
+                      method: 'POST',
                       headers: { Authorization: `Bearer ${token}` },
-                      credentials: "include",
+                      credentials: 'include',
                     }
                   );
                   if (!res.ok) {
                     const data = await res.json();
                     alert(
-                      "연동 해제 실패: " + (data?.message || "Unknown error")
+                      '연동 해제 실패: ' + (data?.message || 'Unknown error')
                     );
                     return;
                   }
                 } catch (e) {
-                  alert("연동 해제 중 오류가 발생했습니다.");
+                  alert('연동 해제 중 오류가 발생했습니다.');
+                  console.error('연동 해제 중 오류:', e);
                   return;
                 }
-                localStorage.removeItem("token");
-                localStorage.removeItem("username");
-                localStorage.removeItem("email");
-                localStorage.removeItem("avatar_url");
-                window.location.href = "/";
+                localStorage.removeItem('token');
+                localStorage.removeItem('username');
+                localStorage.removeItem('email');
+                localStorage.removeItem('avatar_url');
+                navigate('/'); // navigate로 변경
               }}
             >
               연동 해제

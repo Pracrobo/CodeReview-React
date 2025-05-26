@@ -16,7 +16,7 @@ import Navbar from '../components/navbar';
 import Footer from '../components/footer';
 
 export default function LoginPage() {
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, _] = useState(false);
 
   const handleGithubLogin = () => {
     // 기존 토큰/정보 삭제

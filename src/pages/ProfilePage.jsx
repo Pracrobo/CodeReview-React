@@ -1,5 +1,3 @@
-'use client';
-
 import { useState } from 'react';
 import { Button } from '../components/ui/button';
 import {
@@ -29,12 +27,14 @@ import {
 } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '../components/ui/alert';
 import DashboardLayout from '../components/dashboard-layout';
+import { useNavigate } from 'react-router-dom'; // useNavigate 임포트
 
 export default function ProfilePage() {
-  const [currentPlan, setCurrentPlan] = useState('free');
+  const [currentPlan, _] = useState('free');
   const username = localStorage.getItem('username') || '사용자';
   const email = localStorage.getItem('email') || '이메일';
   const avatar_url = localStorage.getItem('avatar_url') || '';
+  const navigate = useNavigate(); // useNavigate 사용
 
   const handleLogout = async () => {
     localStorage.removeItem('token');
@@ -48,10 +48,10 @@ export default function ProfilePage() {
         credentials: 'include',
       });
     } catch (e) {
-      // 실패해도 무시
+      console.error('로그아웃 중 오류 발생:', e);
     }
 
-    window.location.href = '/';
+    navigate('/'); // navigate로 변경
   };
 
   return (
