@@ -21,17 +21,75 @@ export default function Sidebar() {
   const { collapsed, toggleSidebar } = useSidebar();
   const [showText, setShowText] = useState(!collapsed);
 
-  // 텍스트 표시 상태 관리 개선
+  // 메인 네비게이션 메뉴 항목들
+  const mainMenuItems = [
+    {
+      path: '/dashboard',
+      icon: LayoutDashboard,
+      label: '대시보드',
+      isActive: location.pathname === '/dashboard',
+    },
+    {
+      path: '/repositories',
+      icon: ScrollText,
+      label: '저장소',
+      isActive:
+        location.pathname === '/repositories' ||
+        location.pathname.startsWith('/repository'),
+    },
+    {
+      path: '/issues',
+      icon: AlertCircle,
+      label: '이슈',
+      isActive: location.pathname.startsWith('/issues'),
+    },
+  ];
+
+  // 하단 네비게이션 메뉴 항목들
+  const bottomMenuItems = [
+    {
+      path: '/profile',
+      icon: User,
+      label: '내 프로필',
+      isActive: location.pathname === '/profile',
+    },
+    {
+      path: '/settings',
+      icon: Settings,
+      label: '설정',
+      isActive: location.pathname === '/settings',
+    },
+  ];
+
+  // 메뉴 항목 렌더링 함수
+  const renderMenuItem = (item) => (
+    <Button
+      key={item.path}
+      variant={item.isActive ? 'secondary' : 'ghost'}
+      className="w-full transition-all duration-300 h-10 px-3"
+      asChild
+    >
+      <Link to={item.path} title={collapsed ? item.label : undefined}>
+        {collapsed ? (
+          <item.icon className="h-4 w-4" />
+        ) : (
+          <div className="flex items-center w-full">
+            <item.icon className="h-4 w-4 mr-3 flex-shrink-0" />
+            {showText && <span>{item.label}</span>}
+          </div>
+        )}
+      </Link>
+    </Button>
+  );
+
+  // 텍스트 표시 상태 관리
   useEffect(() => {
     if (collapsed) {
-      // 즉시 숨김
       setShowText(false);
     } else {
-      // 펼칠 때는 딜레이 후 표시
       const timer = setTimeout(() => {
         setShowText(true);
-      }, 200); // 애니메이션 시간보다 짧게 설정
-
+      }, 200);
       return () => clearTimeout(timer);
     }
   }, [collapsed]);
@@ -69,105 +127,14 @@ export default function Sidebar() {
       </div>
 
       <div className="p-4 space-y-2 flex-1 flex flex-col">
+        {/* 메인 네비게이션 */}
         <nav className="space-y-1 flex-1">
-          <Button
-            variant={location.pathname === '/dashboard' ? 'secondary' : 'ghost'}
-            className="w-full transition-all duration-300 h-10 px-3"
-            asChild
-          >
-            <Link to="/dashboard" title={collapsed ? '대시보드' : undefined}>
-              {collapsed ? (
-                <LayoutDashboard className="h-4 w-4" />
-              ) : (
-                <div className="flex items-center w-full">
-                  <LayoutDashboard className="h-4 w-4 mr-3 flex-shrink-0" />
-                  {showText && <span>대시보드</span>}
-                </div>
-              )}
-            </Link>
-          </Button>
-
-          <Button
-            variant={
-              location.pathname === '/repositories' ||
-              location.pathname.startsWith('/repository')
-                ? 'secondary'
-                : 'ghost'
-            }
-            className="w-full transition-all duration-300 h-10 px-3"
-            asChild
-          >
-            <Link to="/repositories" title={collapsed ? '저장소' : undefined}>
-              {collapsed ? (
-                <ScrollText className="h-4 w-4" />
-              ) : (
-                <div className="flex items-center w-full">
-                  <ScrollText className="h-4 w-4 mr-3 flex-shrink-0" />
-                  {showText && <span>저장소</span>}
-                </div>
-              )}
-            </Link>
-          </Button>
-
-          <Button
-            variant={
-              location.pathname.startsWith('/issues') ? 'secondary' : 'ghost'
-            }
-            className="w-full transition-all duration-300 h-10 px-3"
-            asChild
-          >
-            <Link to="/issues" title={collapsed ? '이슈' : undefined}>
-              {collapsed ? (
-                <AlertCircle className="h-4 w-4" />
-              ) : (
-                <div className="flex items-center w-full">
-                  <AlertCircle className="h-4 w-4 mr-3 flex-shrink-0" />
-                  {showText && <span>이슈</span>}
-                </div>
-              )}
-            </Link>
-          </Button>
+          {mainMenuItems.map(renderMenuItem)}
         </nav>
 
-        {/* 하단 네비게이션을 상단 네비게이션과 같은 영역으로 이동 */}
+        {/* 하단 네비게이션 */}
         <div className="border-t border-border/50 dark:border-gray-700 pt-4 mt-4">
-          <nav className="space-y-1">
-            <Button
-              variant={location.pathname === '/profile' ? 'secondary' : 'ghost'}
-              className="w-full transition-all duration-300 h-10 px-3"
-              asChild
-            >
-              <Link to="/profile" title={collapsed ? '내 프로필' : undefined}>
-                {collapsed ? (
-                  <User className="h-4 w-4" />
-                ) : (
-                  <div className="flex items-center w-full">
-                    <User className="h-4 w-4 mr-3 flex-shrink-0" />
-                    {showText && <span>내 프로필</span>}
-                  </div>
-                )}
-              </Link>
-            </Button>
-
-            <Button
-              variant={
-                location.pathname === '/settings' ? 'secondary' : 'ghost'
-              }
-              className="w-full transition-all duration-300 h-10 px-3"
-              asChild
-            >
-              <Link to="/settings" title={collapsed ? '설정' : undefined}>
-                {collapsed ? (
-                  <Settings className="h-4 w-4" />
-                ) : (
-                  <div className="flex items-center w-full">
-                    <Settings className="h-4 w-4 mr-3 flex-shrink-0" />
-                    {showText && <span>설정</span>}
-                  </div>
-                )}
-              </Link>
-            </Button>
-          </nav>
+          <nav className="space-y-1">{bottomMenuItems.map(renderMenuItem)}</nav>
         </div>
       </div>
     </div>
