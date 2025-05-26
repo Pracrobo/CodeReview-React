@@ -1,4 +1,3 @@
-'use client';
 import { Link, useParams } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import {

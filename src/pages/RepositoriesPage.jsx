@@ -1,8 +1,6 @@
-"use client";
-
-import { useState } from "react";
-import { Link } from "react-router-dom";
-import { Button } from "../components/ui/button";
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { Button } from '../components/ui/button';
 import {
   Card,
   CardContent,
@@ -10,15 +8,15 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "../components/ui/card";
-import { Input } from "../components/ui/input";
-import { Badge } from "../components/ui/badge";
+} from '../components/ui/card';
+import { Input } from '../components/ui/input';
+import { Badge } from '../components/ui/badge';
 import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
-} from "../components/ui/tabs";
+} from '../components/ui/tabs';
 import {
   AlertCircle,
   Github,
@@ -27,12 +25,12 @@ import {
   Star,
   GitFork,
   Clock,
-} from "lucide-react";
-import DashboardLayout from "../components/dashboard-layout";
-import { mockRepositories, mockStarredRepositories } from "../lib/mock-data";
+} from 'lucide-react';
+import DashboardLayout from '../components/dashboard-layout';
+import { mockRepositories, mockStarredRepositories } from '../lib/mock-data';
 
 export default function RepositoriesPage() {
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState('');
   const [repositories, setRepositories] = useState(mockRepositories);
   const [starredRepositories, setStarredRepositories] = useState(
     mockStarredRepositories
@@ -91,8 +89,8 @@ export default function RepositoriesPage() {
             {repo.isNew && <Badge className="bg-green-500">NEW</Badge>}
           </div>
           <div className="flex items-center gap-2">
-            <Badge variant={repo.isPrivate ? "outline" : "secondary"}>
-              {repo.isPrivate ? "비공개" : "공개"}
+            <Badge variant={repo.isPrivate ? 'outline' : 'secondary'}>
+              {repo.isPrivate ? '비공개' : '공개'}
             </Badge>
             <Button
               variant="ghost"
@@ -102,7 +100,7 @@ export default function RepositoriesPage() {
             >
               <Star
                 className={`h-4 w-4 ${
-                  repo.isStarred ? "fill-yellow-400 text-yellow-400" : ""
+                  repo.isStarred ? 'fill-yellow-400 text-yellow-400' : ''
                 }`}
               />
             </Button>
@@ -174,7 +172,7 @@ export default function RepositoriesPage() {
                 ))}
 
                 <Card className="h-full border-dashed">
-                  <Link to="/dashboard" state={{ from: "repositories" }}>
+                  <Link to="/dashboard" state={{ from: 'repositories' }}>
                     <CardContent className="flex flex-col items-center justify-center h-full p-6 pt-4">
                       <h3 className="text-xl font-semibold leading-none tracking-tight pb-4">
                         저장소 추가하기
@@ -197,13 +195,13 @@ export default function RepositoriesPage() {
                   </div>
                   <h3 className="text-xl font-medium mb-2">
                     {searchQuery
-                      ? "검색 결과가 없습니다"
-                      : "아직 분석한 저장소가 없습니다"}
+                      ? '검색 결과가 없습니다'
+                      : '아직 분석한 저장소가 없습니다'}
                   </h3>
                   <p className="text-center text-muted-foreground mb-4">
                     {searchQuery
-                      ? "다른 검색어로 다시 시도해보세요"
-                      : "GitHub 저장소 URL을 입력하여 AI 분석을 시작해보세요"}
+                      ? '다른 검색어로 다시 시도해보세요'
+                      : 'GitHub 저장소 URL을 입력하여 AI 분석을 시작해보세요'}
                   </p>
                   {!searchQuery && (
                     <Button asChild>
@@ -231,13 +229,13 @@ export default function RepositoriesPage() {
                   </div>
                   <h3 className="text-xl font-medium mb-2">
                     {searchQuery
-                      ? "검색 결과가 없습니다"
-                      : "즐겨찾기한 저장소가 없습니다"}
+                      ? '검색 결과가 없습니다'
+                      : '즐겨찾기한 저장소가 없습니다'}
                   </h3>
                   <p className="text-center text-muted-foreground mb-4">
                     {searchQuery
-                      ? "다른 검색어로 다시 시도해보세요"
-                      : "저장소 목록에서 별표 아이콘을 클릭하여 자주 사용하는 저장소를 즐겨찾기하세요"}
+                      ? '다른 검색어로 다시 시도해보세요'
+                      : '저장소 목록에서 별표 아이콘을 클릭하여 자주 사용하는 저장소를 즐겨찾기하세요'}
                   </p>
                 </CardContent>
               </Card>

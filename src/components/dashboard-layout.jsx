@@ -1,5 +1,3 @@
-'use client';
-
 import Navbar from './navbar';
 import Sidebar from './sidebar';
 import { SidebarProvider } from '../contexts/SidebarContext';
