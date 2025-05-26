@@ -1,14 +1,14 @@
-import { Link } from "react-router-dom";
-import { Button } from "../components/ui/button";
+import { Link } from 'react-router-dom';
+import { Button } from '../components/ui/button';
 import {
   ChevronDown,
   Code,
   MessageSquare,
   BarChart,
   Globe,
-} from "lucide-react";
-import Navbar from "../components/navbar";
-import Footer from "../components/footer";
+} from 'lucide-react';
+import Navbar from '../components/navbar';
+import Footer from '../components/footer';
 
 export default function HomePage() {
   return (
@@ -53,161 +53,322 @@ export default function HomePage() {
       </section>
 
       {/* 기능 소개 섹션 */}
-      <section id="features" className="py-24 bg-gray-200">
+      <section
+        id="features"
+        className="py-24 bg-gradient-to-br from-gray-50 to-white"
+      >
         <div className="container px-4 mx-auto">
-          <h2 className="text-3xl font-bold text-center text-gray-900 sm:text-4xl mb-14">
-            Aissue의 주요 기능
-          </h2>
-
-          {/* 기능 1: 이슈-코드 매칭 */}
-          <div className="flex flex-col md:flex-row items-center gap-10 mb-32">
-            <div className="flex-1">
-              <div className="p-2 w-14 h-14 rounded-full bg-purple-100 flex items-center justify-center mb-6">
-                <Code className="w-8 h-8 text-purple-600" />
-              </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">
-                AI 기반 이슈-코드 매칭
-              </h3>
-              <p className="text-gray-600 mb-6 text-lg">
-                GitHub 이슈의 내용을 AI가 분석하여 관련성이 높은 코드 스니펫,
-                파일, 함수 등을 자동으로 추천해 드립니다. 이를 통해 코드 분석
-                시간을 대폭 줄이고 이슈 해결에 집중할 수 있습니다.
-              </p>
-              <ul className="space-y-2 text-gray-600">
-                <li className="flex items-start">
-                  <span className="mr-2 text-purple-600">✓</span>
-                  <span>이슈 내용 기반 관련 코드 자동 추천</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="mr-2 text-purple-600">✓</span>
-                  <span>코드 구조 분석 및 의미 기반 검색</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="mr-2 text-purple-600">✓</span>
-                  <span>파일 경로, 코드 스니펫, 관련도 시각화</span>
-                </li>
-              </ul>
-            </div>
-            <div className="flex-1 bg-gray-100 rounded-xl overflow-hidden shadow-lg">
-              <img
-                src="/이슈목록.png?height=400&width=600"
-                alt="이슈-코드 매칭 기능 예시"
-                className="w-full h-auto"
-              />
-            </div>
+          {/* 섹션 헤더 */}
+          <div className="text-center mb-20">
+            <h2 className="text-4xl font-bold text-gray-900 mb-6">
+              Aissue의 주요 기능
+            </h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              AI 기술로 GitHub 이슈 해결을 혁신하는 4가지 핵심 기능을 소개합니다
+            </p>
+            <div className="mt-8 w-24 h-1 bg-gradient-to-r from-purple-600 to-indigo-600 mx-auto rounded-full"></div>
           </div>
 
-          {/* 기능 2: 컨트리뷰션 가이드 AI 챗봇 */}
-          <div className="flex flex-col md:flex-row-reverse items-center gap-10 mb-32">
-            <div className="flex-1">
-              <div className="p-2 w-14 h-14 rounded-full bg-indigo-100 flex items-center justify-center mb-6">
-                <MessageSquare className="w-8 h-8 text-indigo-600" />
-              </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">
-                컨트리뷰션 가이드 AI 챗봇
-              </h3>
-              <p className="text-gray-600 mb-6 text-lg">
-                프로젝트의 컨트리뷰션 문서를 AI가 학습하여 코딩 컨벤션, PR 작성
-                방법 등에 대한 질문에 즉시 답변해 드립니다. 별도의 문서를
-                찾아보는 시간을 절약하세요.
-              </p>
-              <ul className="space-y-2 text-gray-600">
-                <li className="flex items-start">
-                  <span className="mr-2 text-indigo-600">✓</span>
-                  <span>프로젝트 문서 기반 맞춤형 답변</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="mr-2 text-indigo-600">✓</span>
-                  <span>코딩 컨벤션, 기여 방법 안내</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="mr-2 text-indigo-600">✓</span>
-                  <span>자연스러운 대화형 인터페이스</span>
-                </li>
-              </ul>
-            </div>
-            <div className="flex-1 bg-gray-100 rounded-xl overflow-hidden shadow-lg">
-              <img
-                src="/저장소-AI챗봇.png?height=400&width=600"
-                alt="컨트리뷰션 가이드 AI 챗봇 예시"
-                className="w-full h-auto"
-              />
-            </div>
-          </div>
+          {/* 기능 카드들 */}
+          <div className="space-y-32">
+            {/* 기능 1: 이슈-코드 매칭 */}
+            <div>
+              <div className="bg-white rounded-3xl shadow-xl overflow-hidden">
+                <div className="flex flex-col lg:flex-row">
+                  {/* 텍스트 영역 */}
+                  <div className="lg:w-1/2 p-8 lg:p-12 flex flex-col justify-center">
+                    <div className="flex items-center mb-6">
+                      <div className="relative">
+                        <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-500 to-purple-700 flex items-center justify-center shadow-lg">
+                          <Code className="w-8 h-8 text-white" />
+                        </div>
+                        <div className="absolute -top-2 -right-2 w-6 h-6 bg-yellow-400 rounded-full flex items-center justify-center text-xs font-bold text-gray-900">
+                          1
+                        </div>
+                      </div>
+                      <div className="ml-4">
+                        <span className="inline-block px-3 py-1 bg-purple-100 text-purple-700 text-sm font-medium rounded-full">
+                          AI 매칭
+                        </span>
+                      </div>
+                    </div>
 
-          {/* 기능 3: 다국어 한글화 지원 */}
-          <div className="flex flex-col md:flex-row items-center gap-10 mb-32">
-            <div className="flex-1">
-              <div className="p-2 w-14 h-14 rounded-full bg-emerald-100 flex items-center justify-center mb-6">
-                <Globe className="w-8 h-8 text-emerald-600" />
-              </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">
-                다국어 한글화 지원
-              </h3>
-              <p className="text-gray-600 mb-6 text-lg">
-                영어나 다른 언어로 작성된 README, 이슈, 문서들을 AI가 자연스러운
-                한국어로 번역해 드립니다. 언어 장벽 없이 글로벌 오픈소스
-                프로젝트에 참여하세요.
-              </p>
-              <ul className="space-y-2 text-gray-600">
-                <li className="flex items-start">
-                  <span className="mr-2 text-emerald-600">✓</span>
-                  <span>영문 README 및 문서 한글 번역</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="mr-2 text-emerald-600">✓</span>
-                  <span>이슈 및 PR 내용 자동 한글화</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="mr-2 text-emerald-600">✓</span>
-                  <span>기술 용어 맥락에 맞는 정확한 번역</span>
-                </li>
-              </ul>
-            </div>
-            <div className="flex-1 bg-gray-100 rounded-xl overflow-hidden shadow-lg">
-              <img
-                src="/이슈디테일.png?height=400&width=600"
-                alt="다국어 한글화 지원 예시"
-                className="w-full h-auto"
-              />
-            </div>
-          </div>
+                    <h3 className="text-3xl font-bold text-gray-900 mb-6 leading-tight">
+                      AI 기반 이슈-코드 매칭
+                    </h3>
 
-          {/* 기능 4: 저장소 분석 및 요약 */}
-          <div className="flex flex-col md:flex-row-reverse items-center gap-10">
-            <div className="flex-1">
-              <div className="p-2 w-14 h-14 rounded-full bg-fuchsia-100 flex items-center justify-center mb-6">
-                <BarChart className="w-8 h-8 text-fuchsia-600" />
+                    <p className="text-lg text-gray-600 mb-8 leading-relaxed">
+                      GitHub 이슈 내용을 AI가 깊이 분석하여 관련성이 높은 코드
+                      스니펫, 파일, 함수를 자동으로 추천합니다. 더 이상 코드를
+                      일일이 찾아보지 마세요.
+                    </p>
+
+                    <div className="space-y-4">
+                      {[
+                        '이슈 내용 기반 관련 코드 자동 추천',
+                        '코드 구조 분석 및 의미 기반 검색',
+                        '파일 경로, 코드 스니펫, 관련도 시각화',
+                      ].map((feature, index) => (
+                        <div key={index} className="flex items-center">
+                          <div className="w-6 h-6 rounded-full bg-gradient-to-r from-purple-500 to-purple-600 flex items-center justify-center mr-4 flex-shrink-0">
+                            <svg
+                              className="w-3 h-3 text-white"
+                              fill="currentColor"
+                              viewBox="0 0 20 20"
+                            >
+                              <path
+                                fillRule="evenodd"
+                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                clipRule="evenodd"
+                              />
+                            </svg>
+                          </div>
+                          <span className="text-gray-700">{feature}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* 이미지 영역 */}
+                  <div className="lg:w-1/2 relative overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-br from-purple-100 to-indigo-100"></div>
+                    <div className="relative p-8 lg:p-12 h-full flex items-center justify-center">
+                      <div className="bg-white rounded-2xl shadow-2xl p-6">
+                        <img
+                          src="/이슈목록.png?height=300&width=400"
+                          alt="이슈-코드 매칭 기능 예시"
+                          className="w-full h-auto rounded-xl"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">
-                저장소 분석 및 요약
-              </h3>
-              <p className="text-gray-600 mb-6 text-lg">
-                GitHub 저장소의 README, 주요 설정 파일, 이슈 목록 등을 AI가
-                분석하여 프로젝트의 핵심 정보를 한눈에 파악할 수 있도록 요약해
-                드립니다.
-              </p>
-              <ul className="space-y-2 text-gray-600">
-                <li className="flex items-start">
-                  <span className="mr-2 text-fuchsia-600">✓</span>
-                  <span>README AI 요약 및 원본 보기</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="mr-2 text-fuchsia-600">✓</span>
-                  <span>주요 사용 언어, 라이선스 정보</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="mr-2 text-fuchsia-600">✓</span>
-                  <span>이슈 목록 및 트렌드 분석</span>
-                </li>
-              </ul>
             </div>
-            <div className="flex-1 bg-gray-100 rounded-xl overflow-hidden shadow-lg">
-              <img
-                src="/저장소-이슈목록.png?height=400&width=600"
-                alt="저장소 분석 및 요약 예시"
-                className="w-full h-auto"
-              />
+
+            {/* 기능 2: 컨트리뷰션 가이드 AI 챗봇 */}
+            <div>
+              <div className="bg-white rounded-3xl shadow-xl overflow-hidden">
+                <div className="flex flex-col lg:flex-row-reverse">
+                  {/* 텍스트 영역 */}
+                  <div className="lg:w-1/2 p-8 lg:p-12 flex flex-col justify-center">
+                    <div className="flex items-center mb-6">
+                      <div className="relative">
+                        <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-500 to-blue-700 flex items-center justify-center shadow-lg">
+                          <MessageSquare className="w-8 h-8 text-white" />
+                        </div>
+                        <div className="absolute -top-2 -right-2 w-6 h-6 bg-yellow-400 rounded-full flex items-center justify-center text-xs font-bold text-gray-900">
+                          2
+                        </div>
+                      </div>
+                      <div className="ml-4">
+                        <span className="inline-block px-3 py-1 bg-indigo-100 text-indigo-700 text-sm font-medium rounded-full">
+                          AI 챗봇
+                        </span>
+                      </div>
+                    </div>
+
+                    <h3 className="text-3xl font-bold text-gray-900 mb-6 leading-tight">
+                      컨트리뷰션 가이드 AI 챗봇
+                    </h3>
+
+                    <p className="text-lg text-gray-600 mb-8 leading-relaxed">
+                      프로젝트의 컨트리뷰션 문서를 학습한 AI가 코딩 컨벤션, PR
+                      작성 방법을 실시간으로 안내합니다. 복잡한 문서를 찾아볼
+                      필요 없이 바로 질문하세요.
+                    </p>
+
+                    <div className="space-y-4">
+                      {[
+                        '프로젝트 문서 기반 맞춤형 답변',
+                        '코딩 컨벤션, 기여 방법 안내',
+                        '자연스러운 대화형 인터페이스',
+                      ].map((feature, index) => (
+                        <div key={index} className="flex items-center">
+                          <div className="w-6 h-6 rounded-full bg-gradient-to-r from-indigo-500 to-blue-600 flex items-center justify-center mr-4 flex-shrink-0">
+                            <svg
+                              className="w-3 h-3 text-white"
+                              fill="currentColor"
+                              viewBox="0 0 20 20"
+                            >
+                              <path
+                                fillRule="evenodd"
+                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                clipRule="evenodd"
+                              />
+                            </svg>
+                          </div>
+                          <span className="text-gray-700">{feature}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* 이미지 영역 */}
+                  <div className="lg:w-1/2 relative overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-br from-indigo-100 to-blue-100"></div>
+                    <div className="relative p-8 lg:p-12 h-full flex items-center justify-center">
+                      <div className="bg-white rounded-2xl shadow-2xl p-6">
+                        <img
+                          src="/저장소-AI챗봇.png?height=300&width=400"
+                          alt="컨트리뷰션 가이드 AI 챗봇 예시"
+                          className="w-full h-auto rounded-xl"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* 기능 3: 다국어 한글화 지원 */}
+            <div>
+              <div className="bg-white rounded-3xl shadow-xl overflow-hidden">
+                <div className="flex flex-col lg:flex-row">
+                  {/* 텍스트 영역 */}
+                  <div className="lg:w-1/2 p-8 lg:p-12 flex flex-col justify-center">
+                    <div className="flex items-center mb-6">
+                      <div className="relative">
+                        <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-500 to-green-700 flex items-center justify-center shadow-lg">
+                          <Globe className="w-8 h-8 text-white" />
+                        </div>
+                        <div className="absolute -top-2 -right-2 w-6 h-6 bg-yellow-400 rounded-full flex items-center justify-center text-xs font-bold text-gray-900">
+                          3
+                        </div>
+                      </div>
+                      <div className="ml-4">
+                        <span className="inline-block px-3 py-1 bg-emerald-100 text-emerald-700 text-sm font-medium rounded-full">
+                          다국어 지원
+                        </span>
+                      </div>
+                    </div>
+
+                    <h3 className="text-3xl font-bold text-gray-900 mb-6 leading-tight">
+                      스마트 한글화 지원
+                    </h3>
+
+                    <p className="text-lg text-gray-600 mb-8 leading-relaxed">
+                      영어나 다른 언어로 작성된 README, 이슈, 문서를 AI가 맥락을
+                      고려하여 자연스러운 한국어로 번역합니다. 언어 장벽 없이
+                      글로벌 프로젝트에 참여하세요.
+                    </p>
+
+                    <div className="space-y-4">
+                      {[
+                        '영문 README 및 문서 한글 번역',
+                        '이슈 및 PR 내용 자동 한글화',
+                        '기술 용어 맥락에 맞는 정확한 번역',
+                      ].map((feature, index) => (
+                        <div key={index} className="flex items-center">
+                          <div className="w-6 h-6 rounded-full bg-gradient-to-r from-emerald-500 to-green-600 flex items-center justify-center mr-4 flex-shrink-0">
+                            <svg
+                              className="w-3 h-3 text-white"
+                              fill="currentColor"
+                              viewBox="0 0 20 20"
+                            >
+                              <path
+                                fillRule="evenodd"
+                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                clipRule="evenodd"
+                              />
+                            </svg>
+                          </div>
+                          <span className="text-gray-700">{feature}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* 이미지 영역 */}
+                  <div className="lg:w-1/2 relative overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-br from-emerald-100 to-green-100"></div>
+                    <div className="relative p-8 lg:p-12 h-full flex items-center justify-center">
+                      <div className="bg-white rounded-2xl shadow-2xl p-6">
+                        <img
+                          src="/이슈디테일.png?height=300&width=400"
+                          alt="다국어 한글화 지원 예시"
+                          className="w-full h-auto rounded-xl"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* 기능 4: 저장소 분석 및 요약 */}
+            <div>
+              <div className="bg-white rounded-3xl shadow-xl overflow-hidden">
+                <div className="flex flex-col lg:flex-row-reverse">
+                  {/* 텍스트 영역 */}
+                  <div className="lg:w-1/2 p-8 lg:p-12 flex flex-col justify-center">
+                    <div className="flex items-center mb-6">
+                      <div className="relative">
+                        <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-fuchsia-500 to-pink-700 flex items-center justify-center shadow-lg">
+                          <BarChart className="w-8 h-8 text-white" />
+                        </div>
+                        <div className="absolute -top-2 -right-2 w-6 h-6 bg-yellow-400 rounded-full flex items-center justify-center text-xs font-bold text-gray-900">
+                          4
+                        </div>
+                      </div>
+                      <div className="ml-4">
+                        <span className="inline-block px-3 py-1 bg-fuchsia-100 text-fuchsia-700 text-sm font-medium rounded-full">
+                          AI 분석
+                        </span>
+                      </div>
+                    </div>
+
+                    <h3 className="text-3xl font-bold text-gray-900 mb-6 leading-tight">
+                      인텔리전트 저장소 분석
+                    </h3>
+
+                    <p className="text-lg text-gray-600 mb-8 leading-relaxed">
+                      GitHub 저장소의 구조, 문서, 이슈를 AI가 종합 분석하여
+                      프로젝트의 핵심 정보를 한눈에 파악할 수 있도록 정리해
+                      드립니다.
+                    </p>
+
+                    <div className="space-y-4">
+                      {[
+                        'README AI 요약 및 원본 보기',
+                        '주요 사용 언어, 라이선스 정보',
+                        '이슈 목록 및 트렌드 분석',
+                      ].map((feature, index) => (
+                        <div key={index} className="flex items-center">
+                          <div className="w-6 h-6 rounded-full bg-gradient-to-r from-fuchsia-500 to-pink-600 flex items-center justify-center mr-4 flex-shrink-0">
+                            <svg
+                              className="w-3 h-3 text-white"
+                              fill="currentColor"
+                              viewBox="0 0 20 20"
+                            >
+                              <path
+                                fillRule="evenodd"
+                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                clipRule="evenodd"
+                              />
+                            </svg>
+                          </div>
+                          <span className="text-gray-700">{feature}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* 이미지 영역 */}
+                  <div className="lg:w-1/2 relative overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-br from-fuchsia-100 to-pink-100"></div>
+                    <div className="relative p-8 lg:p-12 h-full flex items-center justify-center">
+                      <div className="bg-white rounded-2xl shadow-2xl p-6">
+                        <img
+                          src="/저장소-이슈목록.png?height=300&width=400"
+                          alt="저장소 분석 및 요약 예시"
+                          className="w-full h-auto rounded-xl"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
