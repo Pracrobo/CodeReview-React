@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { useEffect } from 'react';
 import { Button } from '../components/ui/button';
 import {
   ChevronDown,
@@ -23,6 +24,17 @@ export default function HomePage() {
       element.scrollIntoView({ behavior: 'smooth' });
     }
   };
+
+  // 페이지 로드 시 URL 해시 확인하여 해당 섹션으로 스크롤
+  useEffect(() => {
+    const hash = window.location.hash.replace('#', '');
+    if (hash) {
+      // 약간의 지연을 두어 페이지 렌더링 완료 후 스크롤
+      setTimeout(() => {
+        scrollToSection(hash);
+      }, 100);
+    }
+  }, []);
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -458,7 +470,7 @@ export default function HomePage() {
               합리적인 요금제
             </h2>
             <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto dark:text-gray-300">
-              무료 플랜으로 시작하여 AIssue의 핵심 기능을 체험해보세요. 더 많은
+              무료 플랜으로 시작하여 AIissue의 핵심 기능을 체험해보세요. 더 많은
               저장소 분석과 고급 기능이 필요하다면 Pro 플랜으로
               업그레이드하세요.
             </p>
