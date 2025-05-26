@@ -13,7 +13,7 @@ import {
   ChevronRight,
 } from 'lucide-react';
 import { useMobile } from '../hooks/use-mobile';
-import { useSidebar } from '../contexts/SidebarContext';
+import { useSidebar } from '../hooks/use-sidebar';
 
 export default function Sidebar() {
   const location = useLocation();
