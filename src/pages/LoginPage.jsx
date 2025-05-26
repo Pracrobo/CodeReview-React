@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "../components/ui/button";
 import {
   Card,
@@ -14,16 +14,15 @@ import {
 import { Github } from "lucide-react";
 import Navbar from "../components/navbar";
 import Footer from "../components/footer";
+import { removeAuthStorage } from "../utils/auth";
 
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleGithubLogin = () => {
     // 기존 토큰/정보 삭제
-    localStorage.removeItem("token");
-    localStorage.removeItem("username");
-    localStorage.removeItem("email");
-    localStorage.removeItem("avatar_url");
+    removeAuthStorage();
     // 실제 GitHub OAuth 인증 시작
     window.location.href = "http://localhost:3001/auth/github/login";
   };

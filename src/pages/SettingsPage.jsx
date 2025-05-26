@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { Button } from "../components/ui/button";
 import {
   Card,
@@ -15,6 +15,100 @@ import { Switch } from "../components/ui/switch";
 import { Label } from "../components/ui/label";
 import { Github } from "lucide-react";
 import DashboardLayout from "../components/dashboard-layout";
+import { useNavigate } from "react-router-dom";
+import { removeAuthStorage } from "../utils/auth";
+
+function useAuthTokens() {
+  return {
+    token: localStorage.getItem("token"),
+    accessToken: localStorage.getItem("accessToken"),
+  };
+}
+
+function GithubUnlinkButton() {
+  const navigate = useNavigate();
+  const { token, accessToken } = useAuthTokens();
+
+  const handleUnlink = useCallback(async () => {
+    if (!token) {
+      alert("로그인 정보가 없습니다. 다시 로그인해 주세요.");
+      navigate("/login");
+      return;
+    }
+    try {
+      const res = await fetch("http://localhost:3001/auth/github/logout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        credentials: "include",
+        body: JSON.stringify({ accessToken }),
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        alert("연동 해제 실패: " + (data?.message || "예상치 못한 오류가 발생했습니다. 문제가 계속되면 관리자에게 문의해 주세요."));
+        return;
+      }
+    } catch (e) {
+      alert("연동 해제 중 오류가 발생했습니다.");
+      return;
+    }
+    removeAuthStorage();
+    navigate("/");
+  }, [token, accessToken, navigate]);
+
+  return (
+    <Button variant="destructive" onClick={handleUnlink}>
+      연동 해제
+    </Button>
+  );
+}
+
+function AccountDeleteButton() {
+  const navigate = useNavigate();
+  const { token, accessToken } = useAuthTokens();
+
+  const handleDelete = useCallback(async () => {
+    if (!window.confirm("정말로 계정 데이터를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.")) return;
+    if (!token) {
+      alert("로그인 정보가 없습니다. 다시 로그인해 주세요.");
+      navigate("/login");
+      return;
+    }
+    try {
+      const res = await fetch("http://localhost:3001/auth/github/delete", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        credentials: "include",
+        body: JSON.stringify({ accessToken }),
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        alert("계정 삭제 실패: " + (data?.message || "예상치 못한 오류가 발생했습니다. 문제가 계속되면 관리자에게 문의해 주세요."));
+        return;
+      }
+    } catch (e) {
+      alert("계정 삭제 중 오류가 발생했습니다.");
+      return;
+    }
+    removeAuthStorage();
+    navigate("/");
+  }, [token, accessToken, navigate]);
+
+  return (
+    <Button
+      variant="destructive"
+      className="w-full justify-center"
+      onClick={handleDelete}
+    >
+      계정 데이터 삭제
+    </Button>
+  );
+}
 
 export default function SettingsPage() {
   const [emailNotifications, setEmailNotifications] = useState(true);
@@ -131,39 +225,7 @@ export default function SettingsPage() {
               <Github className="h-4 w-4" />
               GitHub 권한 관리
             </Button>
-            <Button
-              variant="destructive"
-              onClick={async () => {
-                const token = localStorage.getItem("token");
-                try {
-                  const res = await fetch(
-                    "http://localhost:3001/auth/github/logout",
-                    {
-                      method: "POST",
-                      headers: { Authorization: `Bearer ${token}` },
-                      credentials: "include",
-                    }
-                  );
-                  if (!res.ok) {
-                    const data = await res.json();
-                    alert(
-                      "연동 해제 실패: " + (data?.message || "Unknown error")
-                    );
-                    return;
-                  }
-                } catch (e) {
-                  alert("연동 해제 중 오류가 발생했습니다.");
-                  return;
-                }
-                localStorage.removeItem("token");
-                localStorage.removeItem("username");
-                localStorage.removeItem("email");
-                localStorage.removeItem("avatar_url");
-                window.location.href = "/";
-              }}
-            >
-              연동 해제
-            </Button>
+            <GithubUnlinkButton />
           </CardFooter>
         </Card>
 
@@ -179,9 +241,7 @@ export default function SettingsPage() {
                 계정 데이터를 삭제하면 모든 분석 결과, 설정 및 개인 정보가
                 영구적으로 제거됩니다. 이 작업은 되돌릴 수 없습니다.
               </p>
-              <Button variant="destructive" className="w-full justify-center">
-                계정 데이터 삭제
-              </Button>
+              <AccountDeleteButton />
             </div>
           </CardContent>
         </Card>
