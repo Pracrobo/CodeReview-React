@@ -1,6 +1,6 @@
 {
-  "short_name": "Aissue",
-  "name": "Aissue - AI 기반 GitHub 이슈 분석 서비스",
+  "short_name": "AIssue",
+  "name": "AIssue - AI 기반 GitHub 이슈 분석 서비스",
   "icons": [
     {
       "src": "favicon.ico",

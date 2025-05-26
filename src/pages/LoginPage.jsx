@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { Link } from "react-router-dom";
-import { Button } from "../components/ui/button";
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { Button } from '../components/ui/button';
 import {
   Card,
   CardContent,
@@ -10,22 +10,22 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "../components/ui/card";
-import { Github } from "lucide-react";
-import Navbar from "../components/navbar";
-import Footer from "../components/footer";
+} from '../components/ui/card';
+import { Github } from 'lucide-react';
+import Navbar from '../components/navbar';
+import Footer from '../components/footer';
 
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleGithubLogin = () => {
     // 기존 토큰/정보 삭제
-    localStorage.removeItem("token");
-    localStorage.removeItem("username");
-    localStorage.removeItem("email");
-    localStorage.removeItem("avatar_url");
+    localStorage.removeItem('token');
+    localStorage.removeItem('username');
+    localStorage.removeItem('email');
+    localStorage.removeItem('avatar_url');
     // 실제 GitHub OAuth 인증 시작
-    window.location.href = "http://localhost:3001/auth/github/login";
+    window.location.href = 'http://localhost:3001/auth/github/login';
   };
 
   return (
@@ -39,7 +39,7 @@ export default function LoginPage() {
               로그인
             </CardTitle>
             <CardDescription className="text-center">
-              GitHub 계정으로 로그인하여 Aissue를 이용하세요
+              GitHub 계정으로 로그인하여 AIssue를 이용하세요
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -49,7 +49,7 @@ export default function LoginPage() {
               disabled={isLoading}
             >
               <Github className="w-5 h-5" />
-              {isLoading ? "로그인 중..." : "GitHub로 로그인"}
+              {isLoading ? '로그인 중...' : 'GitHub로 로그인'}
             </Button>
 
             <div className="relative">
@@ -63,10 +63,10 @@ export default function LoginPage() {
 
             <div className="space-y-2">
               <p className="text-center text-sm text-gray-500">
-                Aissue는 GitHub 계정을 통한 로그인만 지원합니다.
+                AIssue는 GitHub 계정을 통한 로그인만 지원합니다.
               </p>
               <p className="text-center text-sm text-gray-500">
-                GitHub 계정이 없으신가요?{" "}
+                GitHub 계정이 없으신가요?{' '}
                 <a
                   href="https://github.com/join"
                   target="_blank"
@@ -80,14 +80,14 @@ export default function LoginPage() {
           </CardContent>
           <CardFooter>
             <p className="text-center text-xs text-gray-500 w-full">
-              로그인함으로써 Aissue의{" "}
+              로그인함으로써 AIssue의{' '}
               <Link
                 to="/terms-of-service"
                 className="text-purple-600 hover:underline"
               >
                 서비스 약관
-              </Link>{" "}
-              및{" "}
+              </Link>{' '}
+              및{' '}
               <Link
                 to="/privacy-policy"
                 className="text-purple-600 hover:underline"
