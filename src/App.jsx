@@ -1,16 +1,16 @@
-import { Routes, Route, Navigate } from "react-router-dom"
-import HomePage from "./pages/HomePage"
-import LoginPage from "./pages/LoginPage"
-import DashboardPage from "./pages/DashboardPage"
-import RepositoriesPage from "./pages/RepositoriesPage"
-import RepositoryPage from "./pages/RepositoryPage"
-import IssuePage from "./pages/IssuePage"
-import IssuesPage from "./pages/IssuesPage"
-import ProfilePage from "./pages/ProfilePage"
-import SettingsPage from "./pages/SettingsPage"
-import PrivacyPolicyPage from "./pages/PrivacyPolicyPage"
-import TermsOfServicePage from "./pages/TermsOfServicePage"
-import CookiePolicyPage from "./pages/CookiePolicyPage"
+import { Routes, Route, Navigate } from "react-router-dom";
+import HomePage from "./pages/HomePage";
+import LoginPage from "./pages/LoginPage";
+import DashboardPage from "./pages/DashboardPage";
+import RepositoriesPage from "./pages/RepositoriesPage";
+import RepositoryPage from "./pages/RepositoryPage";
+import IssuePage from "./pages/IssuePage";
+import IssuesPage from "./pages/IssuesPage";
+import ProfilePage from "./pages/ProfilePage";
+import SettingsPage from "./pages/SettingsPage";
+import PrivacyPolicyPage from "./pages/PrivacyPolicyPage";
+import TermsOfServicePage from "./pages/TermsOfServicePage";
+import CookiePolicyPage from "./pages/CookiePolicyPage";
 import OAuthCallback from "./pages/OAuthCallback";
 
 function App() {
@@ -31,7 +31,7 @@ function App() {
       <Route path="/oauth/callback" element={<OAuthCallback />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
-  )
+  );
 }
 
 export default App;
