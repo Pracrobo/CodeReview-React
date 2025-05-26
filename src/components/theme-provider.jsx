@@ -27,6 +27,8 @@ export function ThemeProvider({
 
   useEffect(() => {
     const root = window.document.documentElement;
+
+    // 이전 테마 클래스를 제거하여 일관성 유지
     root.classList.remove('light', 'dark');
 
     if (theme === 'system') {
@@ -35,6 +37,9 @@ export function ThemeProvider({
         ? 'dark'
         : 'light';
       root.classList.add(systemTheme);
+      // 시스템 테마 적용 시, 실제 적용된 테마(systemTheme)를 localStorage에 저장하거나
+      // 상태로 관리할 필요는 현재 로직상 없습니다.
+      // setTheme(systemTheme)을 호출하면 무한 루프가 발생할 수 있으므로 주의해야 합니다.
       return;
     }
 
