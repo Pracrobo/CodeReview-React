@@ -31,7 +31,7 @@ import { useNavigate } from 'react-router-dom';
 import { removeAuthStorage } from '../utils/auth';
 
 export default function ProfilePage() {
-  const [currentPlan, _] = useState('free');
+  const [currentPlan] = useState('free');
   const username = localStorage.getItem('username') || '사용자';
   const email = localStorage.getItem('email') || '이메일';
   const avatarUrl = localStorage.getItem('avatarUrl') || '';
