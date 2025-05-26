@@ -34,7 +34,7 @@ export default function Navbar({ scrollToTop, scrollToSection }) {
     },
     {
       key: 'pricing',
-      label: '가격정책',
+      label: '가격 정책',
       action: () => handleNavigateToSection('pricing'),
     },
   ];
