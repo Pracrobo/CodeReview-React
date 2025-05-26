@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { Button } from "../components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../components/ui/card";
 import { Badge } from "../components/ui/badge";
@@ -8,20 +8,26 @@ import { Switch } from "../components/ui/switch";
 import { Label } from "../components/ui/label";
 import { Github } from "lucide-react";
 import DashboardLayout from "../components/dashboard-layout";
+import { useNavigate } from "react-router-dom";
+import { removeAuthStorage } from "../utils/auth";
 
-// 공통: 인증 관련 localStorage key들
-const removeAuthStorage = () => {
-  localStorage.removeItem("token");
-  localStorage.removeItem("access_token");
-  localStorage.removeItem("username");
-  localStorage.removeItem("email");
-  localStorage.removeItem("avatar_url");
-};
+function useAuthTokens() {
+  return {
+    token: localStorage.getItem("token"),
+    accessToken: localStorage.getItem("accessToken"),
+  };
+}
 
 function GithubUnlinkButton() {
-  const handleUnlink = async () => {
-    const token = localStorage.getItem("token");
-    const accessToken = localStorage.getItem("access_token");
+  const navigate = useNavigate();
+  const { token, accessToken } = useAuthTokens();
+
+  const handleUnlink = useCallback(async () => {
+    if (!token) {
+      alert("로그인 정보가 없습니다. 다시 로그인해 주세요.");
+      navigate("/login");
+      return;
+    }
     try {
       const res = await fetch("http://localhost:3001/auth/github/logout", {
         method: "POST",
@@ -30,11 +36,11 @@ function GithubUnlinkButton() {
           Authorization: `Bearer ${token}`,
         },
         credentials: "include",
-        body: JSON.stringify({ access_token: accessToken }),
+        body: JSON.stringify({ accessToken }),
       });
       if (!res.ok) {
         const data = await res.json();
-        alert("연동 해제 실패: " + (data?.message || "Unknown error"));
+        alert("연동 해제 실패: " + (data?.message || "예상치 못한 오류가 발생했습니다. 문제가 계속되면 관리자에게 문의해 주세요."));
         return;
       }
     } catch (e) {
@@ -42,8 +48,8 @@ function GithubUnlinkButton() {
       return;
     }
     removeAuthStorage();
-    window.location.href = "/";
-  };
+    navigate("/");
+  }, [token, accessToken, navigate]);
 
   return (
     <Button variant="destructive" onClick={handleUnlink}>
@@ -53,10 +59,16 @@ function GithubUnlinkButton() {
 }
 
 function AccountDeleteButton() {
-  const handleDelete = async () => {
-    const token = localStorage.getItem("token");
-    const accessToken = localStorage.getItem("access_token");
+  const navigate = useNavigate();
+  const { token, accessToken } = useAuthTokens();
+
+  const handleDelete = useCallback(async () => {
     if (!window.confirm("정말로 계정 데이터를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.")) return;
+    if (!token) {
+      alert("로그인 정보가 없습니다. 다시 로그인해 주세요.");
+      navigate("/login");
+      return;
+    }
     try {
       const res = await fetch("http://localhost:3001/auth/github/delete", {
         method: "DELETE",
@@ -65,11 +77,11 @@ function AccountDeleteButton() {
           Authorization: `Bearer ${token}`,
         },
         credentials: "include",
-        body: JSON.stringify({ access_token: accessToken }),
+        body: JSON.stringify({ accessToken }),
       });
       if (!res.ok) {
         const data = await res.json();
-        alert("계정 삭제 실패: " + (data?.message || "Unknown error"));
+        alert("계정 삭제 실패: " + (data?.message || "예상치 못한 오류가 발생했습니다. 문제가 계속되면 관리자에게 문의해 주세요."));
         return;
       }
     } catch (e) {
@@ -77,8 +89,8 @@ function AccountDeleteButton() {
       return;
     }
     removeAuthStorage();
-    window.location.href = "/";
-  };
+    navigate("/");
+  }, [token, accessToken, navigate]);
 
   return (
     <Button

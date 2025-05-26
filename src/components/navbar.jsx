@@ -12,7 +12,7 @@ export default function Navbar() {
 
   const token = localStorage.getItem("token");
   const username = localStorage.getItem("username");
-  const avatarUrl = localStorage.getItem("avatar_url");
+  const avatarUrl = localStorage.getItem("avatarUrl");
   const isLoggedIn = !!token;
 
   return (
