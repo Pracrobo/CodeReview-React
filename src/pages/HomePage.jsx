@@ -11,9 +11,22 @@ import Navbar from '../components/navbar';
 import Footer from '../components/footer';
 
 export default function HomePage() {
+  // 스크롤을 맨 위로 이동하는 함수
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // 특정 섹션으로 스크롤하는 함수
+  const scrollToSection = (sectionId) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
     <div className="flex flex-col min-h-screen">
-      <Navbar />
+      <Navbar scrollToTop={scrollToTop} scrollToSection={scrollToSection} />
 
       {/* 히어로 섹션 */}
       <section className="relative w-full py-20 overflow-hidden bg-gradient-to-br from-violet-600 via-purple-500 to-indigo-700 dark:from-violet-800 dark:via-purple-700 dark:to-indigo-900">
@@ -74,7 +87,7 @@ export default function HomePage() {
                 size="lg"
                 className="bg-white/10 backdrop-blur-sm text-white border-white/30 hover:bg-white/20 font-medium px-8 py-4 text-lg rounded-xl dark:bg-white/5 dark:border-white/20 dark:hover:bg-white/10"
               >
-                <a href="#features">
+                <button onClick={() => scrollToSection('features')}>
                   <svg
                     className="w-5 h-5 mr-2"
                     fill="currentColor"
@@ -88,7 +101,7 @@ export default function HomePage() {
                     />
                   </svg>
                   자세히 알아보기
-                </a>
+                </button>
               </Button>
             </div>
           </div>
