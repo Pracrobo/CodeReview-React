@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'; // useContext 제거
+import { useEffect, useState } from 'react';
 import { ThemeProviderContext } from '../contexts/theme-context'; // 경로 수정
 
 export function ThemeProvider({

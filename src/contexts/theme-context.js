@@ -1,8 +1,6 @@
 import { createContext } from 'react';
 
-const initialState = {
+export const ThemeProviderContext = createContext({
   theme: 'system',
   setTheme: () => null,
-};
-
-export const ThemeProviderContext = createContext(initialState);
+});
