@@ -1,9 +1,16 @@
-"use client"
+"use client";
 
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "../components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/card";
 import { Github } from "lucide-react";
 import Navbar from "../components/navbar";
 import Footer from "../components/footer";
@@ -27,7 +34,9 @@ export default function LoginPage() {
       <main className="flex-1 flex items-center justify-center py-12 bg-gradient-to-b from-purple-50 to-white">
         <Card className="w-full max-w-md mx-4">
           <CardHeader className="space-y-1">
-            <CardTitle className="text-2xl font-bold text-center">로그인</CardTitle>
+            <CardTitle className="text-2xl font-bold text-center">
+              로그인
+            </CardTitle>
             <CardDescription className="text-center">
               GitHub 계정으로 로그인하여 Aissue를 이용하세요
             </CardDescription>
@@ -71,11 +80,17 @@ export default function LoginPage() {
           <CardFooter>
             <p className="text-center text-xs text-gray-500 w-full">
               로그인함으로써 Aissue의{" "}
-              <Link to="/terms-of-service" className="text-purple-600 hover:underline">
+              <Link
+                to="/terms-of-service"
+                className="text-purple-600 hover:underline"
+              >
                 서비스 약관
               </Link>{" "}
               및{" "}
-              <Link to="/privacy-policy" className="text-purple-600 hover:underline">
+              <Link
+                to="/privacy-policy"
+                className="text-purple-600 hover:underline"
+              >
                 개인정보 처리방침
               </Link>
               에 동의합니다.

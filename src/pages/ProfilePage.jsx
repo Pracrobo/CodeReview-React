@@ -1,12 +1,32 @@
-"use client"
+"use client";
 
 import { useState } from "react";
 import { Button } from "../components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/card";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "../components/ui/tabs";
 import { Badge } from "../components/ui/badge";
 import { Input } from "../components/ui/input";
-import { AlertCircle, CreditCard, Github, LogOut, User, Check, X } from "lucide-react";
+import {
+  AlertCircle,
+  CreditCard,
+  Github,
+  LogOut,
+  User,
+  Check,
+  X,
+} from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "../components/ui/alert";
 import DashboardLayout from "../components/dashboard-layout";
 import { useNavigate } from "react-router-dom";
@@ -23,7 +43,10 @@ export default function ProfilePage() {
     removeAuthStorage();
 
     try {
-      await fetch("/auth/github/logout", { method: "GET", credentials: "include" });
+      await fetch("/auth/github/logout", {
+        method: "GET",
+        credentials: "include",
+      });
     } catch (e) {
     }
 
@@ -35,7 +58,9 @@ export default function ProfilePage() {
       <div className="space-y-6">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">내 프로필</h1>
-          <p className="text-muted-foreground">계정 정보 관리 및 구독 플랜 설정</p>
+          <p className="text-muted-foreground">
+            계정 정보 관리 및 구독 플랜 설정
+          </p>
         </div>
 
         <Tabs defaultValue="account">
@@ -49,7 +74,9 @@ export default function ProfilePage() {
             <Card>
               <CardHeader>
                 <CardTitle>프로필 정보</CardTitle>
-                <CardDescription>GitHub 계정과 연동된 프로필 정보입니다</CardDescription>
+                <CardDescription>
+                  GitHub 계정과 연동된 프로필 정보입니다
+                </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-center gap-4">
@@ -83,9 +110,22 @@ export default function ProfilePage() {
                         GitHub 계정
                       </label>
                       <div className="flex">
-                        <Input id="github" value={`@${username}`} readOnly className="rounded-r-none" />
-                        <Button variant="outline" className="rounded-l-none border-l-0" asChild>
-                          <a href={`https://github.com/${username}`} target="_blank" rel="noopener noreferrer">
+                        <Input
+                          id="github"
+                          value={`@${username}`}
+                          readOnly
+                          className="rounded-r-none"
+                        />
+                        <Button
+                          variant="outline"
+                          className="rounded-l-none border-l-0"
+                          asChild
+                        >
+                          <a
+                            href={`https://github.com/${username}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
                             <Github className="w-4 h-4" />
                           </a>
                         </Button>
@@ -95,7 +135,11 @@ export default function ProfilePage() {
                 </div>
               </CardContent>
               <CardFooter className="flex justify-between">
-                <Button variant="outline" className="gap-1" onClick={handleLogout}>
+                <Button
+                  variant="outline"
+                  className="gap-1"
+                  onClick={handleLogout}
+                >
                   <LogOut className="w-4 h-4" />
                   로그아웃
                 </Button>
@@ -108,13 +152,26 @@ export default function ProfilePage() {
               <div>
                 <AlertTitle className="font-semibold mb-1">알림</AlertTitle>
                 <AlertDescription className="text-sm text-gray-700">
-                  계정 정보는 <span className="font-medium text-gray-900">GitHub 계정</span>과 연동되어 있습니다.<br />
-                  일부 정보(프로필 사진, 닉네임, 이메일 등)는 GitHub에서만 변경할 수 있습니다.<br />
+                  계정 정보는{" "}
+                  <span className="font-medium text-gray-900">GitHub 계정</span>
+                  과 연동되어 있습니다.
+                  <br />
+                  일부 정보(프로필 사진, 닉네임, 이메일 등)는 GitHub에서만
+                  변경할 수 있습니다.
+                  <br />
                   <span className="text-gray-500">
                     <ul className="list-disc ml-5 mt-2 space-y-1">
-                      <li>프로필 이미지를 변경하려면 GitHub에서 이미지를 수정하세요.</li>
-                      <li>이메일, 닉네임 등 개인정보도 GitHub에서 변경 후 다시 로그인하면 반영됩니다.</li>
-                      <li>계정 연동 해제 시, 서비스 이용이 제한될 수 있습니다.</li>
+                      <li>
+                        프로필 이미지를 변경하려면 GitHub에서 이미지를
+                        수정하세요.
+                      </li>
+                      <li>
+                        이메일, 닉네임 등 개인정보도 GitHub에서 변경 후 다시
+                        로그인하면 반영됩니다.
+                      </li>
+                      <li>
+                        계정 연동 해제 시, 서비스 이용이 제한될 수 있습니다.
+                      </li>
                     </ul>
                   </span>
                 </AlertDescription>
@@ -127,7 +184,9 @@ export default function ProfilePage() {
             <Card>
               <CardHeader>
                 <CardTitle>현재 구독 플랜</CardTitle>
-                <CardDescription>현재 사용 중인 구독 플랜 정보입니다</CardDescription>
+                <CardDescription>
+                  현재 사용 중인 구독 플랜 정보입니다
+                </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-center justify-between">
@@ -139,11 +198,16 @@ export default function ProfilePage() {
                       {currentPlan === "free" ? "무료 플랜" : "Pro 플랜"}
                     </Badge>
                     <span className="text-sm text-muted-foreground">
-                      {currentPlan === "free" ? "월 3개 저장소 분석" : "월 30개 이상 저장소 분석"}
+                      {currentPlan === "free"
+                        ? "월 3개 저장소 분석"
+                        : "월 30개 이상 저장소 분석"}
                     </span>
                   </div>
                   {currentPlan === "pro" && (
-                    <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+                    <Badge
+                      variant="outline"
+                      className="bg-green-50 text-green-700 border-green-200"
+                    >
                       활성
                     </Badge>
                   )}
@@ -170,19 +234,25 @@ export default function ProfilePage() {
                       <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
                         <div
                           className="h-full bg-purple-600 rounded-full"
-                          style={{ width: currentPlan === "free" ? "66%" : "40%" }}
+                          style={{
+                            width: currentPlan === "free" ? "66%" : "40%",
+                          }}
                         ></div>
                       </div>
                     </div>
                     <div className="space-y-1">
                       <div className="flex justify-between text-sm">
                         <span>AI 챗봇 메시지</span>
-                        <span>{currentPlan === "free" ? "82/100" : "무제한"}</span>
+                        <span>
+                          {currentPlan === "free" ? "82/100" : "무제한"}
+                        </span>
                       </div>
                       <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
                         <div
                           className="h-full bg-purple-600 rounded-full"
-                          style={{ width: currentPlan === "free" ? "82%" : "100%" }}
+                          style={{
+                            width: currentPlan === "free" ? "82%" : "100%",
+                          }}
                         ></div>
                       </div>
                     </div>
@@ -199,7 +269,10 @@ export default function ProfilePage() {
                     <Button variant="outline" className="w-full">
                       결제 정보 변경
                     </Button>
-                    <Button variant="outline" className="w-full text-red-600 hover:text-red-700 hover:bg-red-50">
+                    <Button
+                      variant="outline"
+                      className="w-full text-red-600 hover:text-red-700 hover:bg-red-50"
+                    >
                       구독 취소
                     </Button>
                   </div>
@@ -210,7 +283,9 @@ export default function ProfilePage() {
             <Card>
               <CardHeader>
                 <CardTitle>플랜 비교</CardTitle>
-                <CardDescription>무료 플랜과 Pro 플랜의 기능을 비교해보세요</CardDescription>
+                <CardDescription>
+                  무료 플랜과 Pro 플랜의 기능을 비교해보세요
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="overflow-hidden rounded-lg border">
@@ -219,11 +294,15 @@ export default function ProfilePage() {
                     <div className="p-4 font-medium">기능</div>
                     <div className="p-4 text-center font-medium border-l">
                       <div className="text-sm">무료 플랜</div>
-                      <div className="text-xs text-muted-foreground mt-1">₩0/월</div>
+                      <div className="text-xs text-muted-foreground mt-1">
+                        ₩0/월
+                      </div>
                     </div>
                     <div className="p-4 text-center font-medium border-l bg-purple-50">
                       <div className="text-sm text-purple-700">Pro 플랜</div>
-                      <div className="text-xs text-purple-600/70 mt-1">₩10,000/월</div>
+                      <div className="text-xs text-purple-600/70 mt-1">
+                        ₩10,000/월
+                      </div>
                     </div>
                   </div>
 
@@ -232,14 +311,18 @@ export default function ProfilePage() {
                     <div className="p-4 flex items-center">
                       <div>
                         <div className="font-medium">저장소 분석</div>
-                        <div className="text-xs text-muted-foreground mt-1">월간 분석 가능한 저장소 수</div>
+                        <div className="text-xs text-muted-foreground mt-1">
+                          월간 분석 가능한 저장소 수
+                        </div>
                       </div>
                     </div>
                     <div className="p-4 flex items-center justify-center border-l">
                       <span className="font-medium">3개</span>
                     </div>
                     <div className="p-4 flex items-center justify-center border-l bg-purple-50">
-                      <span className="font-medium text-purple-700">30개 이상</span>
+                      <span className="font-medium text-purple-700">
+                        30개 이상
+                      </span>
                     </div>
                   </div>
 
@@ -248,7 +331,9 @@ export default function ProfilePage() {
                     <div className="p-4 flex items-center">
                       <div>
                         <div className="font-medium">이슈-코드 매칭</div>
-                        <div className="text-xs text-muted-foreground mt-1">이슈와 관련된 코드 분석 수준</div>
+                        <div className="text-xs text-muted-foreground mt-1">
+                          이슈와 관련된 코드 분석 수준
+                        </div>
                       </div>
                     </div>
                     <div className="p-4 flex items-center justify-center border-l">
@@ -259,7 +344,9 @@ export default function ProfilePage() {
                     <div className="p-4 flex items-center justify-center border-l bg-purple-50">
                       <div className="flex items-center text-purple-700">
                         <span className="mr-2">고급 분석</span>
-                        <Badge className="bg-purple-100 text-purple-700 border-purple-200">고급</Badge>
+                        <Badge className="bg-purple-100 text-purple-700 border-purple-200">
+                          고급
+                        </Badge>
                       </div>
                     </div>
                   </div>
@@ -269,7 +356,9 @@ export default function ProfilePage() {
                     <div className="p-4 flex items-center">
                       <div>
                         <div className="font-medium">AI 챗봇</div>
-                        <div className="text-xs text-muted-foreground mt-1">월간 사용 가능한 메시지 수</div>
+                        <div className="text-xs text-muted-foreground mt-1">
+                          월간 사용 가능한 메시지 수
+                        </div>
                       </div>
                     </div>
                     <div className="p-4 flex items-center justify-center border-l">
@@ -290,7 +379,9 @@ export default function ProfilePage() {
                     <div className="p-4 flex items-center">
                       <div>
                         <div className="font-medium">비공개 저장소</div>
-                        <div className="text-xs text-muted-foreground mt-1">비공개 GitHub 저장소 지원</div>
+                        <div className="text-xs text-muted-foreground mt-1">
+                          비공개 GitHub 저장소 지원
+                        </div>
                       </div>
                     </div>
                     <div className="p-4 flex items-center justify-center border-l">
@@ -306,7 +397,9 @@ export default function ProfilePage() {
                     <div className="p-4 flex items-center">
                       <div>
                         <div className="font-medium">우선 지원</div>
-                        <div className="text-xs text-muted-foreground mt-1">문의 및 지원 요청 우선 처리</div>
+                        <div className="text-xs text-muted-foreground mt-1">
+                          문의 및 지원 요청 우선 처리
+                        </div>
                       </div>
                     </div>
                     <div className="p-4 flex items-center justify-center border-l">
