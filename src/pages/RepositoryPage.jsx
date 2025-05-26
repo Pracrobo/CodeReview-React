@@ -86,13 +86,22 @@ export default function RepositoryPage() {
             </Button>
             <div className="flex items-center gap-2">
               <Github className="h-5 w-5" />
-              <h1 className="text-2xl font-bold tracking-tight">{repo.name}</h1>
-              <Badge variant={repo.isPrivate ? 'outline' : 'secondary'}>
+              <h1 className="text-2xl font-bold tracking-tight dark:text-white">
+                {repo.name}
+              </h1>
+              <Badge
+                variant={repo.isPrivate ? 'outline' : 'secondary'}
+                className={
+                  repo.isPrivate
+                    ? 'dark:border-gray-600 dark:text-gray-300'
+                    : 'dark:bg-gray-600 dark:text-gray-200'
+                }
+              >
                 {repo.isPrivate ? '비공개' : '공개'}
               </Badge>
             </div>
           </div>
-          <div className="flex items-center gap-4 text-sm text-muted-foreground">
+          <div className="flex items-center gap-4 text-sm text-muted-foreground dark:text-gray-400">
             <div className="flex items-center gap-1">
               <Star className="h-4 w-4" />
               <span>{repo.stars}</span>
@@ -175,7 +184,7 @@ export default function RepositoryPage() {
                           <Badge
                             key={lang.name}
                             variant="outline"
-                            className="bg-opacity-10"
+                            className="bg-opacity-10 dark:border-opacity-50"
                             style={{
                               backgroundColor: `${lang.color}20`,
                               borderColor: lang.color,
@@ -195,26 +204,28 @@ export default function RepositoryPage() {
                     <div className="pt-2">
                       <div className="flex items-center gap-1">
                         <FileText className="h-4 w-4 text-muted-foreground" />
-                        <div className="text-sm font-medium">라이선스</div>
+                        <div className="text-sm font-medium dark:text-white">
+                          라이선스
+                        </div>
                       </div>
 
-                      <div className="mt-2 p-3 rounded-md border bg-muted/20">
+                      <div className="mt-2 p-3 rounded-md border bg-muted/20 dark:bg-gray-800/50 dark:border-gray-700">
                         <div className="flex items-center gap-2 mb-2">
                           <Badge
                             variant="outline"
-                            className="bg-blue-50 text-blue-700 border-blue-200"
+                            className="bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-600"
                           >
                             {currentLicense.fullName}
                           </Badge>
                         </div>
 
-                        <p className="text-xs text-gray-600 mb-3">
+                        <p className="text-xs text-gray-600 mb-3 dark:text-gray-400">
                           {currentLicense.description}
                         </p>
 
                         <div className="space-y-2">
                           <div>
-                            <div className="flex items-center gap-1 text-xs font-medium text-green-600 mb-1">
+                            <div className="flex items-center gap-1 text-xs font-medium text-green-600 mb-1 dark:text-green-400">
                               <Shield className="h-3 w-3" />
                               <span>허용 사항</span>
                             </div>
@@ -224,7 +235,7 @@ export default function RepositoryPage() {
                                   <Badge
                                     key={index}
                                     variant="outline"
-                                    className="text-xs bg-green-50 text-green-700 border-green-200"
+                                    className="text-xs bg-green-50 text-green-700 border-green-200 dark:bg-green-900/30 dark:text-green-300 dark:border-green-600"
                                   >
                                     {permission}
                                   </Badge>
@@ -234,7 +245,7 @@ export default function RepositoryPage() {
                           </div>
 
                           <div>
-                            <div className="flex items-center gap-1 text-xs font-medium text-amber-600 mb-1">
+                            <div className="flex items-center gap-1 text-xs font-medium text-amber-600 mb-1 dark:text-amber-400">
                               <Info className="h-3 w-3" />
                               <span>조건</span>
                             </div>
@@ -244,7 +255,7 @@ export default function RepositoryPage() {
                                   <Badge
                                     key={index}
                                     variant="outline"
-                                    className="text-xs bg-amber-50 text-amber-700 border-amber-200"
+                                    className="text-xs bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-900/30 dark:text-amber-300 dark:border-amber-600"
                                   >
                                     {condition}
                                   </Badge>
@@ -254,7 +265,7 @@ export default function RepositoryPage() {
                           </div>
 
                           <div>
-                            <div className="flex items-center gap-1 text-xs font-medium text-red-600 mb-1">
+                            <div className="flex items-center gap-1 text-xs font-medium text-red-600 mb-1 dark:text-red-400">
                               <AlertCircle className="h-3 w-3" />
                               <span>제한 사항</span>
                             </div>
@@ -264,7 +275,7 @@ export default function RepositoryPage() {
                                   <Badge
                                     key={index}
                                     variant="outline"
-                                    className="text-xs bg-red-50 text-red-700 border-red-200"
+                                    className="text-xs bg-red-50 text-red-700 border-red-200 dark:bg-red-900/30 dark:text-red-300 dark:border-red-600"
                                   >
                                     {limitation}
                                   </Badge>
@@ -279,7 +290,7 @@ export default function RepositoryPage() {
                             href={`https://github.com/${repo.fullName}/blob/main/LICENSE`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-primary hover:underline inline-flex items-center gap-1"
+                            className="text-primary hover:underline inline-flex items-center gap-1 dark:text-purple-400"
                           >
                             전체 라이선스 보기
                             <ExternalLink className="h-3 w-3" />
@@ -289,8 +300,10 @@ export default function RepositoryPage() {
                     </div>
 
                     <div>
-                      <div className="text-sm font-medium">최근 업데이트</div>
-                      <div className="text-sm text-muted-foreground mt-1">
+                      <div className="text-sm font-medium dark:text-white">
+                        최근 업데이트
+                      </div>
+                      <div className="text-sm text-muted-foreground mt-1 dark:text-gray-400">
                         {repo.lastUpdated}
                       </div>
                     </div>
@@ -303,28 +316,34 @@ export default function RepositoryPage() {
                   </CardHeader>
                   <CardContent className="space-y-2">
                     <div className="flex justify-between items-center">
-                      <span className="text-sm">열린 이슈</span>
+                      <span className="text-sm dark:text-gray-300">
+                        열린 이슈
+                      </span>
                       <Badge
                         variant="outline"
-                        className="bg-green-50 text-green-700 border-green-200"
+                        className="bg-green-50 text-green-700 border-green-200 dark:bg-green-900/30 dark:text-green-300 dark:border-green-600"
                       >
                         {repo.openIssues}
                       </Badge>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="text-sm">닫힌 이슈</span>
+                      <span className="text-sm dark:text-gray-300">
+                        닫힌 이슈
+                      </span>
                       <Badge
                         variant="outline"
-                        className="bg-gray-50 text-gray-700 border-gray-200"
+                        className="bg-gray-50 text-gray-700 border-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600"
                       >
                         {repo.closedIssues}
                       </Badge>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="text-sm">Pull Requests</span>
+                      <span className="text-sm dark:text-gray-300">
+                        Pull Requests
+                      </span>
                       <Badge
                         variant="outline"
-                        className="bg-purple-50 text-purple-700 border-purple-200"
+                        className="bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-900/30 dark:text-purple-300 dark:border-purple-600"
                       >
                         {repo.pullRequests}
                       </Badge>
@@ -343,10 +362,10 @@ export default function RepositoryPage() {
                   to={`/repository/${repoId}/issue/${issue.number}`}
                   key={issue.id}
                 >
-                  <Card className="transition-all hover:shadow-md">
+                  <Card className="transition-all hover:shadow-md dark:hover:shadow-lg">
                     <CardHeader className="pb-2">
                       <div className="flex justify-between items-start">
-                        <CardTitle className="text-base font-medium">
+                        <CardTitle className="text-base font-medium dark:text-white">
                           #{issue.number} {issue.title}
                         </CardTitle>
                         <Badge
@@ -354,18 +373,20 @@ export default function RepositoryPage() {
                             issue.state === 'open' ? 'default' : 'secondary'
                           }
                           className={
-                            issue.state === 'open' ? 'bg-green-500' : ''
+                            issue.state === 'open'
+                              ? 'bg-green-500 dark:bg-green-600'
+                              : 'dark:bg-gray-600 dark:text-gray-200'
                           }
                         >
                           {issue.state === 'open' ? '열림' : '닫힘'}
                         </Badge>
                       </div>
-                      <CardDescription>
+                      <CardDescription className="dark:text-gray-400">
                         {issue.user} 님이 {issue.createdAt}에 작성
                       </CardDescription>
                     </CardHeader>
                     <CardContent className="pb-2">
-                      <p className="text-sm text-muted-foreground line-clamp-2">
+                      <p className="text-sm text-muted-foreground line-clamp-2 dark:text-gray-300">
                         {issue.body}
                       </p>
                       <div className="flex flex-wrap gap-1 mt-3">
@@ -373,7 +394,7 @@ export default function RepositoryPage() {
                           <Badge
                             key={label.name}
                             variant="outline"
-                            className="bg-opacity-10"
+                            className="bg-opacity-10 dark:border-opacity-50"
                             style={{
                               backgroundColor: `${label.color}20`,
                               borderColor: label.color,
@@ -400,9 +421,9 @@ export default function RepositoryPage() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="bg-muted p-4 rounded-lg mb-4 h-[400px] overflow-y-auto flex flex-col space-y-4">
-                  <div className="bg-primary-foreground p-3 rounded-lg max-w-[80%] self-start">
-                    <p className="text-sm">
+                <div className="bg-muted p-4 rounded-lg mb-4 h-[400px] overflow-y-auto flex flex-col space-y-4 dark:bg-gray-800">
+                  <div className="bg-primary-foreground p-3 rounded-lg max-w-[80%] self-start dark:bg-gray-700">
+                    <p className="text-sm dark:text-gray-200">
                       안녕하세요! {repo.name} 저장소에 대해 어떤 것이든
                       물어보세요. 컨트리뷰션 방법, 코딩 컨벤션, PR 작성 방법
                       등에 대해 답변해 드릴 수 있습니다.
@@ -415,11 +436,11 @@ export default function RepositoryPage() {
                     </p>
                   </div>
 
-                  <div className="bg-primary-foreground p-3 rounded-lg max-w-[80%] self-start">
-                    <p className="text-sm">
+                  <div className="bg-primary-foreground p-3 rounded-lg max-w-[80%] self-start dark:bg-gray-700">
+                    <p className="text-sm dark:text-gray-200">
                       {repo.name} 프로젝트에 기여하는 방법은 다음과 같습니다:
                     </p>
-                    <ol className="list-decimal list-inside text-sm mt-2 space-y-1">
+                    <ol className="list-decimal list-inside text-sm mt-2 space-y-1 dark:text-gray-200">
                       <li>저장소를 포크(Fork)하세요.</li>
                       <li>
                         새 브랜치를 생성하세요 (예:
@@ -429,13 +450,13 @@ export default function RepositoryPage() {
                       <li>브랜치를 푸시하세요.</li>
                       <li>Pull Request를 생성하세요.</li>
                     </ol>
-                    <p className="text-sm mt-2">
+                    <p className="text-sm mt-2 dark:text-gray-200">
                       자세한 내용은{' '}
                       <a
                         href={`https://github.com/${repo.fullName}/blob/main/CONTRIBUTING.md`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-primary hover:underline"
+                        className="text-primary hover:underline dark:text-purple-400"
                       >
                         CONTRIBUTING.md
                       </a>{' '}
@@ -452,7 +473,7 @@ export default function RepositoryPage() {
                   <Button>전송</Button>
                 </div>
 
-                <p className="text-xs text-muted-foreground mt-2">
+                <p className="text-xs text-muted-foreground mt-2 dark:text-gray-400">
                   무료 플랜: 이번 달 남은 메시지 82/100
                 </p>
               </CardContent>
