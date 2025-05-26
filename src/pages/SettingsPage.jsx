@@ -131,6 +131,7 @@ export default function SettingsPage() {
                   return;
                 }
                 localStorage.removeItem("token");
+                localStorage.removeItem("access_token");
                 localStorage.removeItem("username");
                 localStorage.removeItem("email");
                 localStorage.removeItem("avatar_url");
@@ -175,6 +176,7 @@ export default function SettingsPage() {
                     return;
                   }
                   localStorage.removeItem("token");
+                  localStorage.removeItem("access_token");
                   localStorage.removeItem("username");
                   localStorage.removeItem("email");
                   localStorage.removeItem("avatar_url");

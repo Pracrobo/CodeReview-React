@@ -6,23 +6,34 @@ export default function OAuthCallback() {
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    const token = params.get("token");
-    const username = params.get("username");
-    const email = params.get("email");
-    const avatar_url = params.get("avatar_url");
-    const access_token = params.get("access_token");
+    const code = params.get("code");
 
-    if (token) {
-      localStorage.setItem("token", token);
-      if (username) localStorage.setItem("username", username);
-      if (email) localStorage.setItem("email", email);
-      if (avatar_url) localStorage.setItem("avatar_url", avatar_url);
-      if (access_token) localStorage.setItem("access_token", access_token);
-      navigate("/dashboard", { replace: true });
-    } else {
-      navigate("/login", { replace: true });
-    }
-  }, [navigate]);
+    if (code) {
+          fetch("http://localhost:3001/auth/github/callback", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ code }),
+          })
+            .then(res => res.json())
+            .then(data => {
+              if (data.token) {
+                localStorage.setItem("token", data.token);
+                if (data.accessToken) localStorage.setItem("access_token", data.accessToken);
+                if (data.username) localStorage.setItem("username", data.username);
+                if (data.email) localStorage.setItem("email", data.email);
+                if (data.avatar_url) localStorage.setItem("avatar_url", data.avatar_url);
+                navigate("/dashboard", { replace: true });
+              } else {
+                navigate("/login", { replace: true });
+              }
+            })
+            .catch(() => {
+              navigate("/login", { replace: true });
+            });
+        } else {
+          navigate("/login", { replace: true });
+        }
+      }, [navigate]);
 
   // 콜백 처리 중에는 아무것도 렌더링하지 않음
   return null;
