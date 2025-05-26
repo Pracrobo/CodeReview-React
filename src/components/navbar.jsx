@@ -50,7 +50,7 @@ export default function Navbar() {
             className="flex items-center gap-1"
           >
             <span className="font-bold text-xl bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-indigo-600">
-              Aissue
+              AIssue
             </span>
           </Link>
         </div>
