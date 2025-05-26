@@ -1,5 +1,5 @@
-import { Link } from "react-router-dom";
-import { Github } from "lucide-react";
+import { Link } from 'react-router-dom';
+import { Github } from 'lucide-react';
 
 export default function Footer() {
   return (
@@ -9,7 +9,7 @@ export default function Footer() {
           <div>
             <Link to="/" className="flex items-center gap-1 mb-4">
               <span className="font-bold text-xl bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-indigo-600">
-                Aissue
+                AIssue
               </span>
             </Link>
             <p className="text-sm text-muted-foreground mb-4 max-w-md">
@@ -19,7 +19,7 @@ export default function Footer() {
             </p>
             <div className="flex items-center gap-4">
               <a
-                href="https://github.com"
+                href="https://github.com/Mai-Nova"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-muted-foreground hover:text-foreground"

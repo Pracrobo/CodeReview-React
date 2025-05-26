@@ -1,13 +1,12 @@
-"use client";
-import { Link, useParams } from "react-router-dom";
-import { Button } from "../components/ui/button";
-import { Badge } from "../components/ui/badge";
+import { Link, useParams } from 'react-router-dom';
+import { Button } from '../components/ui/button';
+import { Badge } from '../components/ui/badge';
 import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
-} from "../components/ui/tabs";
+} from '../components/ui/tabs';
 import {
   ArrowLeft,
   Github,
@@ -16,9 +15,9 @@ import {
   Code,
   Copy,
   ExternalLink,
-} from "lucide-react";
-import DashboardLayout from "../components/dashboard-layout";
-import { mockIssueDetails } from "../lib/mock-data";
+} from 'lucide-react';
+import DashboardLayout from '../components/dashboard-layout';
+import { mockIssueDetails } from '../lib/mock-data';
 
 export default function IssuePage() {
   const { id: repoId, issueId } = useParams();
@@ -54,12 +53,12 @@ export default function IssuePage() {
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
               <div className="flex items-center gap-2">
                 <Badge
-                  variant={issue.state === "open" ? "default" : "secondary"}
+                  variant={issue.state === 'open' ? 'default' : 'secondary'}
                   className={`px-3 py-1 ${
-                    issue.state === "open" ? "bg-green-600" : ""
+                    issue.state === 'open' ? 'bg-green-600' : ''
                   }`}
                 >
-                  {issue.state === "open" ? "열림" : "닫힘"}
+                  {issue.state === 'open' ? '열림' : '닫힘'}
                 </Badge>
                 <h2 className="text-xl font-semibold">{issue.title}</h2>
               </div>
@@ -102,7 +101,7 @@ export default function IssuePage() {
                       </span>
                     </div>
                     <div className="mt-2 prose prose-sm max-w-none">
-                      {issue.body.split("\n\n").map((paragraph, idx) => (
+                      {issue.body.split('\n\n').map((paragraph, idx) => (
                         <p key={idx} className="mb-4">
                           {paragraph}
                         </p>

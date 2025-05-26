@@ -1,7 +1,5 @@
-"use client";
-
-import { useState } from "react";
-import { Button } from "../components/ui/button";
+import { useState } from 'react';
+import { Button } from '../components/ui/button';
 import {
   Card,
   CardContent,
@@ -9,15 +7,15 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "../components/ui/card";
+} from '../components/ui/card';
 import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
-} from "../components/ui/tabs";
-import { Badge } from "../components/ui/badge";
-import { Input } from "../components/ui/input";
+} from '../components/ui/tabs';
+import { Badge } from '../components/ui/badge';
+import { Input } from '../components/ui/input';
 import {
   AlertCircle,
   CreditCard,
@@ -26,31 +24,32 @@ import {
   User,
   Check,
   X,
-} from "lucide-react";
-import { Alert, AlertDescription, AlertTitle } from "../components/ui/alert";
-import DashboardLayout from "../components/dashboard-layout";
-import { useNavigate } from "react-router-dom";
-import { removeAuthStorage } from "../utils/auth";
+} from 'lucide-react';
+import { Alert, AlertDescription, AlertTitle } from '../components/ui/alert';
+import DashboardLayout from '../components/dashboard-layout';
+import { useNavigate } from 'react-router-dom';
+import { removeAuthStorage } from '../utils/auth';
 
 export default function ProfilePage() {
-  const [currentPlan, setCurrentPlan] = useState("free");
-  const username = localStorage.getItem("username") || "사용자";
-  const email = localStorage.getItem("email") || "이메일";
-  const avatarUrl = localStorage.getItem("avatarUrl") || "";
+  const [currentPlan] = useState('free');
+  const username = localStorage.getItem('username') || '사용자';
+  const email = localStorage.getItem('email') || '이메일';
+  const avatarUrl = localStorage.getItem('avatarUrl') || '';
   const navigate = useNavigate();
 
   const handleLogout = async () => {
     removeAuthStorage();
 
     try {
-      await fetch("/auth/github/logout", {
-        method: "GET",
-        credentials: "include",
+      await fetch('/auth/github/logout', {
+        method: 'GET',
+        credentials: 'include',
       });
     } catch (e) {
+      console.error('로그아웃 중 오류 발생:', e);
     }
 
-    navigate("/");
+    navigate('/');
   };
 
   return (
@@ -134,7 +133,7 @@ export default function ProfilePage() {
                   </div>
                 </div>
               </CardContent>
-              <CardFooter className="flex justify-between">
+              <CardFooter>
                 <Button
                   variant="outline"
                   className="gap-1"
@@ -143,7 +142,6 @@ export default function ProfilePage() {
                   <LogOut className="w-4 h-4" />
                   로그아웃
                 </Button>
-                <Button variant="destructive">계정 삭제</Button>
               </CardFooter>
             </Card>
 
@@ -152,7 +150,7 @@ export default function ProfilePage() {
               <div>
                 <AlertTitle className="font-semibold mb-1">알림</AlertTitle>
                 <AlertDescription className="text-sm text-gray-700">
-                  계정 정보는{" "}
+                  계정 정보는{' '}
                   <span className="font-medium text-gray-900">GitHub 계정</span>
                   과 연동되어 있습니다.
                   <br />
@@ -192,18 +190,18 @@ export default function ProfilePage() {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <Badge
-                      variant={currentPlan === "free" ? "outline" : "default"}
-                      className={currentPlan === "pro" ? "bg-purple-600" : ""}
+                      variant={currentPlan === 'free' ? 'outline' : 'default'}
+                      className={currentPlan === 'pro' ? 'bg-purple-600' : ''}
                     >
-                      {currentPlan === "free" ? "무료 플랜" : "Pro 플랜"}
+                      {currentPlan === 'free' ? '무료 플랜' : 'Pro 플랜'}
                     </Badge>
                     <span className="text-sm text-muted-foreground">
-                      {currentPlan === "free"
-                        ? "월 3개 저장소 분석"
-                        : "월 30개 이상 저장소 분석"}
+                      {currentPlan === 'free'
+                        ? '월 3개 저장소 분석'
+                        : '월 30개 이상 저장소 분석'}
                     </span>
                   </div>
-                  {currentPlan === "pro" && (
+                  {currentPlan === 'pro' && (
                     <Badge
                       variant="outline"
                       className="bg-green-50 text-green-700 border-green-200"
@@ -213,7 +211,7 @@ export default function ProfilePage() {
                   )}
                 </div>
 
-                {currentPlan === "pro" && (
+                {currentPlan === 'pro' && (
                   <div className="space-y-2">
                     <div className="text-sm">다음 결제일: 2023년 6월 15일</div>
                     <div className="flex items-center gap-2">
@@ -229,13 +227,13 @@ export default function ProfilePage() {
                     <div className="space-y-1">
                       <div className="flex justify-between text-sm">
                         <span>저장소 분석</span>
-                        <span>{currentPlan === "free" ? "2/3" : "12/30+"}</span>
+                        <span>{currentPlan === 'free' ? '2/3' : '12/30+'}</span>
                       </div>
                       <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
                         <div
                           className="h-full bg-purple-600 rounded-full"
                           style={{
-                            width: currentPlan === "free" ? "66%" : "40%",
+                            width: currentPlan === 'free' ? '66%' : '40%',
                           }}
                         ></div>
                       </div>
@@ -244,14 +242,14 @@ export default function ProfilePage() {
                       <div className="flex justify-between text-sm">
                         <span>AI 챗봇 메시지</span>
                         <span>
-                          {currentPlan === "free" ? "82/100" : "무제한"}
+                          {currentPlan === 'free' ? '82/100' : '무제한'}
                         </span>
                       </div>
                       <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
                         <div
                           className="h-full bg-purple-600 rounded-full"
                           style={{
-                            width: currentPlan === "free" ? "82%" : "100%",
+                            width: currentPlan === 'free' ? '82%' : '100%',
                           }}
                         ></div>
                       </div>
@@ -260,7 +258,7 @@ export default function ProfilePage() {
                 </div>
               </CardContent>
               <CardFooter>
-                {currentPlan === "free" ? (
+                {currentPlan === 'free' ? (
                   <Button className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700">
                     Pro 플랜으로 업그레이드
                   </Button>
@@ -412,7 +410,7 @@ export default function ProfilePage() {
                 </div>
 
                 {/* 업그레이드 버튼 */}
-                {currentPlan === "free" && (
+                {currentPlan === 'free' && (
                   <div className="mt-6">
                     <Button className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700">
                       Pro 플랜으로 업그레이드

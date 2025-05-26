@@ -1,6 +1,4 @@
-"use client";
-
-import { useState, useEffect } from "react";
+import { useState, useEffect } from 'react';
 
 export function useMobile() {
   const [isMobile, setIsMobile] = useState(false);
@@ -14,11 +12,11 @@ export function useMobile() {
     handleResize();
 
     // Listen for window resize events
-    window.addEventListener("resize", handleResize);
+    window.addEventListener('resize', handleResize);
 
     // Clean up event listener on unmount
     return () => {
-      window.removeEventListener("resize", handleResize);
+      window.removeEventListener('resize', handleResize);
     };
   }, []);
 

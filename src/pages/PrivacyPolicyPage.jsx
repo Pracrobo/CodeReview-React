@@ -1,8 +1,8 @@
-import { Link } from "react-router-dom";
-import { Button } from "../components/ui/button";
-import { ArrowLeft } from "lucide-react";
-import Navbar from "../components/navbar";
-import Footer from "../components/footer";
+import { Link } from 'react-router-dom';
+import { Button } from '../components/ui/button';
+import { ArrowLeft } from 'lucide-react';
+import Navbar from '../components/navbar';
+import Footer from '../components/footer';
 
 export default function PrivacyPolicyPage() {
   return (
@@ -20,7 +20,7 @@ export default function PrivacyPolicyPage() {
             </Button>
             <h1 className="text-3xl font-bold mb-2">개인정보 처리방침</h1>
             <p className="text-muted-foreground">
-              최종 업데이트: 2023년 5월 20일
+              최종 업데이트: 2025년 5월 20일
             </p>
           </div>
 
@@ -129,14 +129,14 @@ export default function PrivacyPolicyPage() {
               같이 개인정보 보호책임자를 지정하고 있습니다:
             </p>
             <ul>
-              <li>개인정보 보호책임자: 홍길동</li>
-              <li>직위: 개인정보 보호팀장</li>
-              <li>연락처: privacy@mainova.com</li>
+              <li>개인정보 보호책임자: 최성호</li>
+              <li>직위: 팀장</li>
+              <li>연락처: c99@kakao.com</li>
             </ul>
 
             <h2>8. 개인정보 처리방침 변경</h2>
             <p>
-              이 개인정보 처리방침은 2023년 5월 20일부터 적용됩니다. 법령 및
+              이 개인정보 처리방침은 2025년 5월 20일부터 적용됩니다. 법령 및
               방침에 따른 변경내용의 추가, 삭제 및 정정이 있는 경우에는
               변경사항의 시행 7일 전부터 공지사항을 통하여 고지할 것입니다.
             </p>

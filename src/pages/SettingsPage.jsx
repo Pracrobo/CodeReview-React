@@ -1,7 +1,5 @@
-"use client";
-
-import { useState, useCallback } from "react";
-import { Button } from "../components/ui/button";
+import { useState, useCallback } from 'react';
+import { Button } from '../components/ui/button';
 import {
   Card,
   CardContent,
@@ -9,19 +7,19 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "../components/ui/card";
-import { Badge } from "../components/ui/badge";
-import { Switch } from "../components/ui/switch";
-import { Label } from "../components/ui/label";
-import { Github } from "lucide-react";
-import DashboardLayout from "../components/dashboard-layout";
-import { useNavigate } from "react-router-dom";
-import { removeAuthStorage } from "../utils/auth";
+} from '../components/ui/card';
+import { Badge } from '../components/ui/badge';
+import { Switch } from '../components/ui/switch';
+import { Label } from '../components/ui/label';
+import { Github } from 'lucide-react';
+import DashboardLayout from '../components/dashboard-layout';
+import { useNavigate } from 'react-router-dom';
+import { removeAuthStorage } from '../utils/auth';
 
 function useAuthTokens() {
   return {
-    token: localStorage.getItem("token"),
-    accessToken: localStorage.getItem("accessToken"),
+    token: localStorage.getItem('token'),
+    accessToken: localStorage.getItem('accessToken'),
   };
 }
 
@@ -31,31 +29,36 @@ function GithubUnlinkButton() {
 
   const handleUnlink = useCallback(async () => {
     if (!token) {
-      alert("로그인 정보가 없습니다. 다시 로그인해 주세요.");
-      navigate("/login");
+      alert('로그인 정보가 없습니다. 다시 로그인해 주세요.');
+      navigate('/login');
       return;
     }
     try {
-      const res = await fetch("http://localhost:3001/auth/github/logout", {
-        method: "POST",
+      const res = await fetch('http://localhost:3001/auth/github/logout', {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
-        credentials: "include",
+        credentials: 'include',
         body: JSON.stringify({ accessToken }),
       });
       if (!res.ok) {
         const data = await res.json();
-        alert("연동 해제 실패: " + (data?.message || "예상치 못한 오류가 발생했습니다. 문제가 계속되면 관리자에게 문의해 주세요."));
+        alert(
+          '연동 해제 실패: ' +
+            (data?.message ||
+              '예상치 못한 오류가 발생했습니다. 문제가 계속되면 관리자에게 문의해 주세요.')
+        );
         return;
       }
     } catch (e) {
-      alert("연동 해제 중 오류가 발생했습니다.");
+      alert('연동 해제 중 오류가 발생했습니다.');
+      console.error('연동 해제 오류:', e);
       return;
     }
     removeAuthStorage();
-    navigate("/");
+    navigate('/');
   }, [token, accessToken, navigate]);
 
   return (
@@ -70,33 +73,43 @@ function AccountDeleteButton() {
   const { token, accessToken } = useAuthTokens();
 
   const handleDelete = useCallback(async () => {
-    if (!window.confirm("정말로 계정 데이터를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.")) return;
+    if (
+      !window.confirm(
+        '정말로 계정 데이터를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.'
+      )
+    )
+      return;
     if (!token) {
-      alert("로그인 정보가 없습니다. 다시 로그인해 주세요.");
-      navigate("/login");
+      alert('로그인 정보가 없습니다. 다시 로그인해 주세요.');
+      navigate('/login');
       return;
     }
     try {
-      const res = await fetch("http://localhost:3001/auth/github/delete", {
-        method: "DELETE",
+      const res = await fetch('http://localhost:3001/auth/github/delete', {
+        method: 'DELETE',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
-        credentials: "include",
+        credentials: 'include',
         body: JSON.stringify({ accessToken }),
       });
       if (!res.ok) {
         const data = await res.json();
-        alert("계정 삭제 실패: " + (data?.message || "예상치 못한 오류가 발생했습니다. 문제가 계속되면 관리자에게 문의해 주세요."));
+        alert(
+          '계정 삭제 실패: ' +
+            (data?.message ||
+              '예상치 못한 오류가 발생했습니다. 문제가 계속되면 관리자에게 문의해 주세요.')
+        );
         return;
       }
     } catch (e) {
-      alert("계정 삭제 중 오류가 발생했습니다.");
+      alert('계정 삭제 중 오류가 발생했습니다.');
+      console.error('계정 삭제 오류:', e);
       return;
     }
     removeAuthStorage();
-    navigate("/");
+    navigate('/');
   }, [token, accessToken, navigate]);
 
   return (
@@ -112,7 +125,7 @@ function AccountDeleteButton() {
 
 export default function SettingsPage() {
   const [emailNotifications, setEmailNotifications] = useState(true);
-  const username = localStorage.getItem("username") || "githubuser";
+  const username = localStorage.getItem('username') || 'githubuser';
 
   return (
     <DashboardLayout>

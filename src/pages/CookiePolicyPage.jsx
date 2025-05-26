@@ -1,8 +1,8 @@
-import { Link } from "react-router-dom";
-import { Button } from "../components/ui/button";
-import { ArrowLeft } from "lucide-react";
-import Navbar from "../components/navbar";
-import Footer from "../components/footer";
+import { Link } from 'react-router-dom';
+import { Button } from '../components/ui/button';
+import { ArrowLeft } from 'lucide-react';
+import Navbar from '../components/navbar';
+import Footer from '../components/footer';
 
 export default function CookiePolicyPage() {
   return (
