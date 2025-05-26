@@ -16,39 +16,90 @@ export default function HomePage() {
       <Navbar />
 
       {/* 히어로 섹션 */}
-      <section className="relative w-full py-24 overflow-hidden bg-gradient-to-br from-violet-600 via-purple-500 to-indigo-700">
+      <section className="relative w-full py-20 overflow-hidden bg-gradient-to-br from-violet-600 via-purple-500 to-indigo-700">
+        {/* 배경 패턴 */}
         <div className="absolute inset-0 bg-grid-white/[0.1] bg-[length:20px_20px]" />
+        <div className="absolute inset-0 bg-gradient-to-t from-purple-900/20 to-transparent" />
+
+        {/* 떠다니는 요소들 */}
+        <div className="absolute top-20 left-10 w-20 h-20 bg-white/10 rounded-full blur-xl"></div>
+        <div className="absolute top-40 right-20 w-16 h-16 bg-white/5 rounded-full blur-lg"></div>
+        <div className="absolute bottom-32 left-20 w-12 h-12 bg-white/10 rounded-full blur-lg"></div>
+
         <div className="container relative z-10 px-4 mx-auto">
-          <div className="flex flex-col items-center max-w-3xl mx-auto text-center">
-            <h1 className="text-4xl font-bold tracking-tight text-white sm:text-6xl">
-              AI로 GitHub 이슈 분석을 더 스마트하게
+          <div className="flex flex-col items-center max-w-4xl mx-auto text-center">
+            {/* 상단 배지 */}
+            <div className="inline-flex items-center px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full text-white/90 text-sm font-medium mb-6 border border-white/30">
+              <span className="w-2 h-2 bg-green-400 rounded-full mr-2"></span>
+              AI 기반 GitHub 이슈 분석 플랫폼
+            </div>
+
+            <h1 className="text-5xl font-bold tracking-tight text-white sm:text-7xl mb-6 leading-tight">
+              AI로 GitHub 이슈 분석을
+              <span className="block bg-gradient-to-r from-yellow-300 to-orange-300 bg-clip-text text-transparent">
+                더 스마트하게
+              </span>
             </h1>
-            <p className="mt-6 text-lg leading-8 text-white/90">
-              Aissue는 AI를 활용하여 GitHub 저장소의 이슈를 분석하고, 관련
+
+            <p className="text-xl leading-relaxed text-white/90 mb-10 max-w-3xl">
+              AIssue는 AI를 활용하여 GitHub 저장소의 이슈를 분석하고, 관련
               코드를 추천하며, 컨트리뷰션 가이드를 제공하여 개발자의 생산성을
               향상시키는 서비스입니다.
             </p>
-            <div className="flex flex-col gap-4 mt-10 sm:flex-row">
+
+            <div className="flex flex-col sm:flex-row gap-6 mb-12">
               <Button
                 asChild
                 size="lg"
-                className="bg-white text-purple-700 hover:bg-white/90"
+                className="bg-white text-purple-700 hover:bg-white/90 px-8 py-4 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transform transition-all hover:scale-105"
               >
-                <Link to="/dashboard">무료로 시작하기</Link>
+                <Link to="/dashboard">
+                  무료로 시작하기
+                  <svg
+                    className="w-5 h-5 ml-2"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                </Link>
               </Button>
               <Button
                 asChild
                 variant="secondary"
                 size="lg"
-                className="bg-white/20 text-white border-white hover:bg-white/30 font-medium"
+                className="bg-white/10 backdrop-blur-sm text-white border-white/30 hover:bg-white/20 font-medium px-8 py-4 text-lg rounded-xl"
               >
-                <a href="#features">자세히 알아보기</a>
+                <a href="#features">
+                  <svg
+                    className="w-5 h-5 mr-2"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                    <path
+                      fillRule="evenodd"
+                      d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                  자세히 알아보기
+                </a>
               </Button>
             </div>
           </div>
         </div>
-        <div className="absolute bottom-5 left-1/2 transform -translate-x-1/2 text-white animate-bounce">
-          <ChevronDown size={24} />
+
+        {/* 스크롤 인디케이터 */}
+        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-white animate-bounce">
+          <div className="flex flex-col items-center">
+            <span className="text-sm mb-2">스크롤하여 더 보기</span>
+            <ChevronDown size={24} />
+          </div>
         </div>
       </section>
 
@@ -61,7 +112,7 @@ export default function HomePage() {
           {/* 섹션 헤더 */}
           <div className="text-center mb-20">
             <h2 className="text-4xl font-bold text-gray-900 mb-6">
-              Aissue의 주요 기능
+              AIssue의 주요 기능
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               AI 기술로 GitHub 이슈 해결을 혁신하는 4가지 핵심 기능을 소개합니다
@@ -386,7 +437,7 @@ export default function HomePage() {
               합리적인 요금제
             </h2>
             <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
-              무료 플랜으로 시작하여 Aissue의 핵심 기능을 체험해보세요. 더 많은
+              무료 플랜으로 시작하여 AIssue의 핵심 기능을 체험해보세요. 더 많은
               저장소 분석과 고급 기능이 필요하다면 Pro 플랜으로
               업그레이드하세요.
             </p>
@@ -426,7 +477,7 @@ export default function HomePage() {
                 </div>
 
                 <p className="text-gray-600 mb-6 text-lg">
-                  Aissue의 핵심 기능을 체험해보세요.
+                  AIssue의 핵심 기능을 체험해보세요.
                 </p>
 
                 {/* 가격 */}
@@ -476,14 +527,12 @@ export default function HomePage() {
 
             {/* Pro 플랜 */}
             <div className="bg-white rounded-3xl p-8 shadow-xl border-2 border-purple-200 relative overflow-hidden">
-              {/* 인기 배지 */}
-
               {/* 배경 패턴 */}
               <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-purple-100 to-indigo-100 rounded-full -mr-16 -mt-16 opacity-50"></div>
 
               <div className="relative">
                 {/* 헤더 */}
-                <div className="flex items-center mb-6 mt-4">
+                <div className="flex items-center mb-6">
                   <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-600 to-indigo-600 flex items-center justify-center shadow-lg mr-4">
                     <svg
                       className="w-6 h-6 text-white"
@@ -563,11 +612,11 @@ export default function HomePage() {
       <section className="py-16 bg-gradient-to-r from-purple-700 to-indigo-800 text-white">
         <div className="container px-4 mx-auto text-center">
           <h2 className="text-3xl font-bold mb-6">
-            지금 바로 Aissue를 경험해보세요
+            지금 바로 AIssue를 경험해보세요
           </h2>
           <p className="text-white/80 mb-8 max-w-2xl mx-auto">
             AI의 힘으로 GitHub 이슈 분석과 코드 기여를 더 효율적으로
-            만들어보세요. 무료 플랜으로 시작하여 Aissue의 가치를 직접
+            만들어보세요. 무료 플랜으로 시작하여 AIssue의 가치를 직접
             확인하세요.
           </p>
           <Button
