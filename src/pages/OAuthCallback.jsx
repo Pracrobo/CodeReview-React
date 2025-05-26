@@ -17,7 +17,9 @@ export default function OAuthCallback() {
             .then(res => res.json())
             .then(data => {
               if (data.token) {
+                // 서비스 인증용 JWT
                 localStorage.setItem("token", data.token);
+                // GitHub API 호출용 access_token
                 if (data.accessToken) localStorage.setItem("access_token", data.accessToken);
                 if (data.username) localStorage.setItem("username", data.username);
                 if (data.email) localStorage.setItem("email", data.email);
