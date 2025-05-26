@@ -37,7 +37,7 @@ jobs:
           overwrite: true
 
       - name: Restart PM2 process on server
-        uses: appleboy/ssh-action@v1.0.3 # 최신 버전 확인 권장
+        uses: appleboy/ssh-action@v1.2.2
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
