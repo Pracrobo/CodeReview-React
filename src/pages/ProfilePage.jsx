@@ -544,9 +544,9 @@ export default function ProfilePage() {
                     <div className="p-4 flex items-center justify-center border-l bg-indigo-50 dark:bg-indigo-900/30">
                       <div className="flex items-center text-indigo-700 dark:text-indigo-300">
                         <span className="mr-2">고급 분석</span>
-                        <Badge className="bg-indigo-100 text-indigo-700 border-indigo-200 dark:bg-indigo-900/50 dark:text-indigo-300 dark:border-indigo-700">
+                        <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 bg-indigo-100 text-indigo-700 border-indigo-200 dark:bg-indigo-900/70 dark:text-indigo-300 dark:border-indigo-700">
                           고급
-                        </Badge>
+                        </div>
                       </div>
                     </div>
                   </div>
