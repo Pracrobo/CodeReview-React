@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import {
@@ -27,20 +27,54 @@ import {
   Clock,
 } from 'lucide-react';
 import DashboardLayout from '../components/dashboard-layout';
-import { mockRepositories, mockStarredRepositories } from '../lib/mock-data';
+import {
+  getUserRepositories,
+  removeRepositoryFromTracking,
+} from '../services/repositoryService';
+import { transformRepositoryData } from '../utils/dataTransformers';
 
 export default function RepositoriesPage() {
   const [searchQuery, setSearchQuery] = useState('');
-  const [repositories, setRepositories] = useState(mockRepositories);
-  const [starredRepositories, setStarredRepositories] = useState(
-    mockStarredRepositories
-  );
+  const [repositories, setRepositories] = useState([]);
+  const [starredRepositories, setStarredRepositories] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // 저장소 목록 로드
+  useEffect(() => {
+    loadRepositories();
+  }, []);
+
+  const loadRepositories = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const result = await getUserRepositories();
+
+      if (result.success) {
+        const transformedRepos = result.data.map(transformRepositoryData);
+        setRepositories(transformedRepos);
+
+        // 즐겨찾기 필터링 (추후 DB에서 관리)
+        const starred = transformedRepos.filter((repo) => repo.isStarred);
+        setStarredRepositories(starred);
+      } else {
+        setError(result.message);
+      }
+    } catch (err) {
+      setError('저장소 목록을 불러오는데 실패했습니다.');
+      console.error('저장소 로드 오류:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const toggleStar = (e, repoId) => {
     e.preventDefault();
     e.stopPropagation();
 
-    // 저장소 목록 업데이트
+    // 임시 구현: 로컬 상태만 업데이트
     const updatedRepositories = repositories.map((repo) => {
       if (repo.id === repoId) {
         return { ...repo, isStarred: !repo.isStarred };
@@ -53,17 +87,36 @@ export default function RepositoriesPage() {
     const repo = repositories.find((r) => r.id === repoId);
     if (repo) {
       if (repo.isStarred) {
-        // 즐겨찾기 해제
         setStarredRepositories(
           starredRepositories.filter((r) => r.id !== repoId)
         );
       } else {
-        // 즐겨찾기 추가
         setStarredRepositories([
           ...starredRepositories,
           { ...repo, isStarred: true },
         ]);
       }
+    }
+  };
+
+  const handleDeleteRepository = async (e, githubRepoId) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (!confirm('정말로 이 저장소를 삭제하시겠습니까?')) return;
+
+    try {
+      const result = await removeRepositoryFromTracking(githubRepoId);
+
+      if (result.success) {
+        // 성공 시 목록 새로고침
+        await loadRepositories();
+      } else {
+        alert(result.message);
+      }
+    } catch (err) {
+      alert('저장소 삭제에 실패했습니다.');
+      console.error('저장소 삭제 오류:', err);
     }
   };
 
@@ -126,14 +179,44 @@ export default function RepositoriesPage() {
           </div>
         </div>
       </CardContent>
-      <CardFooter className="text-xs text-muted-foreground">
+      <CardFooter className="text-xs text-muted-foreground flex justify-between">
         <div className="flex items-center gap-1">
           <Clock className="h-3.5 w-3.5" />
           <span>마지막 분석: {repo.lastAnalyzed}</span>
         </div>
+        <Button
+          variant="ghost"
+          size="sm"
+          className="h-6 text-red-600 hover:text-red-800"
+          onClick={(e) => handleDeleteRepository(e, repo.githubRepoId)}
+        >
+          삭제
+        </Button>
       </CardFooter>
     </Card>
   );
+
+  if (loading) {
+    return (
+      <DashboardLayout>
+        <div className="flex items-center justify-center h-64">
+          <div className="text-lg">저장소 목록을 불러오는 중...</div>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  if (error) {
+    return (
+      <DashboardLayout>
+        <div className="flex flex-col items-center justify-center h-64 space-y-4">
+          <div className="text-lg text-red-600">오류가 발생했습니다</div>
+          <div className="text-sm text-gray-600">{error}</div>
+          <Button onClick={loadRepositories}>다시 시도</Button>
+        </div>
+      </DashboardLayout>
+    );
+  }
 
   return (
     <DashboardLayout>
@@ -190,7 +273,7 @@ export default function RepositoriesPage() {
             ) : (
               <Card>
                 <CardContent className="flex flex-col items-center justify-center p-6">
-                  <div className="rounded-full bg-purple-100 p-3 mb-4">
+                  <div className="mt-4 rounded-full bg-purple-100 p-3 mb-4">
                     <Github className="h-6 w-6 text-purple-600" />
                   </div>
                   <h3 className="text-xl font-medium mb-2">
