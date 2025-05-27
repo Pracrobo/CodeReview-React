@@ -39,33 +39,18 @@ export default function HomePage() {
     }
   }, []);
 
-  
-  // Toss Payments 결제 요청 함수
   const handleProPayment = async () => {
     const token = localStorage.getItem('token');
     const username = localStorage.getItem('username');
+    
     if (!token || !username || username === 'null' || username.trim() === '') {
-      alert('Pro 플랜 결제는 로그인 후 이용 가능합니다.');
+      alert('Pro 플랜은 로그인 후 이용 가능합니다.');
       navigate('/login');
       return;
     }
-    const clientKey = 'test_ck_pP2YxJ4K87Z9jZEp2RWzrRGZwXLO';
-    const paymentInfo = {
-      amount: 10000,
-      orderId: 'order-' + Date.now(),
-      orderName: 'AIssue Pro 월간 구독',
-      customerName: `${username}`,
-      successUrl: `${window.location.origin}/pro-payment/success`,
-      failUrl: `${window.location.origin}/pro-payment/fail`,
-    };
-
-    try {
-      const tossPayments = await loadTossPayments(clientKey);
-      await tossPayments.requestPayment('카드', paymentInfo);
-    } catch (e) {
-      console.error('Toss 결제창 오류:', e);
-      alert('결제창을 여는 중 오류가 발생했습니다.');
-    }
+    
+    // 로그인된 사용자는 프로필 페이지의 구독 관리 탭으로 이동
+    navigate('/profile?tab=subscription');
   };
 
   return (
