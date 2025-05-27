@@ -77,7 +77,7 @@ export default function ProfilePage() {
       setCurrentPlan('free');
       return;
     }
-    fetch('http://localhost:3001/auth/me', {
+    fetch('http://localhost:3001/payment/status', {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -91,8 +91,7 @@ export default function ProfilePage() {
         if (data.isProPlan) {
           setCurrentPlan('pro');
           setProPlanExpiresAt(data.proPlanExpiresAt);
-          setIsCanceled(false); // 구독중이면 취소상태 아님
-          // 남은 일수 계산
+          setIsCanceled(false);
           if (data.proPlanExpiresAt) {
             const today = new Date();
             today.setHours(0, 0, 0, 0);

@@ -22,16 +22,15 @@ export default function OAuthCallback() {
           return res.json();
         })
         .then((data) => {
-          if (data.token) {
-            // 서비스 인증용 JWT
+          if (data.success && data.token) {
+            // JWT
             localStorage.setItem('token', data.token);
-            // GitHub API 호출용 accessToken
-            if (data.accessToken)
-              localStorage.setItem('accessToken', data.accessToken);
+            // GitHub API 호출용 accessToken (필요하다면)
+            if (data.githubAccessToken)
+              localStorage.setItem('githubAccessToken', data.githubAccessToken);
             if (data.username) localStorage.setItem('username', data.username);
             if (data.email) localStorage.setItem('email', data.email);
-            if (data.avatarUrl)
-              localStorage.setItem('avatarUrl', data.avatarUrl);
+            if (data.avatarUrl) localStorage.setItem('avatarUrl', data.avatarUrl);
             navigate('/profile', { replace: true });
           } else {
             navigate('/login', { replace: true });

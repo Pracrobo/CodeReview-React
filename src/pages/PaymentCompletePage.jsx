@@ -12,7 +12,7 @@ export default function ProPaymentSuccess() {
       return;
     }
     // 결제 성공 시 백엔드에 Pro 플랜 활성화 요청
-    fetch("http://localhost:3001/auth/activate-pro-plan", {
+    fetch("http://localhost:3001/payment/complete", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
