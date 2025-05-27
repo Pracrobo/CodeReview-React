@@ -150,7 +150,7 @@ export default function ProfilePage() {
               <div>
                 <AlertTitle className="font-semibold mb-1">알림</AlertTitle>
                 <AlertDescription className="text-sm text-slate-700 dark:text-slate-300">
-                  계정 정보는
+                  계정 정보는{' '}
                   <span className="font-medium text-slate-900 dark:text-slate-100">
                     GitHub 계정
                   </span>
