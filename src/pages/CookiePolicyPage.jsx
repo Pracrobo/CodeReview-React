@@ -20,7 +20,7 @@ export default function CookiePolicyPage() {
             </Button>
             <h1 className="text-3xl font-bold mb-2">쿠키 정책</h1>
             <p className="text-muted-foreground">
-              최종 업데이트: 2023년 5월 20일
+              최종 업데이트: 2025년 5월 20일
             </p>
           </div>
 
@@ -150,7 +150,7 @@ export default function CookiePolicyPage() {
             </ul>
 
             <p className="mt-8">
-              본 쿠키 정책은 2023년 5월 20일부터 시행됩니다.
+              본 쿠키 정책은 2025년 5월 20일부터 시행됩니다.
             </p>
           </div>
         </div>
