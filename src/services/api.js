@@ -1,5 +1,7 @@
 // React 환경에서 환경 변수 접근
-const API_BASE_URL = 'http://localhost:3001';
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001';
+console.log('API_BASE_URL:', API_BASE_URL);
 
 // API 요청 함수
 async function apiRequest(endpoint, options = {}) {
