@@ -222,7 +222,7 @@ export default function ProfilePage() {
                     <div className="text-sm dark:text-slate-300">
                       {' '}
                       {/* 다크 모드 텍스트 색상 */}
-                      다음 결제일: 2023년 6월 15일
+                      다음 결제일: 2025년 6월 15일
                     </div>
                     <div className="flex items-center gap-2">
                       <CreditCard className="w-4 h-4 text-muted-foreground" />
