@@ -145,19 +145,21 @@ export default function ProfilePage() {
               </CardFooter>
             </Card>
 
-            <Alert className="mt-8 p-6 bg-gray-50 border border-gray-200 flex items-center gap-4">
-              <AlertCircle className="h-6 w-6 text-gray-500 mr-2" />
+            <Alert className="mt-8 p-6 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center gap-4">
+              <AlertCircle className="h-6 w-6 text-muted-foreground mr-2" />
               <div>
                 <AlertTitle className="font-semibold mb-1">알림</AlertTitle>
-                <AlertDescription className="text-sm text-gray-700">
-                  계정 정보는{' '}
-                  <span className="font-medium text-gray-900">GitHub 계정</span>
+                <AlertDescription className="text-sm text-slate-700 dark:text-slate-300">
+                  계정 정보는
+                  <span className="font-medium text-slate-900 dark:text-slate-100">
+                    GitHub 계정
+                  </span>
                   과 연동되어 있습니다.
                   <br />
                   일부 정보(프로필 사진, 닉네임, 이메일 등)는 GitHub에서만
                   변경할 수 있습니다.
                   <br />
-                  <span className="text-gray-500">
+                  <span className="text-slate-500 dark:text-slate-400">
                     <ul className="list-disc ml-5 mt-2 space-y-1">
                       <li>
                         프로필 이미지를 변경하려면 GitHub에서 이미지를
