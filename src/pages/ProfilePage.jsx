@@ -389,7 +389,7 @@ export default function ProfilePage() {
                   {currentPlan === 'pro' && !isCanceled && (
                     <Badge
                       variant="outline"
-                      className="bg-indigo-100 text-indigo-700 border-indigo-200 transition-colors cursor-pointer hover:bg-indigo-200 hover:text-indigo-900 hover:border-indigo-300 dark:bg-indigo-950 dark:text-indigo-200 dark:border-indigo-800 dark:hover:bg-indigo-900 dark:hover:text-white dark:hover:border-indigo-600"
+                      className="bg-yellow-100 text-yellow-800 border-yellow-200 transition-colors cursor-pointer hover:bg-yellow-100 hover:text-yellow-900 hover:border-yellow-300 dark:bg-yellow-900/40 dark:text-yellow-200 dark:border-yellow-700 dark:hover:bg-yellow-900 dark:hover:text-yellow-100 dark:hover:border-yellow-500"
                     >
                       활성
                     </Badge>
@@ -397,7 +397,7 @@ export default function ProfilePage() {
                   {currentPlan === 'pro' && isCanceled && (
                     <Badge
                       variant="outline"
-                      className="bg-violet-100 text-violet-700 border-violet-200 transition-colors cursor-pointer hover:bg-violet-200 hover:text-violet-900 hover:border-violet-300 dark:bg-violet-950 dark:text-violet-200 dark:border-violet-800 dark:hover:bg-violet-900 dark:hover:text-white dark:hover:border-violet-600"
+                      className="bg-gray-200 text-gray-800 border-gray-600 transition-colors cursor-pointer hover:bg-gray-300 hover:text-black hover:border-gray-500 dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700 dark:hover:bg-gray-800 dark:hover:text-white dark:hover:border-gray-500"
                     >
                       만료 예정
                     </Badge>
@@ -409,7 +409,7 @@ export default function ProfilePage() {
                   <div className="space-y-2">
                     <div className="flex items-center gap-2">
                       <span className="text-sm font-medium">Pro 플랜 만료일:</span>
-                      <span className="text-sm text-gray-400 font-semibold">
+                      <span className="text-sm font-semibold text-slate-700 dark:text-white">
                         {proPlanExpiresAt
                           ? `${formatKoreanDate(proPlanExpiresAt)}`
                           : '정보 없음'}
@@ -419,7 +419,7 @@ export default function ProfilePage() {
                       <span className="text-sm font-medium">
                         남은 구독 기간:
                       </span>
-                      <span className="text-sm text-gray-400 font-semibold">
+                      <span className="text-sm font-semibold text-slate-700 dark:text-white">
                         {getRemainDetail(proPlanExpiresAt)}
                       </span>
                     </div>
