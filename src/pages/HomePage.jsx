@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
 import { Button } from '../components/ui/button';
 import {
@@ -10,8 +10,11 @@ import {
 } from 'lucide-react';
 import Navbar from '../components/navbar';
 import Footer from '../components/footer';
+import { loadTossPayments } from '@tosspayments/payment-sdk';
 
 export default function HomePage() {
+  const navigate = useNavigate();
+
   // 스크롤을 맨 위로 이동하는 함수
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -35,6 +38,35 @@ export default function HomePage() {
       }, 100);
     }
   }, []);
+
+  
+  // Toss Payments 결제 요청 함수
+  const handleProPayment = async () => {
+    const token = localStorage.getItem('token');
+    const username = localStorage.getItem('username');
+    if (!token || !username || username === 'null' || username.trim() === '') {
+      alert('Pro 플랜 결제는 로그인 후 이용 가능합니다.');
+      navigate('/login');
+      return;
+    }
+    const clientKey = 'test_ck_pP2YxJ4K87Z9jZEp2RWzrRGZwXLO';
+    const paymentInfo = {
+      amount: 10000,
+      orderId: 'order-' + Date.now(),
+      orderName: 'AIssue Pro 월간 구독',
+      customerName: `${username}`,
+      successUrl: `${window.location.origin}/pro-payment/success`,
+      failUrl: `${window.location.origin}/pro-payment/fail`,
+    };
+
+    try {
+      const tossPayments = await loadTossPayments(clientKey);
+      await tossPayments.requestPayment('카드', paymentInfo);
+    } catch (e) {
+      console.error('Toss 결제창 오류:', e);
+      alert('결제창을 여는 중 오류가 발생했습니다.');
+    }
+  };
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -642,10 +674,10 @@ export default function HomePage() {
                 </ul>
 
                 <Button
-                  asChild
                   className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white py-3 text-lg font-semibold rounded-xl shadow-lg"
+                  onClick={handleProPayment}
                 >
-                  <Link to="/dashboard">Pro 시작하기</Link>
+                  Pro 시작하기
                 </Button>
               </div>
             </div>
