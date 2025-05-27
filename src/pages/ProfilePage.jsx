@@ -191,7 +191,11 @@ export default function ProfilePage() {
                   <div className="flex items-center gap-2">
                     <Badge
                       variant={currentPlan === 'free' ? 'outline' : 'default'}
-                      className={currentPlan === 'pro' ? 'bg-purple-600' : ''}
+                      className={
+                        currentPlan === 'pro'
+                          ? 'bg-purple-600 text-white dark:bg-purple-500 dark:text-purple-50'
+                          : ''
+                      }
                     >
                       {currentPlan === 'free' ? '무료 플랜' : 'Pro 플랜'}
                     </Badge>
@@ -204,7 +208,7 @@ export default function ProfilePage() {
                   {currentPlan === 'pro' && (
                     <Badge
                       variant="outline"
-                      className="bg-green-50 text-green-700 border-green-200"
+                      className="bg-green-50 text-green-700 border-green-200 dark:bg-green-900/50 dark:text-green-300 dark:border-green-700"
                     >
                       활성
                     </Badge>
@@ -213,25 +217,41 @@ export default function ProfilePage() {
 
                 {currentPlan === 'pro' && (
                   <div className="space-y-2">
-                    <div className="text-sm">다음 결제일: 2023년 6월 15일</div>
+                    <div className="text-sm dark:text-slate-300">
+                      {' '}
+                      {/* 다크 모드 텍스트 색상 */}
+                      다음 결제일: 2023년 6월 15일
+                    </div>
                     <div className="flex items-center gap-2">
                       <CreditCard className="w-4 h-4 text-muted-foreground" />
-                      <span className="text-sm">**** **** **** 4242</span>
+                      <span className="text-sm dark:text-slate-300">
+                        {' '}
+                        {/* 다크 모드 텍스트 색상 */}
+                        **** **** **** 4242
+                      </span>
                     </div>
                   </div>
                 )}
 
                 <div className="pt-4">
-                  <h3 className="text-sm font-medium mb-3">사용량</h3>
+                  <h3 className="text-sm font-medium mb-3 dark:text-slate-200">
+                    {' '}
+                    {/* 다크 모드 텍스트 색상 */}
+                    사용량
+                  </h3>
                   <div className="space-y-3">
                     <div className="space-y-1">
-                      <div className="flex justify-between text-sm">
+                      <div className="flex justify-between text-sm dark:text-slate-300">
+                        {' '}
+                        {/* 다크 모드 텍스트 색상 */}
                         <span>저장소 분석</span>
                         <span>{currentPlan === 'free' ? '2/3' : '12/30+'}</span>
                       </div>
-                      <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                      <div className="h-2 bg-gray-100 dark:bg-slate-700 rounded-full overflow-hidden">
+                        {' '}
+                        {/* 다크 모드 배경색 */}
                         <div
-                          className="h-full bg-purple-600 rounded-full"
+                          className="h-full bg-purple-600 dark:bg-purple-500 rounded-full" /* 다크 모드 배경색 */
                           style={{
                             width: currentPlan === 'free' ? '66%' : '40%',
                           }}
@@ -239,15 +259,19 @@ export default function ProfilePage() {
                       </div>
                     </div>
                     <div className="space-y-1">
-                      <div className="flex justify-between text-sm">
+                      <div className="flex justify-between text-sm dark:text-slate-300">
+                        {' '}
+                        {/* 다크 모드 텍스트 색상 */}
                         <span>AI 챗봇 메시지</span>
                         <span>
                           {currentPlan === 'free' ? '82/100' : '무제한'}
                         </span>
                       </div>
-                      <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                      <div className="h-2 bg-gray-100 dark:bg-slate-700 rounded-full overflow-hidden">
+                        {' '}
+                        {/* 다크 모드 배경색 */}
                         <div
-                          className="h-full bg-purple-600 rounded-full"
+                          className="h-full bg-purple-600 dark:bg-purple-500 rounded-full" /* 다크 모드 배경색 */
                           style={{
                             width: currentPlan === 'free' ? '82%' : '100%',
                           }}
@@ -259,7 +283,7 @@ export default function ProfilePage() {
               </CardContent>
               <CardFooter>
                 {currentPlan === 'free' ? (
-                  <Button className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700">
+                  <Button className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 dark:from-purple-500 dark:to-indigo-500 dark:hover:from-purple-600 dark:hover:to-indigo-600">
                     Pro 플랜으로 업그레이드
                   </Button>
                 ) : (
@@ -269,7 +293,7 @@ export default function ProfilePage() {
                     </Button>
                     <Button
                       variant="outline"
-                      className="w-full text-red-600 hover:text-red-700 hover:bg-red-50"
+                      className="w-full text-red-600 hover:text-red-700 hover:bg-red-50 dark:text-red-500 dark:hover:text-red-400 dark:hover:bg-red-900/50 dark:border-red-500/50 dark:hover:border-red-500"
                     >
                       구독 취소
                     </Button>
@@ -286,125 +310,204 @@ export default function ProfilePage() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="overflow-hidden rounded-lg border">
+                <div className="overflow-hidden rounded-lg border dark:border-slate-700">
+                  {' '}
+                  {/* 다크 모드 테두리 */}
                   {/* 헤더 */}
-                  <div className="grid grid-cols-3 bg-muted/50">
-                    <div className="p-4 font-medium">기능</div>
-                    <div className="p-4 text-center font-medium border-l">
-                      <div className="text-sm">무료 플랜</div>
+                  <div className="grid grid-cols-3 bg-muted/50 dark:bg-slate-800/50">
+                    {' '}
+                    {/* 다크 모드 배경 */}
+                    <div className="p-4 font-medium dark:text-slate-200">
+                      기능
+                    </div>{' '}
+                    {/* 다크 모드 텍스트 */}
+                    <div className="p-4 text-center font-medium border-l dark:border-slate-700">
+                      {' '}
+                      {/* 다크 모드 테두리 */}
+                      <div className="text-sm dark:text-slate-200">
+                        무료 플랜
+                      </div>{' '}
+                      {/* 다크 모드 텍스트 */}
                       <div className="text-xs text-muted-foreground mt-1">
                         ₩0/월
                       </div>
                     </div>
-                    <div className="p-4 text-center font-medium border-l bg-purple-50">
-                      <div className="text-sm text-purple-700">Pro 플랜</div>
-                      <div className="text-xs text-purple-600/70 mt-1">
+                    <div className="p-4 text-center font-medium border-l dark:border-slate-700 bg-purple-50 dark:bg-purple-900/30">
+                      {' '}
+                      {/* 다크 모드 테두리 및 배경 */}
+                      <div className="text-sm text-purple-700 dark:text-purple-400">
+                        Pro 플랜
+                      </div>{' '}
+                      {/* 다크 모드 텍스트 */}
+                      <div className="text-xs text-purple-600/70 dark:text-purple-500/70 mt-1">
+                        {' '}
+                        {/* 다크 모드 텍스트 */}
                         ₩10,000/월
                       </div>
                     </div>
                   </div>
-
                   {/* 저장소 분석 */}
-                  <div className="grid grid-cols-3 border-t">
+                  <div className="grid grid-cols-3 border-t dark:border-slate-700">
+                    {' '}
+                    {/* 다크 모드 테두리 */}
                     <div className="p-4 flex items-center">
                       <div>
-                        <div className="font-medium">저장소 분석</div>
+                        <div className="font-medium dark:text-slate-200">
+                          저장소 분석
+                        </div>{' '}
+                        {/* 다크 모드 텍스트 */}
                         <div className="text-xs text-muted-foreground mt-1">
                           월간 분석 가능한 저장소 수
                         </div>
                       </div>
                     </div>
-                    <div className="p-4 flex items-center justify-center border-l">
-                      <span className="font-medium">3개</span>
+                    <div className="p-4 flex items-center justify-center border-l dark:border-slate-700">
+                      {' '}
+                      {/* 다크 모드 테두리 */}
+                      <span className="font-medium dark:text-slate-200">
+                        3개
+                      </span>{' '}
+                      {/* 다크 모드 텍스트 */}
                     </div>
-                    <div className="p-4 flex items-center justify-center border-l bg-purple-50">
-                      <span className="font-medium text-purple-700">
+                    <div className="p-4 flex items-center justify-center border-l dark:border-slate-700 bg-purple-50 dark:bg-purple-900/30">
+                      {' '}
+                      {/* 다크 모드 테두리 및 배경 */}
+                      <span className="font-medium text-purple-700 dark:text-purple-400">
+                        {' '}
+                        {/* 다크 모드 텍스트 */}
                         30개 이상
                       </span>
                     </div>
                   </div>
-
                   {/* 이슈-코드 매칭 */}
-                  <div className="grid grid-cols-3 border-t">
+                  <div className="grid grid-cols-3 border-t dark:border-slate-700">
+                    {' '}
+                    {/* 다크 모드 테두리 */}
                     <div className="p-4 flex items-center">
                       <div>
-                        <div className="font-medium">이슈-코드 매칭</div>
+                        <div className="font-medium dark:text-slate-200">
+                          이슈-코드 매칭
+                        </div>{' '}
+                        {/* 다크 모드 텍스트 */}
                         <div className="text-xs text-muted-foreground mt-1">
                           이슈와 관련된 코드 분석 수준
                         </div>
                       </div>
                     </div>
-                    <div className="p-4 flex items-center justify-center border-l">
+                    <div className="p-4 flex items-center justify-center border-l dark:border-slate-700">
+                      {' '}
+                      {/* 다크 모드 테두리 */}
                       <div className="flex items-center">
-                        <span className="mr-2">기본 수준</span>
+                        <span className="mr-2 dark:text-slate-200">
+                          기본 수준
+                        </span>{' '}
+                        {/* 다크 모드 텍스트 */}
                       </div>
                     </div>
-                    <div className="p-4 flex items-center justify-center border-l bg-purple-50">
-                      <div className="flex items-center text-purple-700">
+                    <div className="p-4 flex items-center justify-center border-l dark:border-slate-700 bg-purple-50 dark:bg-purple-900/30">
+                      {' '}
+                      {/* 다크 모드 테두리 및 배경 */}
+                      <div className="flex items-center text-purple-700 dark:text-purple-400">
+                        {' '}
+                        {/* 다크 모드 텍스트 */}
                         <span className="mr-2">고급 분석</span>
-                        <Badge className="bg-purple-100 text-purple-700 border-purple-200">
+                        <Badge className="bg-purple-100 text-purple-700 border-purple-200 dark:bg-purple-800/70 dark:text-purple-300 dark:border-purple-700">
+                          {' '}
+                          {/* 다크 모드 배지 */}
                           고급
                         </Badge>
                       </div>
                     </div>
                   </div>
-
                   {/* AI 챗봇 */}
-                  <div className="grid grid-cols-3 border-t">
+                  <div className="grid grid-cols-3 border-t dark:border-slate-700">
+                    {' '}
+                    {/* 다크 모드 테두리 */}
                     <div className="p-4 flex items-center">
                       <div>
-                        <div className="font-medium">AI 챗봇</div>
+                        <div className="font-medium dark:text-slate-200">
+                          AI 챗봇
+                        </div>{' '}
+                        {/* 다크 모드 텍스트 */}
                         <div className="text-xs text-muted-foreground mt-1">
                           월간 사용 가능한 메시지 수
                         </div>
                       </div>
                     </div>
-                    <div className="p-4 flex items-center justify-center border-l">
+                    <div className="p-4 flex items-center justify-center border-l dark:border-slate-700">
+                      {' '}
+                      {/* 다크 모드 테두리 */}
                       <div className="flex items-center">
-                        <span>100 메시지</span>
+                        <span className="dark:text-slate-200">100 메시지</span>{' '}
+                        {/* 다크 모드 텍스트 */}
                       </div>
                     </div>
-                    <div className="p-4 flex items-center justify-center border-l bg-purple-50">
-                      <div className="flex items-center text-purple-700">
+                    <div className="p-4 flex items-center justify-center border-l dark:border-slate-700 bg-purple-50 dark:bg-purple-900/30">
+                      {' '}
+                      {/* 다크 모드 테두리 및 배경 */}
+                      <div className="flex items-center text-purple-700 dark:text-purple-400">
+                        {' '}
+                        {/* 다크 모드 텍스트 */}
                         <span className="font-medium">무제한</span>
-                        <Check className="ml-2 h-4 w-4" />
+                        <Check className="ml-2 h-4 w-4" />{' '}
+                        {/* 아이콘 색상은 부모 텍스트 색상 상속 */}
                       </div>
                     </div>
                   </div>
-
                   {/* 비공개 저장소 */}
-                  <div className="grid grid-cols-3 border-t">
+                  <div className="grid grid-cols-3 border-t dark:border-slate-700">
+                    {' '}
+                    {/* 다크 모드 테두리 */}
                     <div className="p-4 flex items-center">
                       <div>
-                        <div className="font-medium">비공개 저장소</div>
+                        <div className="font-medium dark:text-slate-200">
+                          비공개 저장소
+                        </div>{' '}
+                        {/* 다크 모드 텍스트 */}
                         <div className="text-xs text-muted-foreground mt-1">
                           비공개 GitHub 저장소 지원
                         </div>
                       </div>
                     </div>
-                    <div className="p-4 flex items-center justify-center border-l">
-                      <X className="h-5 w-5 text-red-500" />
+                    <div className="p-4 flex items-center justify-center border-l dark:border-slate-700">
+                      {' '}
+                      {/* 다크 모드 테두리 */}
+                      <X className="h-5 w-5 text-red-500 dark:text-red-400" />{' '}
+                      {/* 다크 모드 아이콘 색상 */}
                     </div>
-                    <div className="p-4 flex items-center justify-center border-l bg-purple-50">
-                      <Check className="h-5 w-5 text-green-500" />
+                    <div className="p-4 flex items-center justify-center border-l dark:border-slate-700 bg-purple-50 dark:bg-purple-900/30">
+                      {' '}
+                      {/* 다크 모드 테두리 및 배경 */}
+                      <Check className="h-5 w-5 text-green-500 dark:text-green-400" />{' '}
+                      {/* 다크 모드 아이콘 색상 */}
                     </div>
                   </div>
-
                   {/* 우선 지원 */}
-                  <div className="grid grid-cols-3 border-t">
+                  <div className="grid grid-cols-3 border-t dark:border-slate-700">
+                    {' '}
+                    {/* 다크 모드 테두리 */}
                     <div className="p-4 flex items-center">
                       <div>
-                        <div className="font-medium">우선 지원</div>
+                        <div className="font-medium dark:text-slate-200">
+                          우선 지원
+                        </div>{' '}
+                        {/* 다크 모드 텍스트 */}
                         <div className="text-xs text-muted-foreground mt-1">
                           문의 및 지원 요청 우선 처리
                         </div>
                       </div>
                     </div>
-                    <div className="p-4 flex items-center justify-center border-l">
-                      <X className="h-5 w-5 text-red-500" />
+                    <div className="p-4 flex items-center justify-center border-l dark:border-slate-700">
+                      {' '}
+                      {/* 다크 모드 테두리 */}
+                      <X className="h-5 w-5 text-red-500 dark:text-red-400" />{' '}
+                      {/* 다크 모드 아이콘 색상 */}
                     </div>
-                    <div className="p-4 flex items-center justify-center border-l bg-purple-50">
-                      <Check className="h-5 w-5 text-green-500" />
+                    <div className="p-4 flex items-center justify-center border-l dark:border-slate-700 bg-purple-50 dark:bg-purple-900/30">
+                      {' '}
+                      {/* 다크 모드 테두리 및 배경 */}
+                      <Check className="h-5 w-5 text-green-500 dark:text-green-400" />{' '}
+                      {/* 다크 모드 아이콘 색상 */}
                     </div>
                   </div>
                 </div>
@@ -412,7 +515,7 @@ export default function ProfilePage() {
                 {/* 업그레이드 버튼 */}
                 {currentPlan === 'free' && (
                   <div className="mt-6">
-                    <Button className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700">
+                    <Button className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 dark:from-purple-500 dark:to-indigo-500 dark:hover:from-purple-600 dark:hover:to-indigo-600">
                       Pro 플랜으로 업그레이드
                     </Button>
                   </div>
