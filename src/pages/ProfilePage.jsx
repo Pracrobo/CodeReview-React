@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import {
   Card,
@@ -27,7 +28,6 @@ import {
 } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '../components/ui/alert';
 import DashboardLayout from '../components/dashboard-layout';
-import { useNavigate } from 'react-router-dom';
 import { removeAuthStorage } from '../utils/auth';
 
 export default function ProfilePage() {
@@ -35,7 +35,26 @@ export default function ProfilePage() {
   const username = localStorage.getItem('username') || '사용자';
   const email = localStorage.getItem('email') || '이메일';
   const avatarUrl = localStorage.getItem('avatarUrl') || '';
+  const location = useLocation();
   const navigate = useNavigate();
+
+  // 쿼리스트링에서 tab 값 읽기
+  const params = new URLSearchParams(location.search);
+  const tabParam = params.get('tab');
+  const [tab, setTab] = useState(tabParam || 'account');
+
+  // 쿼리스트링이 바뀌면 탭도 바꿔줌
+  useEffect(() => {
+    setTab(tabParam || 'account');
+  }, [tabParam]);
+
+  // 탭을 클릭할 때 쿼리스트링도 같이 변경
+  const handleTabChange = (value) => {
+    setTab(value);
+    const newParams = new URLSearchParams(location.search);
+    newParams.set('tab', value);
+    navigate(`${location.pathname}?${newParams.toString()}`, { replace: true });
+  };
 
   const handleLogout = async () => {
     removeAuthStorage();
@@ -62,7 +81,7 @@ export default function ProfilePage() {
           </p>
         </div>
 
-        <Tabs defaultValue="account">
+        <Tabs value={tab} onValueChange={handleTabChange}>
           <TabsList>
             <TabsTrigger value="account">계정 정보</TabsTrigger>
             <TabsTrigger value="subscription">구독 관리</TabsTrigger>

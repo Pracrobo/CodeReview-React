@@ -32,7 +32,7 @@ export default function OAuthCallback() {
             if (data.email) localStorage.setItem('email', data.email);
             if (data.avatarUrl)
               localStorage.setItem('avatarUrl', data.avatarUrl);
-            navigate('/dashboard', { replace: true });
+            navigate('/profile?tab=subscription', { replace: true });
           } else {
             navigate('/login', { replace: true });
           }

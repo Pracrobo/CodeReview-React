@@ -20,8 +20,8 @@ export default function Navbar({ scrollToTop, scrollToSection }) {
   const avatarUrl = localStorage.getItem('avatarUrl');
   const isLoggedIn = !!token;
 
-  // 네비게이션 메뉴 항목들
-  const navigationItems = [
+  // 로그인 상태에 따라 네비게이션 항목을 다르게(로그인 시 아무것도 안보임)
+  const navigationItems = isLoggedIn ? [] : [
     {
       key: 'home',
       label: '홈',
@@ -38,6 +38,20 @@ export default function Navbar({ scrollToTop, scrollToSection }) {
       action: () => handleNavigateToSection('pricing'),
     },
   ];
+
+  // 홈으로 이동하는 함수 (AIssue 로고 클릭)
+  const handleNavigateToHome = () => {
+    if (isLoggedIn) {
+      navigate('/profile?tab=subscription');
+    } else {
+      if (location.pathname === '/') {
+        if (scrollToTop) scrollToTop();
+        else window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else {
+        navigate('/');
+      }
+    }
+  };
 
   // 메뉴 항목 렌더링 함수 (데스크톱)
   const renderDesktopMenuItem = (item) => (
@@ -113,15 +127,6 @@ export default function Navbar({ scrollToTop, scrollToSection }) {
     } else {
       // 다른 페이지에서는 홈페이지로 이동하면서 해시 추가
       navigate(`/#${sectionId}`);
-    }
-  };
-
-  // 홈으로 이동하는 함수 (다른 페이지에서 홈페이지로 이동)
-  const handleNavigateToHome = () => {
-    if (isHomePage) {
-      handleScrollToTop();
-    } else {
-      navigate('/');
     }
   };
 
