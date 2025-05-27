@@ -202,9 +202,6 @@ export default function Navbar({ scrollToTop, scrollToSection }) {
               </DropdownMenu>
             ) : (
               <>
-                <Button asChild variant="ghost">
-                  <Link to="/login">로그인</Link>
-                </Button>
                 <Button asChild>
                   <Link to="/login" className="gap-1">
                     <Github className="h-4 w-4" />
@@ -296,11 +293,6 @@ export default function Navbar({ scrollToTop, scrollToSection }) {
 
             {!isLoggedIn && (
               <div className="flex flex-col gap-2 pt-2">
-                <Button asChild variant="outline" className="w-full">
-                  <Link to="/login" onClick={() => setIsMenuOpen(false)}>
-                    로그인
-                  </Link>
-                </Button>
                 <Button asChild className="w-full gap-1">
                   <Link to="/login" onClick={() => setIsMenuOpen(false)}>
                     <Github className="h-4 w-4" />
