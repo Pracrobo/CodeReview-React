@@ -9,6 +9,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from './ui/dropdown-menu';
+import { removeAuthStorage } from '../utils/auth';
+import { logout } from '../services/authService';
 
 export default function Navbar({ scrollToTop, scrollToSection }) {
   const location = useLocation();
@@ -66,20 +68,8 @@ export default function Navbar({ scrollToTop, scrollToSection }) {
 
   // 로그아웃 처리 함수
   const handleLogout = async () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('username');
-    localStorage.removeItem('email');
-    localStorage.removeItem('avatar_url');
-
-    try {
-      await fetch('/auth/github/logout', {
-        method: 'GET',
-        credentials: 'include',
-      });
-    } catch (e) {
-      console.error('로그아웃 중 오류 발생:', e);
-    }
-
+    await logout();
+    removeAuthStorage();
     navigate('/');
   };
 
