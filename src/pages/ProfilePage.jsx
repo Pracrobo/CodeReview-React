@@ -71,7 +71,10 @@ export default function ProfilePage() {
   const [avatarUrl, setAvatarUrl] = useState('');
   const [isCanceled, setIsCanceled] = useState(false); // 구독 취소 상태
   const [tabValue, setTabValue] = useTabQuery('account');
+  const [createdAt, setCreatedAt] = useState('');
+  const [updatedAt, setUpdatedAt] = useState('');
   const location = useLocation();
+  const navigate = useNavigate();
 
   // 사용자 정보 및 구독 정보 불러오기
   useEffect(() => {
@@ -92,6 +95,8 @@ export default function ProfilePage() {
         setUsername(data.username || '사용자');
         setEmail(data.email || '이메일');
         setAvatarUrl(data.avatarUrl || '');
+        setCreatedAt(data.createdAt || '');
+        setUpdatedAt(data.updatedAt || '');
         if (data.isProPlan) {
           setCurrentPlan('pro');
           setProPlanExpiresAt(data.proPlanExpiresAt);
@@ -241,38 +246,59 @@ export default function ProfilePage() {
                       <label htmlFor="github" className="text-sm font-medium">
                         GitHub 계정
                       </label>
-                      <div className="flex">
-                        <Input
+                      {/* input.jsx와 완전히 동일한 스타일을 바깥 div에만 적용 */}
+                      <div className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-within:outline-none focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2">
+                        <input
                           id="github"
                           value={`@${username}`}
                           readOnly
-                          className="rounded-r-none"
+                          className="flex-1 bg-transparent border-none outline-none focus:ring-0 focus:ring-offset-0 p-0 m-0 rounded-r-none"
+                          tabIndex={-1}
+                          // Input 컴포넌트 대신 input 태그 직접 사용 (불필요한 ring 제거)
                         />
-                        <Button
-                          variant="outline"
-                          className="rounded-l-none border-l-0"
-                          asChild
+                        {/* username과 아이콘 사이 세로 구분선 */}
+                        <div className="h-6 w-px bg-slate-200 dark:bg-slate-700 mx-2 self-center" />
+                        <a
+                          href={`https://github.com/${username}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          tabIndex={0}
+                          className="flex items-center px-2 rounded-l-none border-l-0 bg-transparent outline-none focus:ring-0 focus:ring-offset-0 group"
+                          style={{ borderTopLeftRadius: 0, borderBottomLeftRadius: 0 }}
                         >
-                          <a
-                            href={`https://github.com/${username}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            <Github className="w-4 h-4" />
-                          </a>
-                        </Button>
+                          <Github
+                            className="w-5 h-5 text-slate-500 group-hover:text-ring transition-colors"
+                          />
+                        </a>
                       </div>
                     </div>
                   </div>
-                  <div className="flex justify-end">
-                    <Button
-                      variant="outline"
-                      className="gap-1"
-                      onClick={handleLogout}
-                    >
-                      <LogOut className="w-4 h-4" />
-                      로그아웃
-                    </Button>
+                  <div className="border-t pt-4 mt-2 flex flex-row items-center justify-between gap-2 flex-wrap">
+                    {/* 가입일 */}
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-medium text-slate-500 dark:text-slate-300">가입일</span>
+                      <span className="text-sm text-slate-800 dark:text-slate-100 font-semibold">
+                        {createdAt ? formatKoreanDate(createdAt) : '-'}
+                      </span>
+                    </div>
+                    {/* 최근 활동 */}
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-medium text-slate-500 dark:text-slate-300">최근 활동</span>
+                      <span className="text-sm text-slate-800 dark:text-slate-100 font-semibold">
+                        {updatedAt ? formatKoreanDate(updatedAt) : '-'}
+                      </span>
+                    </div>
+                    {/* 로그아웃 버튼 */}
+                    <div>
+                      <Button
+                        variant="outline"
+                        className="gap-1"
+                        onClick={handleLogout}
+                      >
+                        <LogOut className="w-4 h-4" />
+                        로그아웃
+                      </Button>
+                    </div>
                   </div>
                 </div>
                 <div className="mt-2">
