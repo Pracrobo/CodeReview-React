@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { processGithubCallback } from '../services/authService';
 
 export default function OAuthCallback() {
   const navigate = useNavigate();
@@ -22,8 +23,8 @@ export default function OAuthCallback() {
           return res.json();
         })
         .then((data) => {
-          if (data.success && data.token) {
-            // JWT
+          if (data.token) {
+            // 서비스 인증용 JWT
             localStorage.setItem('token', data.token);
             // GitHub API 호출용 accessToken (필요하다면)
             if (data.githubAccessToken)

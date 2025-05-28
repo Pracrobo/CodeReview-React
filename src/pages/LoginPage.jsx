@@ -13,15 +13,16 @@ import { Github } from 'lucide-react';
 import Navbar from '../components/navbar';
 import Footer from '../components/footer';
 import { removeAuthStorage } from '../utils/auth';
+import { API_BASE_URL } from '../services/api.js';
 
 export default function LoginPage() {
-  const [isLoading, _] = useState(false);
+  const [isLoading] = useState(false);
 
   const handleGithubLogin = () => {
     // 기존 토큰/정보 삭제
     removeAuthStorage();
     // 실제 GitHub OAuth 인증 시작
-    window.location.href = 'http://localhost:3001/auth/github/login';
+    window.location.href = `${API_BASE_URL}/auth/github/login`;
   };
 
   return (

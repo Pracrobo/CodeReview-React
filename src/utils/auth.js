@@ -1,7 +1,11 @@
 export function removeAuthStorage() {
-  localStorage.removeItem("token");
-  localStorage.removeItem("accessToken");
-  localStorage.removeItem("username");
-  localStorage.removeItem("email");
-  localStorage.removeItem("avatarUrl");
-};
+  // 삭제할 항목들을 배열로 관리
+  const itemsToRemove = [
+    'token',
+    'accessToken',
+    'username',
+    'email',
+    'avatarUrl',
+  ];
+  itemsToRemove.forEach((item) => localStorage.removeItem(item));
+}

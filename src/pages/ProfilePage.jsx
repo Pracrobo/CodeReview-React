@@ -29,6 +29,7 @@ import { Alert, AlertDescription, AlertTitle } from '../components/ui/alert';
 import DashboardLayout from '../components/dashboard-layout';
 import { useNavigate } from 'react-router-dom';
 import { removeAuthStorage } from '../utils/auth';
+import { logout } from '../services/authService';
 import useTabQuery from '../hooks/use-tabquery';
 
 // 날짜 포맷 함수 추가
@@ -152,16 +153,7 @@ export default function ProfilePage() {
 
   const handleLogout = async () => {
     removeAuthStorage();
-
-    try {
-      await fetch('/auth/github/logout', {
-        method: 'GET',
-        credentials: 'include',
-      });
-    } catch (e) {
-      console.error('로그아웃 중 오류 발생:', e);
-    }
-
+    await logout();
     navigate('/');
   };
 
