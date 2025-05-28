@@ -258,8 +258,6 @@ export default function ProfilePage() {
                     </div>
                   </div>
                 </div>
-              </CardContent>
-              <CardFooter>
                 <Button
                   variant="outline"
                   className="gap-1"
@@ -268,41 +266,24 @@ export default function ProfilePage() {
                   <LogOut className="w-4 h-4" />
                   로그아웃
                 </Button>
+              </CardContent>
+              <CardFooter>
+                <Alert className="mt-4p-6 bg-indigo-50 dark:bg-indigo-900/30 border border-indigo-200 dark:border-indigo-700 flex items-center gap-4">
+                  <AlertCircle className="h-6 w-6 text-indigo-600 dark:text-indigo-400 mr-2" />
+                  <div>
+                    {/* <AlertTitle className="font-semibold mb-1 text-indigo-800 dark:text-indigo-100">알림</AlertTitle> */}
+                    <AlertDescription className="text-sm text-indigo-800 dark:text-indigo-100">
+                      <span className="font-medium">계정 정보</span>는 <span className="font-medium">GitHub 계정</span>과 연동되어 있으며, 일부 정보(프로필 사진, 닉네임, 이메일 등)는 <span className="font-medium">GitHub</span>에서만 변경할 수 있습니다.
+                      <ul className="list-disc ml-5 mt-2 space-y-1">
+                        <li>프로필 사진, 닉네임, 이메일 등은 GitHub에서 수정해 주세요.</li>
+                        <li>변경 후 다시 로그인하면 최신 정보가 반영됩니다.</li>
+                        <li>계정 연동을 해제하면 서비스 이용이 제한될 수 있습니다.</li>
+                      </ul>
+                    </AlertDescription>
+                  </div>
+                </Alert>
               </CardFooter>
             </Card>
-
-            <Alert className="mt-8 p-6 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center gap-4">
-              <AlertCircle className="h-6 w-6 text-muted-foreground mr-2" />
-              <div>
-                <AlertTitle className="font-semibold mb-1">알림</AlertTitle>
-                <AlertDescription className="text-sm text-slate-700 dark:text-slate-300">
-                  계정 정보는{' '}
-                  <span className="font-medium text-slate-900 dark:text-slate-100">
-                    GitHub 계정
-                  </span>
-                  과 연동되어 있습니다.
-                  <br />
-                  일부 정보(프로필 사진, 닉네임, 이메일 등)는 GitHub에서만
-                  변경할 수 있습니다.
-                  <br />
-                  <span className="text-slate-500 dark:text-slate-400">
-                    <ul className="list-disc ml-5 mt-2 space-y-1">
-                      <li>
-                        프로필 이미지를 변경하려면 GitHub에서 이미지를
-                        수정하세요.
-                      </li>
-                      <li>
-                        이메일, 닉네임 등 개인정보도 GitHub에서 변경 후 다시
-                        로그인하면 반영됩니다.
-                      </li>
-                      <li>
-                        계정 연동 해제 시, 서비스 이용이 제한될 수 있습니다.
-                      </li>
-                    </ul>
-                  </span>
-                </AlertDescription>
-              </div>
-            </Alert>
           </TabsContent>
 
           {/* 구독 관리 탭 */}
