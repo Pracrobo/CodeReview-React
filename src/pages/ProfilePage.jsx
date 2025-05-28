@@ -71,6 +71,7 @@ export default function ProfilePage() {
   const [avatarUrl, setAvatarUrl] = useState('');
   const [isCanceled, setIsCanceled] = useState(false); // 구독 취소 상태
   const [tabValue, setTabValue] = useTabQuery('account');
+  const location = useLocation();
 
   // 사용자 정보 및 구독 정보 불러오기
   useEffect(() => {
@@ -115,7 +116,7 @@ export default function ProfilePage() {
       .catch(() => {
         setCurrentPlan('free');
       });
-  }, []);
+  }, [location]); // location이 바뀔 때마다 실행
 
   // Toss Payments 결제 함수
   const handleProPayment = async () => {
