@@ -343,7 +343,7 @@ export default function ProfilePage() {
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-1">
                         <span className="text-sm font-medium text-slate-800 dark:text-slate-100">저장소 분석</span>
-                        <span className="text-xs font-semibold text-white">2/3</span>
+                        <span className="text-xs font-semibold text-slate-600 dark:text-white">2/3</span>
                       </div>
                       <div className="w-full h-2 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
                         <div
@@ -356,7 +356,7 @@ export default function ProfilePage() {
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-1">
                         <span className="text-sm font-medium text-slate-800 dark:text-slate-100">AI 챗봇 메시지</span>
-                        <span className="text-xs font-semibold text-white">15/100</span>
+                        <span className="text-xs font-semibold text-slate-600 dark:text-white">15/100</span>
                       </div>
                       <div className="w-full h-2 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
                         <div
@@ -390,7 +390,7 @@ export default function ProfilePage() {
                     </div>
                     {!isCanceled && (
                       <>
-                        <Alert className="mt-2 bg-indigo-50 dark:bg-indigo-900/30 border border-indigo-200 dark:border-indigo-700 flex items-center gap-2">
+                        <Alert className="mt-4 bg-indigo-50 dark:bg-indigo-900/30 border border-indigo-200 dark:border-indigo-700 flex items-center gap-2">
                           <AlertCircle className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
                           <span className="text-sm text-indigo-800 dark:text-indigo-100">
                             Pro 플랜은 매월 자동 결제되며, 다양한 프리미엄 기능과 혜택을 계속 이용하실 수 있습니다.
@@ -400,7 +400,7 @@ export default function ProfilePage() {
                       </>
                     )}
                     {isCanceled && (
-                      <Alert className="mt-2 bg-indigo-50 dark:bg-indigo-900/30 border border-indigo-200 dark:border-indigo-700 flex items-center gap-2">
+                      <Alert className="mt-4 bg-indigo-50 dark:bg-indigo-900/30 border border-indigo-200 dark:border-indigo-700 flex items-center gap-2">
                         <AlertCircle className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
                         <span className="text-sm text-indigo-800 dark:text-indigo-100">
                           구독이 취소되었습니다. 만료일까지 Pro 혜택이 유지됩니다.
@@ -436,13 +436,16 @@ export default function ProfilePage() {
                     Pro 플랜 재구독
                   </Button>
                 ) : currentPlan === 'pro' && !isCanceled ? (
-                  <Button
-                    variant="outline"
-                    className="w-full text-base py-3 border-gray-300 text-gray-700 bg-gray-100 hover:bg-gray-200 hover:text-gray-800 dark:text-gray-300 dark:bg-gray-700 dark:border-gray-600 dark:hover:bg-gray-600 dark:hover:border-gray-500 dark:hover:text-gray-100"
-                    onClick={handleCancelSubscription}
-                  >
-                    구독 취소
-                  </Button>
+                  <div className="w-full flex justify-end">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="text-xs text-slate-400 hover:text-red-500 px-3 py-1"
+                      onClick={handleCancelSubscription}
+                    >
+                      구독 취소
+                    </Button>
+                  </div>
                 ) : null}
               </CardFooter>
             </Card>
