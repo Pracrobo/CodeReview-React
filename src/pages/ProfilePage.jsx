@@ -198,31 +198,38 @@ export default function ProfilePage() {
           <TabsContent value="account" className="space-y-4">
             <Card>
               <CardHeader>
-                <CardTitle>프로필 정보</CardTitle>
-                <CardDescription>
-                  GitHub 계정과 연동된 프로필 정보입니다
-                </CardDescription>
+                <CardTitle className="flex items-center gap-3">
+                  프로필 정보
+                  <Badge
+                    variant="outline"
+                    className="bg-slate-200 text-slate-700 border-slate-300 dark:bg-slate-700 dark:text-slate-200 dark:border-slate-500"
+                  >
+                    GitHub 연동
+                  </Badge>
+                </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="flex items-center gap-4">
-                  <div className="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
-                    {avatarUrl ? (
-                      <img
-                        src={avatarUrl}
-                        alt={username}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <User className="w-8 h-8 text-gray-500" />
-                    )}
+                <div className="rounded-lg border bg-slate-50 dark:bg-slate-800 p-4 flex flex-col gap-4">
+                  <div className="flex items-center gap-4">
+                    <div className="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
+                      {avatarUrl ? (
+                        <img
+                          src={avatarUrl}
+                          alt={username}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <User className="w-8 h-8 text-gray-500" />
+                      )}
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <h3 className="font-medium text-lg text-slate-800 dark:text-slate-100">{username}</h3>
+                        <span className="text-xs text-slate-500 dark:text-slate-300">@{username}</span>
+                      </div>
+                      <div className="text-xs text-slate-500 dark:text-slate-400">{email}</div>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="font-medium">{username}</h3>
-                    <p className="text-sm text-muted-foreground">@{username}</p>
-                  </div>
-                </div>
-
-                <div className="space-y-2">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-1">
                       <label htmlFor="email" className="text-sm font-medium">
@@ -257,32 +264,33 @@ export default function ProfilePage() {
                       </div>
                     </div>
                   </div>
-                </div>
-                <Button
-                  variant="outline"
-                  className="gap-1"
-                  onClick={handleLogout}
-                >
-                  <LogOut className="w-4 h-4" />
-                  로그아웃
-                </Button>
-              </CardContent>
-              <CardFooter>
-                <Alert className="mt-4p-6 bg-indigo-50 dark:bg-indigo-900/30 border border-indigo-200 dark:border-indigo-700 flex items-center gap-4">
-                  <AlertCircle className="h-6 w-6 text-indigo-600 dark:text-indigo-400 mr-2" />
-                  <div>
-                    {/* <AlertTitle className="font-semibold mb-1 text-indigo-800 dark:text-indigo-100">알림</AlertTitle> */}
-                    <AlertDescription className="text-sm text-indigo-800 dark:text-indigo-100">
-                      <span className="font-medium">계정 정보</span>는 <span className="font-medium">GitHub 계정</span>과 연동되어 있으며, 일부 정보(프로필 사진, 닉네임, 이메일 등)는 <span className="font-medium">GitHub</span>에서만 변경할 수 있습니다.
-                      <ul className="list-disc ml-5 mt-2 space-y-1">
-                        <li>프로필 사진, 닉네임, 이메일 등은 GitHub에서 수정해 주세요.</li>
-                        <li>변경 후 다시 로그인하면 최신 정보가 반영됩니다.</li>
-                        <li>계정 연동을 해제하면 서비스 이용이 제한될 수 있습니다.</li>
-                      </ul>
-                    </AlertDescription>
+                  <div className="flex justify-end">
+                    <Button
+                      variant="outline"
+                      className="gap-1"
+                      onClick={handleLogout}
+                    >
+                      <LogOut className="w-4 h-4" />
+                      로그아웃
+                    </Button>
                   </div>
-                </Alert>
-              </CardFooter>
+                </div>
+                <div className="mt-2">
+                  <Alert className="bg-indigo-50 dark:bg-indigo-900/30 border border-indigo-200 dark:border-indigo-700 flex items-center gap-4">
+                    <AlertCircle className="h-6 w-6 text-indigo-600 dark:text-indigo-400 mr-2" />
+                    <div>
+                      <AlertDescription className="text-sm text-indigo-800 dark:text-indigo-100">
+                        <span className="font-medium">계정 정보</span>는 <span className="font-medium">GitHub 계정</span>과 연동되어 있으며, 일부 정보(프로필 사진, 닉네임, 이메일 등)는 <span className="font-medium">GitHub</span>에서만 변경할 수 있습니다.
+                        <ul className="list-disc ml-5 mt-2 space-y-1">
+                          <li>프로필 사진, 닉네임, 이메일 등은 GitHub에서 수정해 주세요.</li>
+                          <li>변경 후 다시 로그인하면 최신 정보가 반영됩니다.</li>
+                          <li>계정 연동을 해제하면 서비스 이용이 제한될 수 있습니다.</li>
+                        </ul>
+                      </AlertDescription>
+                    </div>
+                  </Alert>
+                </div>
+              </CardContent>
             </Card>
           </TabsContent>
 
