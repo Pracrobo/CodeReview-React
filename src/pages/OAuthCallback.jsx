@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { processGithubCallback } from '../services/authService';
 
 export default function OAuthCallback() {
   const navigate = useNavigate();
@@ -9,20 +10,10 @@ export default function OAuthCallback() {
     const code = params.get('code');
 
     if (code) {
-      fetch('http://localhost:3001/auth/github/callback', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code }),
-      })
-        .then((res) => {
-          if (!res.ok) {
-            navigate('/login', { replace: true });
-            throw new Error('HTTP error: ' + res.status);
-          }
-          return res.json();
-        })
-        .then((data) => {
-          if (data.token) {
+      processGithubCallback(code)
+        .then((result) => {
+          if (result.success && result.data.token) {
+            const { data } = result;
             // 서비스 인증용 JWT
             localStorage.setItem('token', data.token);
             // GitHub API 호출용 accessToken

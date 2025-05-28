@@ -15,6 +15,10 @@ import { Github } from 'lucide-react';
 import DashboardLayout from '../components/dashboard-layout';
 import { useNavigate } from 'react-router-dom';
 import { removeAuthStorage } from '../utils/auth';
+import {
+  unlinkGithubAccount,
+  deleteGithubAccount,
+} from '../services/authService';
 
 function useAuthTokens() {
   return {
@@ -33,30 +37,14 @@ function GithubUnlinkButton() {
       navigate('/login');
       return;
     }
-    try {
-      const res = await fetch('http://localhost:3001/auth/github/logout', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        credentials: 'include',
-        body: JSON.stringify({ accessToken }),
-      });
-      if (!res.ok) {
-        const data = await res.json();
-        alert(
-          '연동 해제 실패: ' +
-            (data?.message ||
-              '예상치 못한 오류가 발생했습니다. 문제가 계속되면 관리자에게 문의해 주세요.')
-        );
-        return;
-      }
-    } catch (e) {
-      alert('연동 해제 중 오류가 발생했습니다.');
-      console.error('연동 해제 오류:', e);
+
+    const result = await unlinkGithubAccount(accessToken);
+
+    if (!result.success) {
+      alert('연동 해제 실패: ' + result.message);
       return;
     }
+
     removeAuthStorage();
     navigate('/');
   }, [token, accessToken, navigate]);
@@ -84,30 +72,14 @@ function AccountDeleteButton() {
       navigate('/login');
       return;
     }
-    try {
-      const res = await fetch('http://localhost:3001/auth/github/delete', {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        credentials: 'include',
-        body: JSON.stringify({ accessToken }),
-      });
-      if (!res.ok) {
-        const data = await res.json();
-        alert(
-          '계정 삭제 실패: ' +
-            (data?.message ||
-              '예상치 못한 오류가 발생했습니다. 문제가 계속되면 관리자에게 문의해 주세요.')
-        );
-        return;
-      }
-    } catch (e) {
-      alert('계정 삭제 중 오류가 발생했습니다.');
-      console.error('계정 삭제 오류:', e);
+
+    const result = await deleteGithubAccount(accessToken);
+
+    if (!result.success) {
+      alert('계정 삭제 실패: ' + result.message);
       return;
     }
+
     removeAuthStorage();
     navigate('/');
   }, [token, accessToken, navigate]);
