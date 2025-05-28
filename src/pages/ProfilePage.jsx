@@ -78,6 +78,7 @@ export default function ProfilePage() {
     const token = localStorage.getItem('token');
     if (!token) {
       setCurrentPlan('free');
+      setIsCanceled(false);
       return;
     }
     fetch('http://localhost:3001/payment/status', {
@@ -95,26 +96,15 @@ export default function ProfilePage() {
           setCurrentPlan('pro');
           setProPlanExpiresAt(data.proPlanExpiresAt);
           setIsCanceled(false);
-          if (data.proPlanExpiresAt) {
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-            const expire = new Date(data.proPlanExpiresAt);
-            expire.setHours(0, 0, 0, 0);
-            const left = Math.max(
-              0,
-              Math.ceil((expire - today) / (1000 * 60 * 60 * 24))
-            );
-            setDaysLeft(left);
-          }
         } else {
           setCurrentPlan('free');
           setProPlanExpiresAt(null);
-          setDaysLeft(0);
           setIsCanceled(false);
         }
       })
       .catch(() => {
         setCurrentPlan('free');
+        setIsCanceled(false);
       });
   }, [location]); // location이 바뀔 때마다 실행
 
