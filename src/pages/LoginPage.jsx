@@ -16,7 +16,7 @@ import { removeAuthStorage } from '../utils/auth';
 import { API_BASE_URL } from '../services/api.js';
 
 export default function LoginPage() {
-  const [isLoading, _] = useState(false);
+  const [isLoading] = useState(false);
 
   const handleGithubLogin = () => {
     // 기존 토큰/정보 삭제

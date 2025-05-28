@@ -68,8 +68,8 @@ export default function Navbar({ scrollToTop, scrollToSection }) {
 
   // 로그아웃 처리 함수
   const handleLogout = async () => {
-    await logout();
     removeAuthStorage();
+    await logout();
     navigate('/');
   };
 
