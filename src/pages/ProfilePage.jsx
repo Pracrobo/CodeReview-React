@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import {
   Card,
@@ -28,6 +29,7 @@ import { Alert, AlertDescription, AlertTitle } from '../components/ui/alert';
 import DashboardLayout from '../components/dashboard-layout';
 import { useNavigate } from 'react-router-dom';
 import { removeAuthStorage } from '../utils/auth';
+import useTabQuery from '../hooks/use-tabquery';
 
 // 날짜 포맷 함수 추가
 function formatKoreanDate(dateString) {
@@ -68,7 +70,7 @@ export default function ProfilePage() {
   const [email, setEmail] = useState('이메일');
   const [avatarUrl, setAvatarUrl] = useState('');
   const [isCanceled, setIsCanceled] = useState(false); // 구독 취소 상태
-  const navigate = useNavigate();
+  const [tabValue, setTabValue] = useTabQuery('account');
 
   // 사용자 정보 및 구독 정보 불러오기
   useEffect(() => {
@@ -195,7 +197,7 @@ export default function ProfilePage() {
             계정 정보 관리 및 구독 플랜 설정
           </p>
         </div>
-        <Tabs defaultValue="account">
+        <Tabs value={tabValue} onValueChange={setTabValue}>
           <TabsList>
             <TabsTrigger value="account">계정 정보</TabsTrigger>
             <TabsTrigger value="subscription">구독 관리</TabsTrigger>
@@ -447,7 +449,7 @@ export default function ProfilePage() {
                 {currentPlan === 'free' ? (
                   <Button
                     className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white"
-                    onClick={handleResubscribe}
+                    onClick={handleProPayment}
                   >
                     Pro 플랜으로 업그레이드
                   </Button>
@@ -470,7 +472,7 @@ export default function ProfilePage() {
                 ) : currentPlan === 'pro' && isCanceled ? (
                   <Button
                     className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white"
-                    onClick={handleResubscribe}
+                    onClick={handleProPayment}
                   >
                     Pro 플랜 재구독
                   </Button>

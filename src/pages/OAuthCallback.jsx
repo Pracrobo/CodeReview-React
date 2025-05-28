@@ -31,7 +31,7 @@ export default function OAuthCallback() {
             if (data.username) localStorage.setItem('username', data.username);
             if (data.email) localStorage.setItem('email', data.email);
             if (data.avatarUrl) localStorage.setItem('avatarUrl', data.avatarUrl);
-            navigate('/profile', { replace: true });
+            navigate('/profile?tab=account', { replace: true });
           } else {
             navigate('/login', { replace: true });
           }

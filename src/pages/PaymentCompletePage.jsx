@@ -24,15 +24,15 @@ export default function ProPaymentSuccess() {
       .then(data => {
         if (data.success) {
           alert("Pro 플랜이 활성화되었습니다!");
-          navigate("/dashboard");
+          navigate("/profile?tab=subscription", { replace: true });
         } else {
           alert(data.message || "Pro 플랜 활성화에 실패했습니다.");
-          navigate("/dashboard");
+          navigate("/profile?tab=subscription", { replace: true });
         }
       })
       .catch(() => {
         alert("Pro 플랜 활성화 중 오류가 발생했습니다.");
-        navigate("/dashboard");
+        navigate("/profile?tab=subscription", { replace: true });
       });
   }, [navigate]);
 
