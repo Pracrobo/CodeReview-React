@@ -42,7 +42,7 @@ export default function HomePage() {
     const token = localStorage.getItem('token');
     const username = localStorage.getItem('username');
     
-    if (!token || !username || username === 'null' || username.trim() === '') {
+    if (!token || !username || username.trim() === '') {
       alert('Pro 플랜은 로그인 후 이용 가능합니다.');
       navigate('/login');
       return;

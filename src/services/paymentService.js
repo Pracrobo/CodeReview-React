@@ -10,6 +10,12 @@ export async function requestProPayment(token, orderId, successUrl, failUrl) {
     body: JSON.stringify({ orderId, successUrl, failUrl }),
     credentials: 'include',
   });
+
+  if (!res.ok) {
+    const errorText = await res.text();
+    throw new Error(errorText || `HTTP error: ${res.status}`);
+  }
+
   return res.json();
 }
 
