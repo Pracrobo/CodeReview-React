@@ -83,9 +83,7 @@ export default function Navbar({ scrollToTop, scrollToSection }) {
 
   // 로그아웃 처리 함수
   const handleLogout = async () => {
-    removeAuthStorage();
     await logout();
-    navigate('/');
   };
 
   const isHomePage = location.pathname === '/';

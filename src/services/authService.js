@@ -24,24 +24,61 @@ export async function processGithubCallback(code) {
   }
 }
 
-// GitHub 연동 해제
-export async function unlinkGithubAccount(accessToken) {
+// 로그아웃
+export async function logout() {
   try {
-    const response = await apiRequest('/auth/github/logout', {
+    const token = localStorage.getItem('token');
+    const githubAccessToken = localStorage.getItem('githubAccessToken');
+    await fetch(`${API_BASE_URL}/auth/github/logout`, {
       method: 'POST',
-      body: JSON.stringify({ accessToken }),
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+      body: JSON.stringify({ accessToken: githubAccessToken }),
     });
+    // 모든 인증 정보 삭제 (token 포함)
+    localStorage.removeItem('token');
+    localStorage.removeItem('githubAccessToken');
+    localStorage.removeItem('username');
+    localStorage.removeItem('email');
+    localStorage.removeItem('avatarUrl');
+    // 상태 갱신 이벤트 발생
+    window.dispatchEvent(new Event('loginStateChanged'));
     window.location.replace('/');
-    return {
-      success: true,
-      message: response.message || '연동 해제가 완료되었습니다.',
-    };
+    return { success: true };
+  } catch (error) {
+    console.error('로그아웃 중 오류 발생:', error);
+    return { success: false };
+  }
+}
+
+// 연동 해제
+export async function unlinkGithubAccount() {
+  try {
+    const token = localStorage.getItem('token');
+    const githubAccessToken = localStorage.getItem('githubAccessToken');
+    await fetch(`${API_BASE_URL}/auth/github/unlink`, {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+      body: JSON.stringify({ accessToken: githubAccessToken }),
+    });
+    // 모든 인증 정보 삭제
+    localStorage.removeItem('token');
+    localStorage.removeItem('githubAccessToken');
+    localStorage.removeItem('username');
+    localStorage.removeItem('email');
+    localStorage.removeItem('avatarUrl');
+    window.location.replace('/');
+    return { success: true };
   } catch (error) {
     console.error('연동 해제 오류:', error);
-    return {
-      success: false,
-      message: error.message || '연동 해제에 실패했습니다.',
-    };
+    return { success: false };
   }
 }
 
@@ -63,20 +100,5 @@ export async function deleteGithubAccount(accessToken) {
       success: false,
       message: error.message || '계정 삭제에 실패했습니다.',
     };
-  }
-}
-
-// 로그아웃 처리
-export async function logout() {
-  try {
-    await fetch(`${API_BASE_URL}/auth/github/logout`, {
-      method: 'GET',
-      credentials: 'include',
-    });
-    window.location.replace('/');
-    return { success: true };
-  } catch (error) {
-    console.error('로그아웃 중 오류 발생:', error);
-    return { success: false };
   }
 }

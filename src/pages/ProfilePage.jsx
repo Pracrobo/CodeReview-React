@@ -116,9 +116,7 @@ export default function ProfilePage() {
   };
 
   const handleLogout = async () => {
-    removeAuthStorage();
     await logout();
-    navigate('/');
   };
 
   // 구독 취소
