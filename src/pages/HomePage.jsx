@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
 import { Button } from '../components/ui/button';
 import {
@@ -12,6 +12,8 @@ import Navbar from '../components/navbar';
 import Footer from '../components/footer';
 
 export default function HomePage() {
+  const navigate = useNavigate();
+
   // 스크롤을 맨 위로 이동하는 함수
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -35,6 +37,20 @@ export default function HomePage() {
       }, 100);
     }
   }, []);
+
+  const handleProPayment = async () => {
+    const token = localStorage.getItem('token');
+    const username = localStorage.getItem('username');
+    
+    if (!token || !username || username.trim() === '') {
+      alert('Pro 플랜은 로그인 후 이용 가능합니다.');
+      navigate('/login');
+      return;
+    }
+    
+    // 로그인된 사용자는 프로필 페이지의 구독 관리 탭으로 이동
+    navigate('/profile?tab=subscription');
+  };
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -642,10 +658,10 @@ export default function HomePage() {
                 </ul>
 
                 <Button
-                  asChild
                   className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white py-3 text-lg font-semibold rounded-xl shadow-lg"
+                  onClick={handleProPayment}
                 >
-                  <Link to="/dashboard">Pro 시작하기</Link>
+                  Pro 시작하기
                 </Button>
               </div>
             </div>

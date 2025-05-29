@@ -6,8 +6,12 @@ const TabsContext = React.createContext({
   setSelectedTab: () => {},
 });
 
-const Tabs = ({ defaultValue, children, className, ...props }) => {
-  const [selectedTab, setSelectedTab] = React.useState(defaultValue);
+const Tabs = ({ defaultValue, value, onValueChange, children, className, ...props }) => {
+  const isControlled = value !== undefined && onValueChange !== undefined;
+  const [internalTab, setInternalTab] = React.useState(defaultValue);
+
+  const selectedTab = isControlled ? value : internalTab;
+  const setSelectedTab = isControlled ? onValueChange : setInternalTab;
 
   return (
     <TabsContext.Provider value={{ selectedTab, setSelectedTab }}>

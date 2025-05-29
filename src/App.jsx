@@ -12,6 +12,8 @@ import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
 import TermsOfServicePage from './pages/TermsOfServicePage';
 import CookiePolicyPage from './pages/CookiePolicyPage';
 import OAuthCallback from './pages/OAuthCallback';
+import PaymentCompletePage from './pages/PaymentCompletePage';
+import PaymentFailPage from './pages/PaymentFailPage';
 import { SidebarProvider } from './contexts/SidebarContext';
 
 function App() {
@@ -35,6 +37,8 @@ function App() {
           <Route path="/terms-of-service" element={<TermsOfServicePage />} />
           <Route path="/cookie-policy" element={<CookiePolicyPage />} />
           <Route path="/oauth/callback" element={<OAuthCallback />} />
+          <Route path="/payment/success" element={<PaymentCompletePage />} />
+          <Route path="/payment/fail" element={<PaymentFailPage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </div>
