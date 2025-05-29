@@ -31,6 +31,7 @@ export async function unlinkGithubAccount(accessToken) {
       method: 'POST',
       body: JSON.stringify({ accessToken }),
     });
+    window.location.replace('/');
     return {
       success: true,
       message: response.message || '연동 해제가 완료되었습니다.',
@@ -51,6 +52,7 @@ export async function deleteGithubAccount(accessToken) {
       method: 'DELETE',
       body: JSON.stringify({ accessToken }),
     });
+    window.location.replace('/');
     return {
       success: true,
       message: response.message || '계정 삭제가 완료되었습니다.',
@@ -71,6 +73,7 @@ export async function logout() {
       method: 'GET',
       credentials: 'include',
     });
+    window.location.replace('/');
     return { success: true };
   } catch (error) {
     console.error('로그아웃 중 오류 발생:', error);
