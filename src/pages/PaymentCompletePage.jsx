@@ -9,7 +9,7 @@ export default function ProPaymentSuccess() {
     const token = localStorage.getItem("token");
     if (!token) {
       alert("로그인 정보가 없습니다.");
-      navigate("/login");
+      navigate("/login", { replace: true });
       return;
     }
     fetch(`${API_BASE_URL}/payment/complete`, {
@@ -20,7 +20,12 @@ export default function ProPaymentSuccess() {
       },
       credentials: "include",
     })
-      .then(res => res.json())
+      .then(res => {
+        if (!res.ok) {
+          throw new Error("HTTP error: " + res.status);
+        }
+        return res.json();
+      })
       .then(data => {
         if (data.success) {
           alert("Pro 플랜이 활성화되었습니다!");
@@ -29,7 +34,7 @@ export default function ProPaymentSuccess() {
         }
         navigate("/profile?tab=subscription", { replace: true });
       })
-      .catch(() => {
+      .catch((err) => {
         alert("Pro 플랜 활성화 중 오류가 발생했습니다.");
         navigate("/profile?tab=subscription", { replace: true });
       });
