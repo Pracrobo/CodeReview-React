@@ -11,7 +11,6 @@ export default function ProPaymentSuccess() {
       navigate("/login");
       return;
     }
-    // 결제 성공 시 백엔드에 Pro 플랜 활성화 요청
     fetch(`${import.meta.env.VITE_API_URL}`, {
       method: "POST",
       headers: {
@@ -24,11 +23,10 @@ export default function ProPaymentSuccess() {
       .then(data => {
         if (data.success) {
           alert("Pro 플랜이 활성화되었습니다!");
-          navigate("/profile?tab=subscription", { replace: true });
         } else {
           alert(data.message || "Pro 플랜 활성화에 실패했습니다.");
-          navigate("/profile?tab=subscription", { replace: true });
         }
+        navigate("/profile?tab=subscription", { replace: true });
       })
       .catch(() => {
         alert("Pro 플랜 활성화 중 오류가 발생했습니다.");

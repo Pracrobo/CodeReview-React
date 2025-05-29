@@ -37,8 +37,8 @@ function App() {
           <Route path="/terms-of-service" element={<TermsOfServicePage />} />
           <Route path="/cookie-policy" element={<CookiePolicyPage />} />
           <Route path="/oauth/callback" element={<OAuthCallback />} />
-          <Route path="/pro-payment/success" element={<PaymentCompletePage />} />
-          <Route path="/pro-payment/fail" element={<PaymentFailPage />} />
+          <Route path="/payment/success" element={<PaymentCompletePage />} />
+          <Route path="/payment/fail" element={<PaymentFailPage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </div>

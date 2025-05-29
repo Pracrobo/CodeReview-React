@@ -140,8 +140,8 @@ export default function ProfilePage() {
         amount: 10000,
         orderId: `pro-${username}-${Date.now()}`,
         orderName: 'AIssue Pro 플랜 월간 구독',
-        successUrl: `${window.location.origin}/pro-payment/success`,
-        failUrl: `${window.location.origin}/pro-payment/fail`,
+        successUrl: `${window.location.origin}/payment/success`,
+        failUrl: `${window.location.origin}/payment/fail`,
         customerEmail: email,
         customerName: username,
       });
