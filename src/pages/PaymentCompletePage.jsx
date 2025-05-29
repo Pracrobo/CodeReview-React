@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { API_BASE_URL } from '../services/api';
 
 export default function ProPaymentSuccess() {
   const navigate = useNavigate();
@@ -11,7 +12,7 @@ export default function ProPaymentSuccess() {
       navigate("/login");
       return;
     }
-    fetch(`${import.meta.env.VITE_API_URL}`, {
+    fetch(`${API_BASE_URL}/payment/complete`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

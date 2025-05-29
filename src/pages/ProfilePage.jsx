@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import {
   Card,
@@ -27,41 +27,11 @@ import {
 } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '../components/ui/alert';
 import DashboardLayout from '../components/dashboard-layout';
-import { useNavigate } from 'react-router-dom';
 import { removeAuthStorage } from '../utils/auth';
 import { logout } from '../services/authService';
 import useTabQuery from '../hooks/use-tabquery';
-
-// 날짜 포맷 함수 추가
-function formatKoreanDate(dateString) {
-  if (!dateString) return '';
-  const date = new Date(dateString);
-  return `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일`;
-}
-
-// 남은 기간을 "D-30 (30일 23:59:12 남음)" 형식으로 가독성 좋게 표시하는 함수
-function getRemainDetail(expireDateString) {
-  if (!expireDateString) return '';
-  const now = new Date();
-  const expire = new Date(expireDateString);
-  const diff = expire - now;
-  if (diff <= 0) return '만료됨';
-
-  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-  const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-  const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-  const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-
-  // 2자리수로 포맷팅
-  const pad = (n) => n.toString().padStart(2, '0');
-
-  // days가 0이면 일수 생략
-  if (days > 0) {
-    return `D-${days} (${days}일 ${pad(hours)}:${pad(minutes)}:${pad(seconds)} 남음)`;
-  } else {
-    return `D-0 (${pad(hours)}:${pad(minutes)}:${pad(seconds)} 남음)`;
-  }
-}
+import { formatKoreanDate, getRemainDetail } from '../utils/dateHelpers';
+import { fetchUserAndPlan } from '../services/userService';
 
 export default function ProfilePage() {
   const [currentPlan, setCurrentPlan] = useState('loading');
@@ -85,13 +55,7 @@ export default function ProfilePage() {
       setIsCanceled(false);
       return;
     }
-    fetch('http://localhost:3001/payment/status', {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      credentials: 'include',
-    })
-      .then((res) => res.json())
+    fetchUserAndPlan(token)
       .then((data) => {
         setUsername(data.username || '사용자');
         setEmail(data.email || '이메일');
@@ -128,7 +92,7 @@ export default function ProfilePage() {
         });
       }
 
-      const clientKey = import.meta.env.VITE_TOSS_CLIENT_KEY || import.meta.env.REACT_APP_TOSS_CLIENT_KEY;
+      const clientKey = import.meta.env.VITE_TOSS_CLIENT_KEY;
       if (!clientKey) {
         alert('결제 시스템 설정에 문제가 있습니다. 관리자에게 문의하세요.');
         return;
@@ -138,7 +102,7 @@ export default function ProfilePage() {
 
       await tossPayments.requestPayment('카드', {
         amount: 10000,
-        orderId: `pro-${username}-${Date.now()}`,
+        orderId: `${username}-${Date.now()}`,
         orderName: 'AIssue Pro 플랜 월간 구독',
         successUrl: `${window.location.origin}/payment/success`,
         failUrl: `${window.location.origin}/payment/fail`,
@@ -199,7 +163,7 @@ export default function ProfilePage() {
                   프로필 정보
                   <Badge
                     variant="outline"
-                    className="bg-slate-200 text-slate-700 border-slate-300 dark:bg-slate-700 dark:text-slate-200 dark:border-slate-500"
+                    className="bg-slate-200 text-slate-700 border-slate-300 dark:bg-slate-700 dark:text-slate-200 dark:border-slate-500 hover:bg-slate-300 hover:text-slate-900 dark:hover:bg-slate-600 dark:hover:text-white transition-colors"
                   >
                     GitHub 연동
                   </Badge>

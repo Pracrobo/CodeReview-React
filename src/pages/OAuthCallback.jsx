@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { processGithubCallback } from '../services/authService';
+import { API_BASE_URL } from '../services/api';
 
 export default function OAuthCallback() {
   const navigate = useNavigate();
@@ -10,7 +11,7 @@ export default function OAuthCallback() {
     const code = params.get('code');
 
     if (code) {
-      fetch('http://localhost:3001/auth/github/callback', {
+      fetch(`${API_BASE_URL}/auth/github/callback`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ code }),
