@@ -26,7 +26,8 @@ jobs:
       - name: Create .env file for production build
         run: |
           echo "VITE_API_BASE_URL=${{ secrets.VITE_API_BASE_URL }}" > .env.production
-
+          echo "VITE_TOSS_CLIENT_KEY=${{ secrets.VITE_TOSS_CLIENT_KEY }}" >> .env.production
+      
       - name: Build project
         run: npm run build
 
