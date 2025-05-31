@@ -112,7 +112,7 @@ export function DialogFooter({ children }) {
     if (!React.isValidElement(child)) return child;
 
     const baseStyle = {
-      marginTop: 20,
+      marginTop: 30,
       fontWeight: 600,
       fontFamily: 'inherit',
       fontSize: 15,

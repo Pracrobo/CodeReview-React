@@ -30,7 +30,7 @@ export async function processGithubCallback(code) {
 export async function logout() {
   try {
     const token = localStorage.getItem('token');
-    await fetch(`${API_BASE_URL}/auth/github/logout`, {
+    const response = await fetch(`${API_BASE_URL}/auth/github/logout`, {
       method: 'POST',
       credentials: 'include',
       headers: {
@@ -38,13 +38,18 @@ export async function logout() {
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
       },
     });
-    // 모든 인증 정보 삭제 (공통 함수 사용)
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.message || '로그아웃 실패');
+    }
+
     removeAuthStorage();
     window.location.replace('/');
     return { success: true };
   } catch (error) {
     console.error('로그아웃 중 오류 발생:', error);
-    return { success: false };
+    return { success: false, message: error.message || '로그아웃에 실패했습니다.' };
   }
 }
 
@@ -52,7 +57,7 @@ export async function logout() {
 export async function unlinkGithubAccount() {
   try {
     const token = localStorage.getItem('token');
-    await fetch(`${API_BASE_URL}/auth/github/unlink`, {
+    const response = await fetch(`${API_BASE_URL}/auth/github/unlink`, {
       method: 'POST',
       credentials: 'include',
       headers: {
@@ -61,12 +66,18 @@ export async function unlinkGithubAccount() {
       },
       // body 필요 없음 (쿠키 기반)
     });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.message || '연동 해제 실패');
+    }
+
     removeAuthStorage();
     window.location.replace('/');
     return { success: true };
   } catch (error) {
     console.error('연동 해제 오류:', error);
-    return { success: false };
+    return { success: false, message: error.message || '연동 해제에 실패했습니다.' };
   }
 }
 
@@ -74,7 +85,7 @@ export async function unlinkGithubAccount() {
 export async function deleteGithubAccount() {
   try {
     const token = localStorage.getItem('token');
-    await fetch(`${API_BASE_URL}/auth/github/delete`, {
+    const response = await fetch(`${API_BASE_URL}/auth/github/delete`, {
       method: 'DELETE',
       credentials: 'include',
       headers: {
@@ -83,6 +94,12 @@ export async function deleteGithubAccount() {
       },
       // body 필요 없음 (쿠키 기반)
     });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.message || '계정 삭제 실패');
+    }
+
     removeAuthStorage();
     window.location.replace('/');
     return {
