@@ -1,4 +1,5 @@
 import { apiRequest, API_BASE_URL } from './api.js';
+import { removeAuthStorage } from '../utils/auth.js';
 
 // GitHub OAuth 콜백 처리
 export async function processGithubCallback(code) {
@@ -37,12 +38,8 @@ export async function logout() {
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
       },
     });
-    // 모든 인증 정보 삭제 (token 포함)
-    localStorage.removeItem('token');
-    localStorage.removeItem('githubAccessToken');
-    localStorage.removeItem('username');
-    localStorage.removeItem('email');
-    localStorage.removeItem('avatarUrl');
+    // 모든 인증 정보 삭제 (공통 함수 사용)
+    removeAuthStorage();
     window.dispatchEvent(new Event('loginStateChanged'));
     window.location.replace('/');
     return { success: true };
@@ -66,12 +63,8 @@ export async function unlinkGithubAccount() {
       },
       body: JSON.stringify({ accessToken: githubAccessToken }),
     });
-    // 모든 인증 정보 삭제
-    localStorage.removeItem('token');
-    localStorage.removeItem('githubAccessToken');
-    localStorage.removeItem('username');
-    localStorage.removeItem('email');
-    localStorage.removeItem('avatarUrl');
+    // 모든 인증 정보 삭제 (공통 함수 사용)
+    removeAuthStorage();
     window.location.replace('/');
     return { success: true };
   } catch (error) {
