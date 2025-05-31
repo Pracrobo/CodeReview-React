@@ -7,6 +7,7 @@ export async function processGithubCallback(code) {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ code }),
+      credentials: 'include',
     });
 
     if (!response.ok) {
@@ -28,7 +29,6 @@ export async function processGithubCallback(code) {
 export async function logout() {
   try {
     const token = localStorage.getItem('token');
-    const githubAccessToken = localStorage.getItem('githubAccessToken');
     await fetch(`${API_BASE_URL}/auth/github/logout`, {
       method: 'POST',
       credentials: 'include',
@@ -36,7 +36,6 @@ export async function logout() {
         'Content-Type': 'application/json',
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
       },
-      body: JSON.stringify({ accessToken: githubAccessToken }),
     });
     // 모든 인증 정보 삭제 (token 포함)
     localStorage.removeItem('token');
@@ -44,7 +43,6 @@ export async function logout() {
     localStorage.removeItem('username');
     localStorage.removeItem('email');
     localStorage.removeItem('avatarUrl');
-    // 상태 갱신 이벤트 발생
     window.dispatchEvent(new Event('loginStateChanged'));
     window.location.replace('/');
     return { success: true };
@@ -88,6 +86,7 @@ export async function deleteGithubAccount(accessToken) {
     const response = await apiRequest('/auth/github/delete', {
       method: 'DELETE',
       body: JSON.stringify({ accessToken }),
+      credentials: 'include',
     });
     window.location.replace('/');
     return {

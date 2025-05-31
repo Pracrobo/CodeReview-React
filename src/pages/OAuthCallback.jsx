@@ -13,6 +13,7 @@ export default function OAuthCallback() {
     if (code) {
       fetch(`${API_BASE_URL}/auth/github/callback`, {
         method: 'POST',
+        credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ code }),
       })
