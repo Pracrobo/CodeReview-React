@@ -40,7 +40,6 @@ export async function logout() {
     });
     // 모든 인증 정보 삭제 (공통 함수 사용)
     removeAuthStorage();
-    window.dispatchEvent(new Event('loginStateChanged'));
     window.location.replace('/');
     return { success: true };
   } catch (error) {
@@ -53,7 +52,6 @@ export async function logout() {
 export async function unlinkGithubAccount() {
   try {
     const token = localStorage.getItem('token');
-    const githubAccessToken = localStorage.getItem('githubAccessToken');
     await fetch(`${API_BASE_URL}/auth/github/unlink`, {
       method: 'POST',
       credentials: 'include',
@@ -61,9 +59,8 @@ export async function unlinkGithubAccount() {
         'Content-Type': 'application/json',
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
       },
-      body: JSON.stringify({ accessToken: githubAccessToken }),
+      // body 필요 없음 (쿠키 기반)
     });
-    // 모든 인증 정보 삭제 (공통 함수 사용)
     removeAuthStorage();
     window.location.replace('/');
     return { success: true };
@@ -74,17 +71,23 @@ export async function unlinkGithubAccount() {
 }
 
 // 계정 데이터 삭제
-export async function deleteGithubAccount(accessToken) {
+export async function deleteGithubAccount() {
   try {
-    const response = await apiRequest('/auth/github/delete', {
+    const token = localStorage.getItem('token');
+    await fetch(`${API_BASE_URL}/auth/github/delete`, {
       method: 'DELETE',
-      body: JSON.stringify({ accessToken }),
       credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+      // body 필요 없음 (쿠키 기반)
     });
+    removeAuthStorage();
     window.location.replace('/');
     return {
       success: true,
-      message: response.message || '계정 삭제가 완료되었습니다.',
+      message: '계정 삭제가 완료되었습니다.',
     };
   } catch (error) {
     console.error('계정 삭제 오류:', error);

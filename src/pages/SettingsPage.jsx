@@ -38,7 +38,7 @@ function GithubUnlinkButton() {
       return;
     }
 
-    const result = await unlinkGithubAccount(accessToken);
+    const result = await unlinkGithubAccount();
 
     if (!result.success) {
       alert('연동 해제 실패: ' + result.message);
@@ -73,7 +73,7 @@ function AccountDeleteButton() {
       return;
     }
 
-    const result = await deleteGithubAccount(accessToken);
+    const result = await deleteGithubAccount();
 
     if (!result.success) {
       alert('계정 삭제 실패: ' + result.message);
