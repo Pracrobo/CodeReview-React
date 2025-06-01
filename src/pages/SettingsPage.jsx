@@ -21,20 +21,13 @@ import {
 } from '../services/authService';
 import { Dialog, DialogContent, DialogHeader, DialogFooter } from '../components/ui/dialog';
 
-function useAuthTokens() {
-  return {
-    token: localStorage.getItem('token'),
-    accessToken: localStorage.getItem('accessToken'),
-  };
-}
-
 function GithubUnlinkButton() {
   const navigate = useNavigate();
-  const { token, accessToken } = useAuthTokens();
+  const accessToken = localStorage.getItem('accessToken');
   const [open, setOpen] = useState(false);
 
   const handleUnlink = useCallback(async () => {
-    if (!token) {
+    if (!accessToken) {
       alert('로그인 정보가 없습니다. 다시 로그인해 주세요.');
       navigate('/login');
       return;
@@ -49,7 +42,7 @@ function GithubUnlinkButton() {
 
     removeAuthStorage();
     window.location.replace('/');
-  }, [token, accessToken, navigate]);
+  }, [accessToken, navigate]);
 
   return (
     <>
@@ -81,11 +74,11 @@ function GithubUnlinkButton() {
 // 계정 데이터 삭제 모달 버튼
 function AccountDeleteButton() {
   const navigate = useNavigate();
-  const { token, accessToken } = useAuthTokens();
+  const accessToken = localStorage.getItem('accessToken');
   const [open, setOpen] = useState(false);
 
   const handleDelete = useCallback(async () => {
-    if (!token) {
+    if (!accessToken) {
       alert('로그인 정보가 없습니다. 다시 로그인해 주세요.');
       navigate('/login');
       return;
@@ -100,7 +93,7 @@ function AccountDeleteButton() {
 
     removeAuthStorage();
     window.location.replace('/');
-  }, [token, accessToken, navigate]);
+  }, [accessToken, navigate]);
 
   return (
     <>

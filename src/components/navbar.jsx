@@ -26,7 +26,7 @@ export default function Navbar({ scrollToTop, scrollToSection, loggedIn }) {
   // 홈으로 이동하는 함수 (AIssue 로고 클릭)
   const handleNavigateToHome = () => {
     if (isLoggedIn) {
-      navigate('/profile?tab=subscription');
+      navigate('/dashboard');
     } else {
       if (location.pathname === '/') {
         if (scrollToTop) scrollToTop();

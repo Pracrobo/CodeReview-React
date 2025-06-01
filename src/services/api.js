@@ -31,7 +31,6 @@ async function apiRequest(endpoint, options = {}) {
         config.headers.Authorization = `Bearer ${accessToken}`;
         response = await fetch(`${API_BASE_URL}${endpoint}`, config);
       } else {
-        removeAuthStorage();
         window.location.href = '/login';
         throw new Error('인증이 만료되었습니다. 다시 로그인해주세요.');
       }
