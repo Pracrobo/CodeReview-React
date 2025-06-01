@@ -1,10 +1,12 @@
+import { refreshAccessToken } from './authService.js';
+
 // React 환경에서 환경 변수 접근
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001';
 
 // API 요청 함수
 async function apiRequest(endpoint, options = {}) {
-  const token = localStorage.getItem('token');
+  let token = localStorage.getItem('token');
 
   const config = {
     headers: {
@@ -16,27 +18,31 @@ async function apiRequest(endpoint, options = {}) {
   };
 
   try {
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
+    let response = await fetch(`${API_BASE_URL}${endpoint}`, config);
 
-    if (!response.ok) {
-      // 401 에러 처리
-      if (response.status === 401) {
-        localStorage.removeItem('token');
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('username');
-        localStorage.removeItem('email');
-        localStorage.removeItem('avatarUrl');
+    // accessToken 만료(401) 시 refresh 시도
+    if (response.status === 401) {
+      const refreshResult = await refreshAccessToken();
+      if (refreshResult.success) {
+        // 새 토큰으로 재시도
+        token = refreshResult.token;
+        config.headers.Authorization = `Bearer ${token}`;
+        response = await fetch(`${API_BASE_URL}${endpoint}`, config);
+      } else {
+        // refresh 실패 시 로그아웃 처리
+        removeAuthStorage();
         window.location.href = '/login';
         throw new Error('인증이 만료되었습니다. 다시 로그인해주세요.');
       }
+    }
 
+    if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
       throw new Error(errorData.message || `HTTP ${response.status}`);
     }
 
     return await response.json();
   } catch (error) {
-    console.error('API 요청 오류:', error);
     throw error;
   }
 }
