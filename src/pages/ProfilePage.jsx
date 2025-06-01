@@ -251,7 +251,7 @@ export default function ProfilePage() {
                     {/* 로그아웃 버튼 */}
                     <div>
                       <Button
-                        variant="outline"
+                        variant="destructive" // 기존: "outline"
                         className="gap-1"
                         onClick={() => setOpen(true)} // 다이얼로그 열기
                       >
@@ -572,7 +572,7 @@ export default function ProfilePage() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setOpen(false)}>취소</Button>
-            <Button onClick={handleLogout}>로그아웃</Button>
+            <Button variant="destructive" onClick={handleLogout}>로그아웃</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
