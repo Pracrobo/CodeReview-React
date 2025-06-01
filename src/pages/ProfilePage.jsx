@@ -31,6 +31,34 @@ import { removeAuthStorage } from '../utils/auth';
 import { logout } from '../services/authService';
 import useTabQuery from '../hooks/use-tabquery';
 import { formatKoreanDate, getRemainDetail } from '../utils/dateHelpers';
+
+// 날짜 포맷 함수
+function formatKoreanDateTime(dateString) {
+  if (!dateString) return '';
+  const date = new Date(dateString);
+  return date
+    .toLocaleString('ko-KR', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true,
+    })
+    .replace(/\./g, '.')
+    .replace(',', '')
+    .replace(/\s?$/, '');
+}
+
+// 이용기간 포맷 함수 (끝나는 시간 1분 줄이기)
+function formatPeriod(start, end) {
+  if (!start || !end) return '';
+  const startDate = new Date(start);
+  const endDate = new Date(end);
+  endDate.setMinutes(endDate.getMinutes() - 1); // 끝나는 시간 1분 줄이기
+  return `${formatKoreanDateTime(startDate)} ~ ${formatKoreanDateTime(endDate)}`;
+}
+
 import { fetchUserAndPlan } from '../services/userService';
 import {
   Dialog,
@@ -40,19 +68,24 @@ import {
 } from '../components/ui/dialog';
 
 export default function ProfilePage() {
+  // 쿼리 파라미터에서 tab 값 읽기
+  const location = useLocation();
+  const navigate = useNavigate();
+  const params = new URLSearchParams(location.search);
+  const initialTab = params.get('tab') || 'account';
+
+  const [tabValue, setTabValue] = useState(initialTab);
   const [currentPlan, setCurrentPlan] = useState('loading');
+  const [proPlanActivatedAt, setProPlanActivatedAt] = useState(null);
   const [proPlanExpiresAt, setProPlanExpiresAt] = useState(null);
   const [daysLeft, setDaysLeft] = useState(0);
   const [username, setUsername] = useState('사용자');
   const [email, setEmail] = useState('이메일');
   const [avatarUrl, setAvatarUrl] = useState('');
   const [isCanceled, setIsCanceled] = useState(false); // 구독 취소 상태
-  const [tabValue, setTabValue] = useTabQuery('account');
   const [createdAt, setCreatedAt] = useState('');
   const [updatedAt, setUpdatedAt] = useState('');
   const [open, setOpen] = useState(false); // 로그아웃 다이얼로그 열림 상태
-  const location = useLocation();
-  const navigate = useNavigate();
 
   // 사용자 정보 및 구독 정보 불러오기
   useEffect(() => {
@@ -68,13 +101,13 @@ export default function ProfilePage() {
         setAvatarUrl(data.avatarUrl || '');
         setCreatedAt(data.createdAt || '');
         setUpdatedAt(data.updatedAt || '');
+        setProPlanActivatedAt(data.proPlanActivatedAt); // DB에서 받은 값
+        setProPlanExpiresAt(data.proPlanExpiresAt);     // DB에서 받은 값
         if (data.isProPlan) {
           setCurrentPlan('pro');
-          setProPlanExpiresAt(data.proPlanExpiresAt);
           setIsCanceled(false);
         } else {
           setCurrentPlan('free');
-          setProPlanExpiresAt(null);
           setIsCanceled(false);
         }
       })
@@ -144,6 +177,18 @@ export default function ProfilePage() {
     setDaysLeft(30);
   };
 
+  // 탭 변경 시 URL 쿼리 파라미터도 변경
+  const handleTabChange = (value) => {
+    setTabValue(value);
+    navigate(`/profile?tab=${value}`, { replace: true });
+  };
+
+  useEffect(() => {
+    // location.search가 바뀌면 탭 상태도 동기화
+    const params = new URLSearchParams(location.search);
+    setTabValue(params.get('tab') || 'account');
+  }, [location.search]);
+
   return (
     <DashboardLayout>
       <div className="space-y-6">
@@ -153,7 +198,7 @@ export default function ProfilePage() {
             계정 정보 관리 및 구독 플랜 설정
           </p>
         </div>
-        <Tabs value={tabValue} onValueChange={setTabValue}>
+        <Tabs value={tabValue} onValueChange={handleTabChange}>
           <TabsList>
             <TabsTrigger value="account">계정 정보</TabsTrigger>
             <TabsTrigger value="subscription">구독 관리</TabsTrigger>
@@ -238,22 +283,40 @@ export default function ProfilePage() {
                     <div className="flex items-center gap-2">
                       <span className="text-sm font-medium text-slate-500 dark:text-slate-300">가입일</span>
                       <span className="text-sm text-slate-800 dark:text-slate-100 font-semibold">
-                        {createdAt ? formatKoreanDate(createdAt) : '-'}
+                        {createdAt
+                          ? new Date(createdAt).toLocaleString('ko-KR', {
+                              year: 'numeric',
+                              month: '2-digit',
+                              day: '2-digit',
+                              hour: '2-digit',
+                              minute: '2-digit',
+                              hour12: true,
+                            }).replace(/\./g, '.').replace(',','').replace(/\s?$/, '')
+                          : '-'}
                       </span>
                     </div>
                     {/* 최근 활동 */}
                     <div className="flex items-center gap-2">
                       <span className="text-sm font-medium text-slate-500 dark:text-slate-300">최근 활동</span>
                       <span className="text-sm text-slate-800 dark:text-slate-100 font-semibold">
-                        {updatedAt ? formatKoreanDate(updatedAt) : '-'}
+                        {updatedAt
+                          ? new Date(updatedAt).toLocaleString('ko-KR', {
+                              year: 'numeric',
+                              month: '2-digit',
+                              day: '2-digit',
+                              hour: '2-digit',
+                              minute: '2-digit',
+                              hour12: true,
+                            }).replace(/\./g, '.').replace(',','').replace(/\s?$/, '')
+                          : '-'}
                       </span>
                     </div>
                     {/* 로그아웃 버튼 */}
                     <div>
                       <Button
-                        variant="destructive" // 기존: "outline"
+                        variant="destructive"
                         className="gap-1"
-                        onClick={() => setOpen(true)} // 다이얼로그 열기
+                        onClick={() => setOpen(true)}
                       >
                         <LogOut className="w-4 h-4" />
                         로그아웃
@@ -350,19 +413,21 @@ export default function ProfilePage() {
                 {currentPlan === 'pro' && (
                   <div className="space-y-2">
                     <div className="flex items-center gap-2">
-                      <span className="text-sm font-medium">Pro 플랜 만료일:</span>
+                      <span className="text-sm font-medium">Pro 플랜 이용기간 :</span>
                       <span className="text-sm font-semibold text-slate-700 dark:text-white">
-                        {proPlanExpiresAt
-                          ? `${formatKoreanDate(proPlanExpiresAt)}`
+                        {proPlanActivatedAt && proPlanExpiresAt
+                          ? formatPeriod(proPlanActivatedAt, proPlanExpiresAt)
                           : '정보 없음'}
                       </span>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-medium">남은 구독 기간:</span>
+                    {/* 남은 구독 기간 → 이용기간으로 텍스트 변경 */}
+                    {/* 기존 남은 구독 기간 표시는 제거 또는 필요시 아래처럼 남겨도 됨 */}
+                    {/* <div className="flex items-center gap-2">
+                      <span className="text-sm font-medium">남은 구독 기간 :</span>
                       <span className="text-sm font-semibold text-slate-700 dark:text-white">
                         {getRemainDetail(proPlanExpiresAt)}
                       </span>
-                    </div>
+                    </div> */}
                     {!isCanceled && (
                       <>
                         <Alert className="mt-4 bg-indigo-50 dark:bg-indigo-900/30 border border-indigo-200 dark:border-indigo-700 flex items-center gap-2">
