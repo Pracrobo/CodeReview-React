@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import {
@@ -28,11 +29,43 @@ import {
   FileText,
 } from 'lucide-react';
 import DashboardLayout from '../components/dashboard-layout';
-import { mockRepositoryDetails, mockIssues } from '../lib/mock-data';
+import { getRepositoryDetails } from '../services/repositoryService';
 
 export default function RepositoryPage() {
   const { id: repoId } = useParams();
-  const repo = mockRepositoryDetails;
+  const [repo, setRepo] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // 페이지 로드 시 저장소 정보 가져오기
+  useEffect(() => {
+    const loadRepositoryData = async () => {
+      if (!repoId) {
+        setError('저장소 ID가 필요합니다.');
+        setLoading(false);
+        return;
+      }
+
+      try {
+        setLoading(true);
+        const result = await getRepositoryDetails(repoId);
+
+        if (result.success) {
+          setRepo(result.data);
+          setError(null);
+        } else {
+          setError(result.message || '저장소 정보를 불러올 수 없습니다.');
+        }
+      } catch (err) {
+        console.error('저장소 정보 로드 오류:', err);
+        setError('저장소 정보를 불러오는 중 오류가 발생했습니다.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadRepositoryData();
+  }, [repoId]);
 
   // 라이선스 정보 및 의무사항
   const licenseInfo = {
@@ -70,8 +103,84 @@ export default function RepositoryPage() {
     },
   };
 
-  // 현재 저장소의 라이선스 정보 (예시로 MIT 사용)
-  const currentLicense = licenseInfo.MIT;
+  // 로딩 상태
+  if (loading) {
+    return (
+      <DashboardLayout>
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600 mx-auto mb-4"></div>
+            <p className="text-muted-foreground">
+              저장소 정보를 로드하는 중...
+            </p>
+          </div>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  // 오류 상태
+  if (error) {
+    return (
+      <DashboardLayout>
+        <div className="flex flex-col items-center justify-center h-64 space-y-4">
+          <div className="text-lg text-red-600">오류가 발생했습니다</div>
+          <div className="text-sm text-gray-600">{error}</div>
+          <Button onClick={() => window.location.reload()}>다시 시도</Button>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  // 저장소 데이터가 없는 경우
+  if (!repo) {
+    return (
+      <DashboardLayout>
+        <div className="flex flex-col items-center justify-center h-64 space-y-4">
+          <div className="text-lg">저장소를 찾을 수 없습니다</div>
+          <Button asChild>
+            <Link to="/dashboard">대시보드로 돌아가기</Link>
+          </Button>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  // 현재 저장소의 라이선스 정보
+  const currentLicense = licenseInfo[repo.licenseSpdxId] || licenseInfo.MIT;
+
+  // 날짜 포맷팅 함수
+  const formatDate = (dateString) => {
+    if (!dateString) return '정보 없음';
+    return new Date(dateString).toLocaleDateString('ko-KR');
+  };
+
+  // 언어별 색상 매핑 함수
+  const getLanguageColor = (language) => {
+    const colors = {
+      JavaScript: '#f1e05a',
+      TypeScript: '#2b7489',
+      Python: '#3572A5',
+      Java: '#b07219',
+      'C++': '#f34b7d',
+      C: '#555555',
+      Go: '#00ADD8',
+      Rust: '#dea584',
+      PHP: '#4F5D95',
+      Ruby: '#701516',
+      Swift: '#ffac45',
+      Kotlin: '#F18E33',
+      HTML: '#e34c26',
+      CSS: '#1572B6',
+      Shell: '#89e051',
+      Assembly: '#6E4C13',
+      'Jupyter Notebook': '#DA5B0B',
+      XML: '#0060ac',
+      Gradle: '#02303a',
+      Perl: '#0298c3',
+    };
+    return colors[language] || '#8b5cf6';
+  };
 
   return (
     <DashboardLayout>
@@ -86,43 +195,35 @@ export default function RepositoryPage() {
             <div className="flex items-center gap-2">
               <Github className="h-5 w-5" />
               <h1 className="text-2xl font-bold tracking-tight dark:text-white">
-                {repo.name}
+                {repo.fullName?.split('/')[1] || repo.fullName}
               </h1>
               <Badge
-                variant={repo.isPrivate ? 'outline' : 'secondary'}
-                className={
-                  repo.isPrivate
-                    ? 'dark:border-gray-600 dark:text-gray-300'
-                    : 'dark:bg-gray-600 dark:text-gray-200'
-                }
+                variant="secondary"
+                className="dark:bg-gray-600 dark:text-gray-200"
               >
-                {repo.isPrivate ? '비공개' : '공개'}
+                공개
               </Badge>
             </div>
           </div>
           <div className="flex items-center gap-4 text-sm text-muted-foreground dark:text-gray-400">
             <div className="flex items-center gap-1">
               <Star className="h-4 w-4" />
-              <span>{repo.stars}</span>
+              <span>{repo.star || 0}</span>
             </div>
             <div className="flex items-center gap-1">
               <GitFork className="h-4 w-4" />
-              <span>{repo.forks}</span>
+              <span>{repo.fork || 0}</span>
             </div>
             <div className="flex items-center gap-1">
               <AlertCircle className="h-4 w-4" />
-              <span>{repo.issues}개 이슈</span>
+              <span>{repo.issueTotalCount || 0}개 이슈</span>
             </div>
             <div className="flex items-center gap-1">
               <Clock className="h-4 w-4" />
-              <span>마지막 분석: {repo.lastAnalyzed}</span>
+              <span>마지막 분석: {formatDate(repo.lastAnalyzedAt)}</span>
             </div>
             <Button variant="ghost" size="sm" className="gap-1" asChild>
-              <a
-                href={`https://github.com/${repo.fullName}`}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
+              <a href={repo.htmlUrl} target="_blank" rel="noopener noreferrer">
                 GitHub에서 보기
                 <ExternalLink className="h-3.5 w-3.5" />
               </a>
@@ -149,17 +250,15 @@ export default function RepositoryPage() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="prose prose-sm max-w-none">
-                    <p>{repo.readmeSummary}</p>
-                    <h3 className="text-lg font-medium mt-4">주요 기능</h3>
-                    <ul>
-                      {repo.features.map((feature, index) => (
-                        <li key={index}>{feature}</li>
-                      ))}
-                    </ul>
+                    <p>
+                      {repo.readmeSummaryGpt ||
+                        repo.description ||
+                        '분석된 README 요약이 없습니다.'}
+                    </p>
                   </div>
                   <Button variant="outline" size="sm" className="gap-1" asChild>
                     <a
-                      href={`https://github.com/${repo.fullName}/blob/main/README.md`}
+                      href={`${repo.htmlUrl}/blob/main/README.md`}
                       target="_blank"
                       rel="noopener noreferrer"
                     >
@@ -177,29 +276,72 @@ export default function RepositoryPage() {
                   </CardHeader>
                   <CardContent className="space-y-2">
                     <div>
-                      <div className="text-sm font-medium">주요 언어</div>
-                      <div className="flex flex-wrap gap-1 mt-1">
-                        {repo.languages.map((lang) => (
-                          <Badge
-                            key={lang.name}
-                            variant="outline"
-                            className="bg-opacity-10 dark:border-opacity-50"
-                            style={{
-                              backgroundColor: `${lang.color}20`,
-                              borderColor: lang.color,
-                            }}
-                          >
-                            <span
-                              className="w-2 h-2 rounded-full mr-1"
-                              style={{ backgroundColor: lang.color }}
-                            ></span>
-                            {lang.name} {lang.percentage}%
-                          </Badge>
-                        ))}
+                      <div className="text-sm font-medium">사용 언어</div>
+                      <div className="mt-2">
+                        {repo?.languages && repo.languages.length > 0 ? (
+                          <div className="space-y-3">
+                            {/* 언어 비율 바 */}
+                            <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+                              <div className="h-full flex">
+                                {repo.languages.map((lang) => (
+                                  <div
+                                    key={lang.languageName}
+                                    className="h-full"
+                                    style={{
+                                      backgroundColor: getLanguageColor(
+                                        lang.languageName
+                                      ),
+                                      width: `${lang.percentage}%`,
+                                    }}
+                                    title={`${
+                                      lang.languageName
+                                    }: ${lang.percentage.toFixed(1)}%`}
+                                  />
+                                ))}
+                              </div>
+                            </div>
+
+                            {/* 언어 목록 */}
+                            <div className="space-y-1">
+                              {repo.languages.slice(0, 5).map((lang) => (
+                                <div
+                                  key={lang.languageName}
+                                  className="flex items-center justify-between text-sm"
+                                >
+                                  <div className="flex items-center gap-2">
+                                    <div
+                                      className="w-3 h-3 rounded-full"
+                                      style={{
+                                        backgroundColor: getLanguageColor(
+                                          lang.languageName
+                                        ),
+                                      }}
+                                    />
+                                    <span className="font-medium">
+                                      {lang.languageName}
+                                    </span>
+                                  </div>
+                                  <span className="text-muted-foreground">
+                                    {lang.percentage.toFixed(1)}%
+                                  </span>
+                                </div>
+                              ))}
+                              {repo.languages.length > 5 && (
+                                <div className="text-xs text-muted-foreground pt-1">
+                                  +{repo.languages.length - 5}개 언어 더
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="text-sm text-muted-foreground">
+                            언어 정보가 없습니다
+                          </div>
+                        )}
                       </div>
                     </div>
 
-                    {/* 라이선스 정보 개선 */}
+                    {/* 라이선스 정보 */}
                     <div className="pt-2">
                       <div className="flex items-center gap-1">
                         <FileText className="h-4 w-4 text-muted-foreground" />
@@ -286,7 +428,7 @@ export default function RepositoryPage() {
 
                         <div className="mt-3 text-xs text-center">
                           <a
-                            href={`https://github.com/${repo.fullName}/blob/main/LICENSE`}
+                            href={`${repo.htmlUrl}/blob/main/LICENSE`}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="text-primary hover:underline inline-flex items-center gap-1 dark:text-purple-400"
@@ -303,7 +445,7 @@ export default function RepositoryPage() {
                         최근 업데이트
                       </div>
                       <div className="text-sm text-muted-foreground mt-1 dark:text-gray-400">
-                        {repo.lastUpdated}
+                        {formatDate(repo.updatedAt)}
                       </div>
                     </div>
                   </CardContent>
@@ -316,24 +458,13 @@ export default function RepositoryPage() {
                   <CardContent className="space-y-2">
                     <div className="flex justify-between items-center">
                       <span className="text-sm dark:text-gray-300">
-                        열린 이슈
+                        총 이슈
                       </span>
                       <Badge
                         variant="outline"
-                        className="bg-green-50 text-green-700 border-green-200 dark:bg-green-900/30 dark:text-green-300 dark:border-green-600"
+                        className="bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-600"
                       >
-                        {repo.openIssues}
-                      </Badge>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm dark:text-gray-300">
-                        닫힌 이슈
-                      </span>
-                      <Badge
-                        variant="outline"
-                        className="bg-gray-50 text-gray-700 border-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600"
-                      >
-                        {repo.closedIssues}
+                        {repo.issueTotalCount || 0}
                       </Badge>
                     </div>
                     <div className="flex justify-between items-center">
@@ -344,7 +475,30 @@ export default function RepositoryPage() {
                         variant="outline"
                         className="bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-900/30 dark:text-purple-300 dark:border-purple-600"
                       >
-                        {repo.pullRequests}
+                        {repo.prTotalCount || 0}
+                      </Badge>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm dark:text-gray-300">
+                        분석 상태
+                      </span>
+                      <Badge
+                        variant="outline"
+                        className={
+                          repo.analysisStatus === 'completed'
+                            ? 'bg-green-50 text-green-700 border-green-200 dark:bg-green-900/30 dark:text-green-300 dark:border-green-600'
+                            : repo.analysisStatus === 'analyzing'
+                            ? 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-600'
+                            : 'bg-gray-50 text-gray-700 border-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600'
+                        }
+                      >
+                        {repo.analysisStatus === 'completed'
+                          ? '분석 완료'
+                          : repo.analysisStatus === 'analyzing'
+                          ? '분석 중'
+                          : repo.analysisStatus === 'failed'
+                          ? '분석 실패'
+                          : '분석 전'}
                       </Badge>
                     </div>
                   </CardContent>
@@ -355,58 +509,10 @@ export default function RepositoryPage() {
 
           {/* 이슈 목록 탭 */}
           <TabsContent value="issues" className="space-y-4">
-            <div className="grid grid-cols-1 gap-4">
-              {mockIssues.map((issue) => (
-                <Link
-                  to={`/repository/${repoId}/issue/${issue.number}`}
-                  key={issue.id}
-                >
-                  <Card className="transition-all hover:shadow-md dark:hover:shadow-lg">
-                    <CardHeader className="pb-2">
-                      <div className="flex justify-between items-start">
-                        <CardTitle className="text-base font-medium dark:text-white">
-                          #{issue.number} {issue.title}
-                        </CardTitle>
-                        <Badge
-                          variant={
-                            issue.state === 'open' ? 'default' : 'secondary'
-                          }
-                          className={
-                            issue.state === 'open'
-                              ? 'bg-green-500 dark:bg-green-600'
-                              : 'dark:bg-gray-600 dark:text-gray-200'
-                          }
-                        >
-                          {issue.state === 'open' ? '열림' : '닫힘'}
-                        </Badge>
-                      </div>
-                      <CardDescription className="dark:text-gray-400">
-                        {issue.user} 님이 {issue.createdAt}에 작성
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent className="pb-2">
-                      <p className="text-sm text-muted-foreground line-clamp-2 dark:text-gray-300">
-                        {issue.body}
-                      </p>
-                      <div className="flex flex-wrap gap-1 mt-3">
-                        {issue.labels.map((label) => (
-                          <Badge
-                            key={label.name}
-                            variant="outline"
-                            className="bg-opacity-10 dark:border-opacity-50"
-                            style={{
-                              backgroundColor: `${label.color}20`,
-                              borderColor: label.color,
-                            }}
-                          >
-                            {label.name}
-                          </Badge>
-                        ))}
-                      </div>
-                    </CardContent>
-                  </Card>
-                </Link>
-              ))}
+            <div className="text-center py-8">
+              <p className="text-muted-foreground">
+                이슈 목록 기능은 준비 중입니다.
+              </p>
             </div>
           </TabsContent>
 
@@ -423,43 +529,10 @@ export default function RepositoryPage() {
                 <div className="bg-muted p-4 rounded-lg mb-4 h-[400px] overflow-y-auto flex flex-col space-y-4 dark:bg-gray-800">
                   <div className="bg-primary-foreground p-3 rounded-lg max-w-[80%] self-start dark:bg-gray-700">
                     <p className="text-sm dark:text-gray-200">
-                      안녕하세요! {repo.name} 저장소에 대해 어떤 것이든
-                      물어보세요. 컨트리뷰션 방법, 코딩 컨벤션, PR 작성 방법
-                      등에 대해 답변해 드릴 수 있습니다.
-                    </p>
-                  </div>
-
-                  <div className="bg-primary p-3 rounded-lg max-w-[80%] text-primary-foreground self-end">
-                    <p className="text-sm">
-                      이 프로젝트에 기여하려면 어떻게 해야 하나요?
-                    </p>
-                  </div>
-
-                  <div className="bg-primary-foreground p-3 rounded-lg max-w-[80%] self-start dark:bg-gray-700">
-                    <p className="text-sm dark:text-gray-200">
-                      {repo.name} 프로젝트에 기여하는 방법은 다음과 같습니다:
-                    </p>
-                    <ol className="list-decimal list-inside text-sm mt-2 space-y-1 dark:text-gray-200">
-                      <li>저장소를 포크(Fork)하세요.</li>
-                      <li>
-                        새 브랜치를 생성하세요 (예:
-                        `feature/your-feature-name`).
-                      </li>
-                      <li>변경사항을 커밋하세요.</li>
-                      <li>브랜치를 푸시하세요.</li>
-                      <li>Pull Request를 생성하세요.</li>
-                    </ol>
-                    <p className="text-sm mt-2 dark:text-gray-200">
-                      자세한 내용은{' '}
-                      <a
-                        href={`https://github.com/${repo.fullName}/blob/main/CONTRIBUTING.md`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-primary hover:underline dark:text-purple-400"
-                      >
-                        CONTRIBUTING.md
-                      </a>{' '}
-                      파일을 참고하세요.
+                      안녕하세요!{' '}
+                      {repo.fullName?.split('/')[1] || repo.fullName} 저장소에
+                      대해 어떤 것이든 물어보세요. 컨트리뷰션 방법, 코딩 컨벤션,
+                      PR 작성 방법 등에 대해 답변해 드릴 수 있습니다.
                     </p>
                   </div>
                 </div>
@@ -473,7 +546,7 @@ export default function RepositoryPage() {
                 </div>
 
                 <p className="text-xs text-muted-foreground mt-2 dark:text-gray-400">
-                  무료 플랜: 이번 달 남은 메시지 82/100
+                  AI 챗봇 기능은 준비 중입니다.
                 </p>
               </CardContent>
             </Card>

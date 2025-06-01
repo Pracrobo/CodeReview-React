@@ -140,6 +140,22 @@ export default function RepositoriesPage() {
             <Github className="h-5 w-5" />
             <CardTitle className="text-base font-medium">{repo.name}</CardTitle>
             {repo.isNew && <Badge className="bg-green-500">NEW</Badge>}
+            {repo.analysisStatus === 'completed' && (
+              <Badge
+                variant="outline"
+                className="bg-green-50 text-green-700 border-green-200"
+              >
+                분석완료
+              </Badge>
+            )}
+            {repo.analysisStatus === 'analyzing' && (
+              <Badge
+                variant="outline"
+                className="bg-blue-50 text-blue-700 border-blue-200"
+              >
+                분석중
+              </Badge>
+            )}
           </div>
           <div className="flex items-center gap-2">
             <Badge variant={repo.isPrivate ? 'outline' : 'secondary'}>
@@ -164,7 +180,7 @@ export default function RepositoriesPage() {
         </CardDescription>
       </CardHeader>
       <CardContent className="pb-2">
-        <div className="flex items-center gap-4 text-sm text-muted-foreground">
+        <div className="flex items-center gap-4 text-sm text-muted-foreground mb-2">
           <div className="flex items-center gap-1">
             <Star className="h-4 w-4" />
             <span>{repo.stars}</span>
@@ -178,6 +194,23 @@ export default function RepositoriesPage() {
             <span>{repo.issues}개 이슈</span>
           </div>
         </div>
+        {/* 주요 언어 표시 */}
+        {repo.language && (
+          <div className="flex items-center gap-2 text-sm">
+            <div className="flex items-center gap-1">
+              <div
+                className="w-3 h-3 rounded-full"
+                style={{ backgroundColor: getLanguageColor(repo.language) }}
+              />
+              <span className="font-medium">{repo.language}</span>
+              {repo.languagePercentage && (
+                <span className="text-muted-foreground">
+                  {repo.languagePercentage.toFixed(1)}%
+                </span>
+              )}
+            </div>
+          </div>
+        )}
       </CardContent>
       <CardFooter className="text-xs text-muted-foreground flex justify-between">
         <div className="flex items-center gap-1">
@@ -195,6 +228,33 @@ export default function RepositoriesPage() {
       </CardFooter>
     </Card>
   );
+
+  // 언어별 색상 매핑 함수
+  const getLanguageColor = (language) => {
+    const colors = {
+      JavaScript: '#f1e05a',
+      TypeScript: '#2b7489',
+      Python: '#3572A5',
+      Java: '#b07219',
+      'C++': '#f34b7d',
+      C: '#555555',
+      Go: '#00ADD8',
+      Rust: '#dea584',
+      PHP: '#4F5D95',
+      Ruby: '#701516',
+      Swift: '#ffac45',
+      Kotlin: '#F18E33',
+      HTML: '#e34c26',
+      CSS: '#1572B6',
+      Shell: '#89e051',
+      Assembly: '#6E4C13',
+      'Jupyter Notebook': '#DA5B0B',
+      XML: '#0060ac',
+      Gradle: '#02303a',
+      Perl: '#0298c3',
+    };
+    return colors[language] || '#8b5cf6';
+  };
 
   if (loading) {
     return (

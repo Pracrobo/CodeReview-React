@@ -13,11 +13,15 @@ export function transformRepositoryData(dbRepo) {
     isStarred: false, // 즐겨찾기 기능은 추후 구현
     isNew: isNewRepository(dbRepo.createdAt),
     githubRepoId: dbRepo.githubRepoId,
-    language: dbRepo.programmingLanguage,
-    languagePercentage: dbRepo.languagePercentage,
+    language: dbRepo.primaryLanguage,
+    languagePercentage: dbRepo.primaryLanguagePercentage,
+    languages: dbRepo.languages || [],
     license: dbRepo.licenseSpdxId,
     readmeSummary: dbRepo.readmeSummaryGpt,
     htmlUrl: dbRepo.htmlUrl,
+    analysisStatus: dbRepo.analysisStatus,
+    analysisProgress: dbRepo.analysisProgress,
+    analysisCompletedAt: dbRepo.analysisCompletedAt,
   };
 }
 

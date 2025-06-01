@@ -19,6 +19,7 @@ import {
   getAnalyzingRepositories,
   getRecentlyAnalyzedRepositories,
   getAnalysisStatus,
+  updateRepositoryLastViewed,
 } from '../services/repositoryService';
 
 export default function DashboardPage() {
@@ -80,6 +81,7 @@ export default function DashboardPage() {
     const updatedRepositories = [];
     let hasCompletedRepo = false;
     let hasFailedRepo = false;
+    let failedRepoMessages = [];
 
     for (const repo of analyzingRepositories) {
       const statusResult = await getAnalysisStatus(repo.id);
@@ -102,6 +104,54 @@ export default function DashboardPage() {
           setNewRepositories((prev) => [updatedRepo, ...prev]);
         } else if (updatedRepo.status === 'failed') {
           hasFailedRepo = true;
+
+          // 오류 타입에 따른 사용자 친화적 메시지 생성
+          let userFriendlyMessage = '분석에 실패했습니다.';
+
+          if (updatedRepo.errorType) {
+            switch (updatedRepo.errorType) {
+              case 'REPOSITORY_SIZE_EXCEEDED':
+                userFriendlyMessage = `${updatedRepo.fullName}: 저장소 크기가 3MB를 초과하여 분석할 수 없습니다.`;
+                break;
+              case 'REPOSITORY_ACCESS_DENIED':
+                userFriendlyMessage = `${updatedRepo.fullName}: 저장소에 접근할 권한이 없습니다.`;
+                break;
+              case 'REPOSITORY_NOT_FOUND':
+                userFriendlyMessage = `${updatedRepo.fullName}: 저장소를 찾을 수 없습니다.`;
+                break;
+              case 'REPOSITORY_ARCHIVED':
+                userFriendlyMessage = `${updatedRepo.fullName}: 아카이브된 저장소는 분석할 수 없습니다.`;
+                break;
+              case 'REPOSITORY_DISABLED':
+                userFriendlyMessage = `${updatedRepo.fullName}: 비활성화된 저장소는 분석할 수 없습니다.`;
+                break;
+              case 'FLASK_ERROR':
+                userFriendlyMessage = `${updatedRepo.fullName}: 분석 서버 오류가 발생했습니다.`;
+                break;
+              case 'FLASK_CONNECTION_ERROR':
+                userFriendlyMessage = `${updatedRepo.fullName}: 분석 서버에 연결할 수 없습니다.`;
+                break;
+              case 'FLASK_TIMEOUT_ERROR':
+                userFriendlyMessage = `${updatedRepo.fullName}: 분석 요청 시간이 초과되었습니다.`;
+                break;
+              case 'DATABASE_ERROR':
+                userFriendlyMessage = `${updatedRepo.fullName}: 데이터베이스 오류가 발생했습니다.`;
+                break;
+              case 'VALIDATION_ERROR':
+                userFriendlyMessage = `${updatedRepo.fullName}: 검증 오류가 발생했습니다.`;
+                break;
+              default:
+                userFriendlyMessage = `${updatedRepo.fullName}: ${
+                  updatedRepo.errorMessage || '알 수 없는 오류가 발생했습니다.'
+                }`;
+                break;
+            }
+          } else if (updatedRepo.errorMessage) {
+            userFriendlyMessage = `${updatedRepo.fullName}: ${updatedRepo.errorMessage}`;
+          }
+
+          failedRepoMessages.push(userFriendlyMessage);
+
           // 실패한 저장소는 분석 중 목록에서 제거
           console.error('저장소 분석 실패:', updatedRepo.errorMessage);
         } else {
@@ -119,12 +169,21 @@ export default function DashboardPage() {
       console.log('저장소 분석이 완료되었습니다!');
     }
 
-    // 실패한 저장소가 있으면 에러 표시
-    if (hasFailedRepo) {
-      setErrorMessage('일부 저장소 분석이 실패했습니다. 다시 시도해주세요.');
+    // 실패한 저장소가 있으면 구체적인 에러 표시
+    if (hasFailedRepo && failedRepoMessages.length > 0) {
+      const errorMessage =
+        failedRepoMessages.length === 1
+          ? failedRepoMessages[0]
+          : `다음 저장소들의 분석이 실패했습니다:\n\n${failedRepoMessages.join(
+              '\n'
+            )}`;
+
+      setErrorMessage(errorMessage);
       setShowError(true);
-      // 3초 후 에러 메시지 자동 숨김
-      setTimeout(() => setShowError(false), 3000);
+
+      // 오류 메시지를 더 오래 표시 (여러 저장소 실패 시)
+      const hideTimeout = failedRepoMessages.length > 1 ? 10000 : 7000;
+      setTimeout(() => setShowError(false), hideTimeout);
     }
   };
 
@@ -177,13 +236,79 @@ export default function DashboardPage() {
         // 성공 메시지 표시 (선택사항)
         console.log('저장소 분석이 시작되었습니다:', result.message);
       } else {
-        setErrorMessage(result.message);
+        // 오류 타입에 따른 사용자 친화적 메시지 표시
+        let userFriendlyMessage = result.message;
+
+        // 백엔드에서 errorType을 제공하는 경우 처리
+        if (result.errorType) {
+          switch (result.errorType) {
+            case 'REPOSITORY_SIZE_EXCEEDED':
+              userFriendlyMessage = `저장소 크기가 너무 큽니다. 현재 서비스는 3MB 이하의 저장소만 분석 가능합니다.\n\n${result.message}`;
+              break;
+            case 'REPOSITORY_NOT_FOUND':
+              userFriendlyMessage =
+                '저장소를 찾을 수 없습니다. URL이 올바른지 확인해주세요.';
+              break;
+            case 'REPOSITORY_ACCESS_DENIED':
+              userFriendlyMessage =
+                '저장소에 접근할 권한이 없습니다. 공개 저장소인지 확인해주세요.';
+              break;
+            case 'REPOSITORY_ARCHIVED':
+              userFriendlyMessage =
+                '아카이브된 저장소는 분석할 수 없습니다. 활성 상태의 저장소를 선택해주세요.';
+              break;
+            case 'REPOSITORY_DISABLED':
+              userFriendlyMessage =
+                '비활성화된 저장소는 분석할 수 없습니다. 다른 저장소를 선택해주세요.';
+              break;
+            case 'GITHUB_AUTH_REQUIRED':
+              userFriendlyMessage =
+                'GitHub 인증이 필요합니다. 잠시 후 다시 시도해주세요.';
+              break;
+            case 'FLASK_CONNECTION_ERROR':
+              userFriendlyMessage =
+                '분석 서버에 연결할 수 없습니다. 잠시 후 다시 시도해주세요.';
+              break;
+            case 'FLASK_TIMEOUT_ERROR':
+              userFriendlyMessage =
+                '분석 요청 시간이 초과되었습니다. 잠시 후 다시 시도해주세요.';
+              break;
+            case 'INVALID_GITHUB_URL':
+              userFriendlyMessage =
+                '올바른 GitHub URL 형식이 아닙니다. (예: https://github.com/owner/repo)';
+              break;
+            case 'MISSING_REPO_URL':
+            case 'EMPTY_REPO_URL':
+              userFriendlyMessage = 'GitHub 저장소 URL을 입력해주세요.';
+              break;
+            case 'DATABASE_ERROR':
+              userFriendlyMessage =
+                '데이터베이스 오류가 발생했습니다. 잠시 후 다시 시도해주세요.';
+              break;
+            case 'VALIDATION_ERROR':
+              userFriendlyMessage = `입력 데이터가 올바르지 않습니다: ${result.message}`;
+              break;
+            default:
+              // 기본 메시지 사용
+              break;
+          }
+        }
+
+        setErrorMessage(userFriendlyMessage);
         setShowError(true);
+
+        // 자동으로 에러 메시지 숨김 (크기 초과 오류는 더 오래 표시)
+        const hideTimeout =
+          result.errorType === 'REPOSITORY_SIZE_EXCEEDED' ? 8000 : 5000;
+        setTimeout(() => setShowError(false), hideTimeout);
       }
     } catch (error) {
       console.error('저장소 분석 요청 오류:', error);
-      setErrorMessage('저장소 분석 요청 중 오류가 발생했습니다.');
+      setErrorMessage(
+        '저장소 분석 요청 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.'
+      );
       setShowError(true);
+      setTimeout(() => setShowError(false), 5000);
     } finally {
       setIsAnalyzing(false);
     }
@@ -224,13 +349,31 @@ export default function DashboardPage() {
   };
 
   // 분석 완료된 저장소 클릭 시 페이지 이동
-  const handleRepositoryClick = (repo) => {
-    navigate(`/repository/${repo.id}`, {
-      state: {
-        from: 'dashboard',
-        isNewlyAnalyzed: true,
-      },
-    });
+  const handleRepositoryClick = async (repo) => {
+    try {
+      // 마지막 조회 시간 업데이트
+      await updateRepositoryLastViewed(repo.id);
+
+      // 로컬 상태에서 해당 저장소를 새로운 저장소 목록에서 제거
+      setNewRepositories((prev) => prev.filter((r) => r.id !== repo.id));
+
+      // 저장소 페이지로 이동
+      navigate(`/repository/${repo.id}`, {
+        state: {
+          from: 'dashboard',
+          isNewlyAnalyzed: true,
+        },
+      });
+    } catch (error) {
+      console.error('저장소 클릭 처리 중 오류:', error);
+      // 오류가 발생해도 페이지 이동은 계속 진행
+      navigate(`/repository/${repo.id}`, {
+        state: {
+          from: 'dashboard',
+          isNewlyAnalyzed: true,
+        },
+      });
+    }
   };
 
   if (loading) {
