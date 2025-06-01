@@ -45,7 +45,6 @@ function formatKoreanDateTime(dateString) {
       minute: '2-digit',
       hour12: true,
     })
-    .replace(/\./g, '.')
     .replace(',', '')
     .replace(/\s?$/, '');
 }
