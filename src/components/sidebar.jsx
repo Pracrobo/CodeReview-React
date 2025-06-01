@@ -124,7 +124,7 @@ export default function Sidebar() {
             opacity-0 w-0 overflow-hidden
           `}
                 >
-                  사이드바 접기
+                  사이드바 펼치기
                 </span>
               </>
             ) : (

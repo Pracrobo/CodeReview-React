@@ -25,12 +25,16 @@ import {
   Check,
   X,
 } from 'lucide-react';
-import { Alert, AlertDescription, AlertTitle } from '../components/ui/alert';
+import { Alert, AlertDescription } from '../components/ui/alert';
 import DashboardLayout from '../components/dashboard-layout';
-import { removeAuthStorage } from '../utils/auth';
 import { logout } from '../services/authService';
-import useTabQuery from '../hooks/use-tabquery';
-import { formatKoreanDate, getRemainDetail } from '../utils/dateHelpers';
+import { fetchUserAndPlan } from '../services/userService';
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+} from '../components/ui/dialog';
 
 // 날짜 포맷 함수
 function formatKoreanDateTime(dateString) {
@@ -58,14 +62,6 @@ function formatPeriod(start, end) {
   return `${formatKoreanDateTime(startDate)} ~ ${formatKoreanDateTime(endDate)}`;
 }
 
-import { fetchUserAndPlan } from '../services/userService';
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-} from '../components/ui/dialog';
-
 export default function ProfilePage() {
   // 쿼리 파라미터에서 tab 값 읽기
   const location = useLocation();
@@ -73,18 +69,18 @@ export default function ProfilePage() {
   const params = new URLSearchParams(location.search);
   const initialTab = params.get('tab') || 'account';
 
+  // 상태 선언
   const [tabValue, setTabValue] = useState(initialTab);
   const [currentPlan, setCurrentPlan] = useState('loading');
   const [proPlanActivatedAt, setProPlanActivatedAt] = useState(null);
   const [proPlanExpiresAt, setProPlanExpiresAt] = useState(null);
-  const [daysLeft, setDaysLeft] = useState(0);
   const [username, setUsername] = useState('사용자');
   const [email, setEmail] = useState('이메일');
   const [avatarUrl, setAvatarUrl] = useState('');
-  const [isCanceled, setIsCanceled] = useState(false); // 구독 취소 상태
+  const [isCanceled, setIsCanceled] = useState(false);
   const [createdAt, setCreatedAt] = useState('');
   const [updatedAt, setUpdatedAt] = useState('');
-  const [open, setOpen] = useState(false); // 로그아웃 다이얼로그 열림 상태
+  const [open, setOpen] = useState(false);
 
   // 사용자 정보 및 구독 정보 불러오기
   useEffect(() => {
@@ -100,8 +96,8 @@ export default function ProfilePage() {
         setAvatarUrl(data.avatarUrl || '');
         setCreatedAt(data.createdAt || '');
         setUpdatedAt(data.updatedAt || '');
-        setProPlanActivatedAt(data.proPlanActivatedAt); // DB에서 받은 값
-        setProPlanExpiresAt(data.proPlanExpiresAt);     // DB에서 받은 값
+        setProPlanActivatedAt(data.proPlanActivatedAt);
+        setProPlanExpiresAt(data.proPlanExpiresAt);
         if (data.isProPlan) {
           setCurrentPlan('pro');
           setIsCanceled(false);
@@ -114,7 +110,7 @@ export default function ProfilePage() {
         setCurrentPlan('free');
         setIsCanceled(false);
       });
-  }, [location]); // location이 바뀔 때마다 실행
+  }, [location]);
 
   // Toss Payments 결제 함수
   const handleProPayment = async () => {
@@ -173,7 +169,6 @@ export default function ProfilePage() {
     newExpire.setHours(0, 0, 0, 0); // 시각을 0시로 맞춤
     newExpire.setDate(newExpire.getDate() + 30); // 30일 뒤
     setProPlanExpiresAt(newExpire.toISOString());
-    setDaysLeft(30);
   };
 
   // 탭 변경 시 URL 쿼리 파라미터도 변경
@@ -419,24 +414,15 @@ export default function ProfilePage() {
                           : '정보 없음'}
                       </span>
                     </div>
-                    {/* 남은 구독 기간 → 이용기간으로 텍스트 변경 */}
-                    {/* 기존 남은 구독 기간 표시는 제거 또는 필요시 아래처럼 남겨도 됨 */}
-                    {/* <div className="flex items-center gap-2">
-                      <span className="text-sm font-medium">남은 구독 기간 :</span>
-                      <span className="text-sm font-semibold text-slate-700 dark:text-white">
-                        {getRemainDetail(proPlanExpiresAt)}
-                      </span>
-                    </div> */}
+                    {/* 결제 정보 등 추가 가능 */}
+                    {/* ... */}
                     {!isCanceled && (
-                      <>
-                        <Alert className="mt-4 bg-indigo-50 dark:bg-indigo-900/30 border border-indigo-200 dark:border-indigo-700 flex items-center gap-2">
-                          <AlertCircle className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
-                          <span className="text-sm text-indigo-800 dark:text-indigo-100">
-                            Pro 플랜은 매월 자동 결제되며, 다양한 프리미엄 기능과 혜택을 계속 이용하실 수 있습니다.
-                          </span>
-                        </Alert>
-
-                      </>
+                      <Alert className="mt-4 bg-indigo-50 dark:bg-indigo-900/30 border border-indigo-200 dark:border-indigo-700 flex items-center gap-2">
+                        <AlertCircle className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
+                        <span className="text-sm text-indigo-800 dark:text-indigo-100">
+                          Pro 플랜은 매월 자동 결제되며, 다양한 프리미엄 기능과 혜택을 계속 이용하실 수 있습니다.
+                        </span>
+                      </Alert>
                     )}
                     {isCanceled && (
                       <Alert className="mt-4 bg-indigo-50 dark:bg-indigo-900/30 border border-indigo-200 dark:border-indigo-700 flex items-center gap-2">
