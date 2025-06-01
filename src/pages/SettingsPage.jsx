@@ -16,8 +16,8 @@ import DashboardLayout from '../components/dashboard-layout';
 import { useNavigate } from 'react-router-dom';
 import { removeAuthStorage } from '../utils/auth';
 import {
-  unlinkGithubAccount,
-  deleteGithubAccount,
+  unlinkAccount,
+  deleteAccount,
 } from '../services/authService';
 import { Dialog, DialogContent, DialogHeader, DialogFooter } from '../components/ui/dialog';
 
@@ -40,7 +40,7 @@ function GithubUnlinkButton() {
       return;
     }
 
-    const result = await unlinkGithubAccount();
+    const result = await unlinkAccount();
 
     if (!result.success) {
       alert('연동 해제 실패: ' + result.message);
@@ -91,7 +91,7 @@ function AccountDeleteButton() {
       return;
     }
 
-    const result = await deleteGithubAccount();
+    const result = await deleteAccount();
 
     if (!result.success) {
       alert('계정 삭제 실패: ' + result.message);

@@ -1,4 +1,5 @@
 import { refreshAccessToken } from './authService.js';
+import { removeAuthStorage } from '../utils/auth.js';
 
 // React 환경에서 환경 변수 접근
 const API_BASE_URL =
@@ -6,12 +7,11 @@ const API_BASE_URL =
 
 // API 요청 함수
 async function apiRequest(endpoint, options = {}) {
-  let token = localStorage.getItem('token');
-
+  let accessToken = localStorage.getItem('accessToken');
   const config = {
     headers: {
       'Content-Type': 'application/json',
-      ...(token && { Authorization: `Bearer ${token}` }),
+      ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
       ...options.headers,
     },
     ...options,
@@ -20,16 +20,17 @@ async function apiRequest(endpoint, options = {}) {
   try {
     let response = await fetch(`${API_BASE_URL}${endpoint}`, config);
 
-    // accessToken 만료(401) 시 refresh 시도
-    if (response.status === 401) {
+    // 토큰 갱신 요청 자체가 아니라면, 401 시 refresh 시도
+    if (
+      response.status === 401 &&
+      endpoint !== '/auth/token/refresh'
+    ) {
       const refreshResult = await refreshAccessToken();
       if (refreshResult.success) {
-        // 새 토큰으로 재시도
-        token = refreshResult.token;
-        config.headers.Authorization = `Bearer ${token}`;
+        accessToken = refreshResult.accessToken;
+        config.headers.Authorization = `Bearer ${accessToken}`;
         response = await fetch(`${API_BASE_URL}${endpoint}`, config);
       } else {
-        // refresh 실패 시 로그아웃 처리
         removeAuthStorage();
         window.location.href = '/login';
         throw new Error('인증이 만료되었습니다. 다시 로그인해주세요.');

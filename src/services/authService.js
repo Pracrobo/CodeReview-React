@@ -1,24 +1,16 @@
-import { apiRequest, API_BASE_URL } from './api.js';
+import { apiRequest } from './api.js';
 import { removeAuthStorage } from '../utils/auth.js';
 
 // GitHub OAuth 콜백 처리
 export async function processGithubCallback(code) {
   try {
-    const response = await fetch(`${API_BASE_URL}/auth/github/callback`, {
+    const data = await apiRequest('/auth/github/callback', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ code }),
       credentials: 'include',
     });
-
-    if (!response.ok) {
-      throw new Error('HTTP error: ' + response.status);
-    }
-
-    const data = await response.json();
     return { success: true, data };
   } catch (error) {
-    console.error('GitHub 콜백 처리 오류:', error);
     return {
       success: false,
       message: error.message || 'GitHub 로그인 처리에 실패했습니다.',
@@ -26,26 +18,29 @@ export async function processGithubCallback(code) {
   }
 }
 
-// 로그아웃 (apiRequest 사용, accessToken 만료 시 자동 갱신)
+// 로그아웃
 export async function logout() {
   try {
-    await apiRequest('/auth/github/logout', {
+    await apiRequest('/auth/logout', {
       method: 'POST',
       credentials: 'include',
     });
     removeAuthStorage();
+    window.dispatchEvent(new Event('loginStateChanged')); // 추가
     window.location.replace('/');
     return { success: true };
   } catch (error) {
-    console.error('로그아웃 중 오류 발생:', error);
+    removeAuthStorage();
+    window.dispatchEvent(new Event('loginStateChanged')); // 추가
+    window.location.replace('/');
     return { success: false, message: error.message || '로그아웃에 실패했습니다.' };
   }
 }
 
-// 연동 해제 (apiRequest 사용, accessToken 만료 시 자동 갱신)
-export async function unlinkGithubAccount() {
+// 계정 연동 해제
+export async function unlinkAccount() {
   try {
-    await apiRequest('/auth/github/unlink', {
+    await apiRequest('/auth/unlink', {
       method: 'POST',
       credentials: 'include',
     });
@@ -53,15 +48,14 @@ export async function unlinkGithubAccount() {
     window.location.replace('/');
     return { success: true };
   } catch (error) {
-    console.error('연동 해제 오류:', error);
     return { success: false, message: error.message || '연동 해제에 실패했습니다.' };
   }
 }
 
-// 계정 데이터 삭제 (apiRequest 사용, accessToken 만료 시 자동 갱신)
-export async function deleteGithubAccount() {
+// 계정 삭제
+export async function deleteAccount() {
   try {
-    await apiRequest('/auth/github/delete', {
+    await apiRequest('/auth/delete', {
       method: 'DELETE',
       credentials: 'include',
     });
@@ -72,7 +66,6 @@ export async function deleteGithubAccount() {
       message: '계정 삭제가 완료되었습니다.',
     };
   } catch (error) {
-    console.error('계정 삭제 오류:', error);
     return {
       success: false,
       message: error.message || '계정 삭제에 실패했습니다.',
@@ -82,25 +75,16 @@ export async function deleteGithubAccount() {
 
 export async function refreshAccessToken() {
   try {
-    const response = await fetch(`${API_BASE_URL}/auth/token/refresh`, {
+    const data = await apiRequest('/auth/token/refresh', {
       method: 'POST',
-      credentials: 'include', // 쿠키 자동 전송
-      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
     });
-
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.message || '토큰 갱신 실패');
-    }
-
-    const data = await response.json();
-    if (data.token) {
-      localStorage.setItem('token', data.token);
-      return { success: true, token: data.token };
+    if (data.accessToken) {
+      localStorage.setItem('accessToken', data.accessToken);
+      return { success: true, accessToken: data.accessToken };
     }
     throw new Error('토큰이 없습니다.');
   } catch (error) {
-    // 필요시 로그아웃 처리 등
     removeAuthStorage();
     return { success: false, message: error.message || '토큰 갱신 실패' };
   }

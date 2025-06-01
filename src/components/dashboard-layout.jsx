@@ -7,7 +7,7 @@ export default function DashboardLayout({ children }) {
     <SidebarProvider>
       <div className="flex flex-col h-screen">
         {/* 네비게이션 바 */}
-        <Navbar />
+        <Navbar loggedIn={true} /> {/* 여기서 loggedIn 명시적으로 전달 */}
 
         {/* 메인 콘텐츠 영역 */}
         <div className="flex flex-1 overflow-hidden">

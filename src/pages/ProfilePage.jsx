@@ -56,13 +56,12 @@ export default function ProfilePage() {
 
   // 사용자 정보 및 구독 정보 불러오기
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (!token) {
+    if (!localStorage.getItem('accessToken')) {
       setCurrentPlan('free');
       setIsCanceled(false);
       return;
     }
-    fetchUserAndPlan(token)
+    fetchUserAndPlan()
       .then((data) => {
         setUsername(data.username || '사용자');
         setEmail(data.email || '이메일');

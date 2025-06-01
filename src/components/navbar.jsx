@@ -13,16 +13,15 @@ import { removeAuthStorage } from '../utils/auth';
 import { logout } from '../services/authService';
 import { Dialog, DialogContent, DialogHeader, DialogFooter } from './ui/dialog';
 
-export default function Navbar({ scrollToTop, scrollToSection }) {
+export default function Navbar({ scrollToTop, scrollToSection, loggedIn }) {
   const location = useLocation();
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [open, setOpen] = useState(false);
 
-  const token = localStorage.getItem('token');
   const username = localStorage.getItem('username');
   const avatarUrl = localStorage.getItem('avatarUrl');
-  const isLoggedIn = !!token;
+  const isLoggedIn = loggedIn;
 
   // 홈으로 이동하는 함수 (AIssue 로고 클릭)
   const handleNavigateToHome = () => {
