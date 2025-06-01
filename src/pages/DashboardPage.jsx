@@ -79,17 +79,31 @@ export default function DashboardPage() {
   const checkAnalysisProgress = async () => {
     const updatedRepositories = [];
     let hasCompletedRepo = false;
+    let hasFailedRepo = false;
 
     for (const repo of analyzingRepositories) {
       const statusResult = await getAnalysisStatus(repo.id);
 
       if (statusResult.success) {
-        const updatedRepo = { ...repo, ...statusResult.data };
+        const updatedRepo = {
+          ...repo,
+          ...statusResult.data,
+          // Flask에서 받은 추가 정보들 포함
+          progress: statusResult.data.progress || repo.progress || 0,
+          currentStep: statusResult.data.currentStep || repo.currentStep,
+          etaText: statusResult.data.etaText || '계산 중...',
+          estimatedCompletion:
+            statusResult.data.estimatedCompletion || repo.estimatedCompletion,
+        };
 
         if (updatedRepo.status === 'completed') {
           hasCompletedRepo = true;
           // 완료된 저장소는 새로운 저장소 목록으로 이동
           setNewRepositories((prev) => [updatedRepo, ...prev]);
+        } else if (updatedRepo.status === 'failed') {
+          hasFailedRepo = true;
+          // 실패한 저장소는 분석 중 목록에서 제거
+          console.error('저장소 분석 실패:', updatedRepo.errorMessage);
         } else {
           updatedRepositories.push(updatedRepo);
         }
@@ -102,8 +116,15 @@ export default function DashboardPage() {
 
     // 완료된 저장소가 있으면 알림 표시
     if (hasCompletedRepo) {
-      // 여기에 토스트 알림 등을 추가할 수 있습니다
       console.log('저장소 분석이 완료되었습니다!');
+    }
+
+    // 실패한 저장소가 있으면 에러 표시
+    if (hasFailedRepo) {
+      setErrorMessage('일부 저장소 분석이 실패했습니다. 다시 시도해주세요.');
+      setShowError(true);
+      // 3초 후 에러 메시지 자동 숨김
+      setTimeout(() => setShowError(false), 3000);
     }
   };
 
@@ -168,16 +189,38 @@ export default function DashboardPage() {
     }
   };
 
-  // 남은 시간 계산 함수
-  const getRemainingTime = (estimatedCompletion) => {
-    if (!estimatedCompletion) return '계산 중...';
+  // 남은 시간 표시 함수 (Flask의 etaText 우선 사용)
+  const getDisplayTime = (repo) => {
+    // Flask에서 받은 etaText가 있으면 우선 사용
+    if (repo.etaText) {
+      return repo.etaText;
+    }
 
-    const remaining = new Date(estimatedCompletion).getTime() - Date.now();
+    // 기존 로직 (fallback)
+    if (!repo.estimatedCompletion) return '계산 중...';
+
+    const remaining = new Date(repo.estimatedCompletion).getTime() - Date.now();
     if (remaining <= 0) return '완료 예정';
 
     const minutes = Math.floor(remaining / 60000);
     if (minutes < 1) return '곧 완료';
     return `약 ${minutes}분 남음`;
+  };
+
+  // 진행 단계 표시 함수
+  const getProgressStepText = (repo) => {
+    if (repo.currentStep) {
+      return repo.currentStep;
+    }
+
+    const progress = repo.progress || 0;
+    if (progress <= 5) return '저장소 정보 확인 중...';
+    if (progress <= 10) return '저장소 복제 중...';
+    if (progress <= 20) return '코드 파일 로드 중...';
+    if (progress <= 50) return '코드 임베딩 생성 중...';
+    if (progress <= 70) return '문서 파일 로드 중...';
+    if (progress <= 90) return '문서 임베딩 생성 중...';
+    return '분석 완료 중...';
   };
 
   // 분석 완료된 저장소 클릭 시 페이지 이동
@@ -267,9 +310,13 @@ export default function DashboardPage() {
                       </div>
                       <Badge
                         variant="outline"
-                        className="bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-600"
+                        className={
+                          repo.status === 'failed'
+                            ? 'bg-red-50 text-red-700 border-red-200 dark:bg-red-900/30 dark:text-red-300 dark:border-red-600'
+                            : 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-600'
+                        }
                       >
-                        분석 중
+                        {repo.status === 'failed' ? '분석 실패' : '분석 중'}
                       </Badge>
                     </div>
                   </CardHeader>
@@ -277,15 +324,32 @@ export default function DashboardPage() {
                     <div className="space-y-2">
                       <div className="flex justify-between text-sm">
                         <span>진행률: {repo.progress || 0}%</span>
-                        <span>
-                          {getRemainingTime(repo.estimatedCompletion)}
-                        </span>
+                        <span>{getDisplayTime(repo)}</span>
                       </div>
-                      <Progress value={repo.progress || 0} className="h-2" />
-                      <p className="text-xs text-gray-600 mt-2 dark:text-gray-400">
-                        분석이 완료되면 자동으로 새로운 저장소 목록으로
-                        이동됩니다.
-                      </p>
+                      <Progress
+                        value={repo.progress || 0}
+                        className={`h-2 ${
+                          repo.status === 'failed' ? 'bg-red-100' : ''
+                        }`}
+                      />
+                      <div className="flex justify-between items-center mt-2">
+                        <p
+                          className={`text-xs ${
+                            repo.status === 'failed'
+                              ? 'text-red-600 dark:text-red-400'
+                              : 'text-gray-600 dark:text-gray-400'
+                          }`}
+                        >
+                          {repo.status === 'failed'
+                            ? repo.errorMessage || '분석 중 오류가 발생했습니다'
+                            : getProgressStepText(repo)}
+                        </p>
+                        <p className="text-xs text-gray-500 dark:text-gray-500">
+                          {repo.status === 'failed'
+                            ? '다시 시도해주세요'
+                            : '완료 시 자동으로 이동됩니다'}
+                        </p>
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
