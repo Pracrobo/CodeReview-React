@@ -16,31 +16,24 @@ import DashboardLayout from '../components/dashboard-layout';
 import { useNavigate } from 'react-router-dom';
 import { removeAuthStorage } from '../utils/auth';
 import {
-  unlinkGithubAccount,
-  deleteGithubAccount,
+  unlinkAccount,
+  deleteAccount,
 } from '../services/authService';
 import { Dialog, DialogContent, DialogHeader, DialogFooter } from '../components/ui/dialog';
 
-function useAuthTokens() {
-  return {
-    token: localStorage.getItem('token'),
-    accessToken: localStorage.getItem('accessToken'),
-  };
-}
-
 function GithubUnlinkButton() {
   const navigate = useNavigate();
-  const { token, accessToken } = useAuthTokens();
+  const accessToken = localStorage.getItem('accessToken');
   const [open, setOpen] = useState(false);
 
   const handleUnlink = useCallback(async () => {
-    if (!token) {
+    if (!accessToken) {
       alert('로그인 정보가 없습니다. 다시 로그인해 주세요.');
       navigate('/login');
       return;
     }
 
-    const result = await unlinkGithubAccount();
+    const result = await unlinkAccount();
 
     if (!result.success) {
       alert('연동 해제 실패: ' + result.message);
@@ -48,8 +41,8 @@ function GithubUnlinkButton() {
     }
 
     removeAuthStorage();
-    navigate('/');
-  }, [token, accessToken, navigate]);
+    window.location.replace('/');
+  }, [accessToken, navigate]);
 
   return (
     <>
@@ -81,17 +74,17 @@ function GithubUnlinkButton() {
 // 계정 데이터 삭제 모달 버튼
 function AccountDeleteButton() {
   const navigate = useNavigate();
-  const { token, accessToken } = useAuthTokens();
+  const accessToken = localStorage.getItem('accessToken');
   const [open, setOpen] = useState(false);
 
   const handleDelete = useCallback(async () => {
-    if (!token) {
+    if (!accessToken) {
       alert('로그인 정보가 없습니다. 다시 로그인해 주세요.');
       navigate('/login');
       return;
     }
 
-    const result = await deleteGithubAccount();
+    const result = await deleteAccount();
 
     if (!result.success) {
       alert('계정 삭제 실패: ' + result.message);
@@ -99,8 +92,8 @@ function AccountDeleteButton() {
     }
 
     removeAuthStorage();
-    navigate('/');
-  }, [token, accessToken, navigate]);
+    window.location.replace('/');
+  }, [accessToken, navigate]);
 
   return (
     <>

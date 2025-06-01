@@ -39,10 +39,10 @@ export default function HomePage() {
   }, []);
 
   const handleProPayment = async () => {
-    const token = localStorage.getItem('token');
+    const accessToken = localStorage.getItem('accessToken');
     const username = localStorage.getItem('username');
     
-    if (!token || !username || username.trim() === '') {
+    if (!accessToken || !username || username.trim() === '') {
       alert('Pro 플랜은 로그인 후 결제하면 이용하실 수 있습니다.');
       navigate('/login');
       return;

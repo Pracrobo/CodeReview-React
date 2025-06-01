@@ -68,14 +68,17 @@ export default function Sidebar() {
       asChild
     >
       <Link to={item.path} title={collapsed ? item.label : undefined}>
-        {collapsed ? (
-          <item.icon className="h-4 w-4" />
-        ) : (
-          <div className="flex items-center w-full">
-            <item.icon className="h-4 w-4 mr-3 flex-shrink-0" />
-            {showText && <span>{item.label}</span>}
-          </div>
-        )}
+        <div className="flex items-center justify-start w-full">
+          <item.icon className="h-4 w-4 mr-3 flex-shrink-0" />
+          <span
+            className={`
+            transition-all duration-200
+            ${collapsed || !showText ? 'opacity-0 w-0 overflow-hidden' : 'opacity-100 w-auto ml-0'}
+          `}
+          >
+            {item.label}
+          </span>
+        </div>
       </Link>
     </Button>
   );
@@ -101,38 +104,58 @@ export default function Sidebar() {
       } dark:border-gray-700`}
     >
       {/* 토글 버튼 */}
-      <div className="p-4 border-b border-border/50 dark:border-gray-700">
+      <div className="px-4 pt-4 pb-4 relative">
+        {/* 사이드바 접기 버튼 */}
         <Button
           variant="ghost"
           size="sm"
-          className="w-full hover:bg-accent/50 transition-all duration-300 h-10 px-3 relative"
+          className="w-full hover:bg-accent/50 transition-all duration-300 h-10 px-3"
           onClick={toggleSidebar}
           aria-label={collapsed ? '사이드바 펼치기' : '사이드바 접기'}
         >
-          {collapsed ? (
-            <ChevronRight className="h-4 w-4" />
-          ) : (
-            <div className="flex items-center w-full">
-              <ChevronLeft className="h-4 w-4 mr-2 flex-shrink-0" />
-              {showText && (
-                <span className="text-sm text-muted-foreground dark:text-gray-400">
+          <div className="flex items-center justify-start w-full h-full">
+            {collapsed ? (
+              <>
+                <ChevronRight className="h-4 w-4 mr-3 flex-shrink-0 ml-1" />
+                <span
+                  className={`
+            text-sm text-muted-foreground dark:text-gray-400
+            transition-all duration-200
+            opacity-0 w-0 overflow-hidden
+          `}
+                >
+                  사이드바 펼치기
+                </span>
+              </>
+            ) : (
+              <>
+                <ChevronLeft className="h-4 w-4 mr-3 flex-shrink-0 ml-1" />
+                <span
+                  className={`
+            text-sm text-muted-foreground dark:text-gray-400
+            transition-all duration-200
+            ${!showText ? 'opacity-0 w-0 overflow-hidden' : 'opacity-100 w-auto ml-0'}
+          `}
+                >
                   사이드바 접기
                 </span>
-              )}
-            </div>
-          )}
+              </>
+            )}
+          </div>
         </Button>
+        {/* 경계선만 양쪽 여백 */}
+        <div className="absolute left-4 right-4 bottom-0 h-px bg-border dark:bg-gray-700" />
       </div>
 
-      <div className="p-4 space-y-2 flex-1 flex flex-col">
+      <div className="p-0 flex-1 flex flex-col">
         {/* 메인 네비게이션 */}
-        <nav className="space-y-1 flex-1">
-          {mainMenuItems.map(renderMenuItem)}
-        </nav>
+        <nav className="space-y-1 flex-1 p-4">{mainMenuItems.map(renderMenuItem)}</nav>
 
         {/* 하단 네비게이션 */}
-        <div className="border-t border-border/50 dark:border-gray-700 pt-4 mt-4">
-          <nav className="space-y-1">{bottomMenuItems.map(renderMenuItem)}</nav>
+        <div className="relative px-0 pt-4 pb-0">
+          {/* 경계선만 양쪽 여백 */}
+          <div className="absolute left-4 right-4 top-0 h-px bg-border dark:bg-gray-700" />
+          <nav className="space-y-1 p-4 pt-0">{bottomMenuItems.map(renderMenuItem)}</nav>
         </div>
       </div>
     </div>
