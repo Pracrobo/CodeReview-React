@@ -6,8 +6,8 @@ export default function ProPaymentSuccess() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) {
+    const accessToken = localStorage.getItem("accessToken");
+    if (!accessToken) {
       alert("로그인 정보가 없습니다.");
       navigate("/login", { replace: true });
       return;
@@ -16,7 +16,7 @@ export default function ProPaymentSuccess() {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${accessToken}`,
       },
       credentials: "include",
     })
