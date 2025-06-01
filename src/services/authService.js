@@ -26,13 +26,11 @@ export async function logout() {
       credentials: 'include',
     });
     removeAuthStorage();
-    window.dispatchEvent(new Event('loginStateChanged')); // 추가
-    window.location.replace('/');
+    window.location.replace('/'); // ← 즉시 이동
     return { success: true };
   } catch (error) {
     removeAuthStorage();
-    window.dispatchEvent(new Event('loginStateChanged')); // 추가
-    window.location.replace('/');
+    window.location.replace('/'); // ← 즉시 이동
     return { success: false, message: error.message || '로그아웃에 실패했습니다.' };
   }
 }

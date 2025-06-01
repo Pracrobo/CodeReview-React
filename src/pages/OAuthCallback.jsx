@@ -18,7 +18,7 @@ export default function OAuthCallback() {
             if (data.username) localStorage.setItem('username', data.username);
             if (data.email) localStorage.setItem('email', data.email);
             if (data.avatarUrl) localStorage.setItem('avatarUrl', data.avatarUrl);
-            window.location.replace('/profile?tab=subscription');
+            window.location.replace('/dashboard');
           } else {
             navigate('/login', { replace: true });
           }

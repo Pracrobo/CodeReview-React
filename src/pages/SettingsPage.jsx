@@ -48,7 +48,7 @@ function GithubUnlinkButton() {
     }
 
     removeAuthStorage();
-    navigate('/');
+    window.location.replace('/');
   }, [token, accessToken, navigate]);
 
   return (
@@ -99,7 +99,7 @@ function AccountDeleteButton() {
     }
 
     removeAuthStorage();
-    navigate('/');
+    window.location.replace('/');
   }, [token, accessToken, navigate]);
 
   return (
