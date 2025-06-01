@@ -62,7 +62,7 @@ export default function Sidebar() {
   // 메뉴 항목 렌더링 함수
   const renderMenuItem = (item) => (
     <Button
-      key={`${item.path}-${collapsed}-${showText}`}
+      key={item.path}
       variant={item.isActive ? 'secondary' : 'ghost'}
       className="w-full transition-all duration-300 h-10 px-3"
       asChild

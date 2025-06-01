@@ -11,10 +11,7 @@ export async function processGithubCallback(code) {
     });
     return { success: true, data };
   } catch (error) {
-    return {
-      success: false,
-      message: error.message || 'GitHub 로그인 처리에 실패했습니다.',
-    };
+    return { success: false, message: error.message || 'GitHub 로그인 처리에 실패했습니다.' };
   }
 }
 
@@ -26,11 +23,9 @@ export async function logout() {
       credentials: 'include',
     });
     removeAuthStorage();
-    window.location.replace('/'); // ← 즉시 이동
+    window.location.replace('/');
     return { success: true };
   } catch (error) {
-    removeAuthStorage();
-    window.location.replace('/'); // ← 즉시 이동
     return { success: false, message: error.message || '로그아웃에 실패했습니다.' };
   }
 }
@@ -59,15 +54,9 @@ export async function deleteAccount() {
     });
     removeAuthStorage();
     window.location.replace('/');
-    return {
-      success: true,
-      message: '계정 삭제가 완료되었습니다.',
-    };
+    return { success: true };
   } catch (error) {
-    return {
-      success: false,
-      message: error.message || '계정 삭제에 실패했습니다.',
-    };
+    return { success: false, message: error.message || '계정 삭제에 실패했습니다.' };
   }
 }
 
@@ -84,6 +73,6 @@ export async function refreshAccessToken() {
     throw new Error('토큰이 없습니다.');
   } catch (error) {
     removeAuthStorage();
-    return { success: false, message: error.message || '토큰 갱신 실패' };
+    return { success: false, message: error.message || '토큰 갱신에 실패했습니다.' };
   }
 }
