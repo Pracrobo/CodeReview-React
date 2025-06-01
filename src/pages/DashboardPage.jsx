@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import {
   Card,
@@ -11,35 +11,121 @@ import {
 import { Input } from '../components/ui/input';
 import { Progress } from '../components/ui/progress';
 import { Badge } from '../components/ui/badge';
-import { AlertCircle, Clock, Search } from 'lucide-react';
+import { AlertCircle, Clock, Search, CheckCircle } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '../components/ui/alert';
 import DashboardLayout from '../components/dashboard-layout';
-import { mockAnalyzingRepositories, mockRepositories } from '../lib/mock-data';
+import {
+  analyzeRepository,
+  getAnalyzingRepositories,
+  getRecentlyAnalyzedRepositories,
+  getAnalysisStatus,
+} from '../services/repositoryService';
 
 export default function DashboardPage() {
   const [repoUrl, setRepoUrl] = useState('');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [showError, setShowError] = useState(false);
-  const [analyzingRepositories, setAnalyzingRepositories] = useState(
-    mockAnalyzingRepositories
-  );
-  const [newRepositories, setNewRepositories] = useState(
-    mockRepositories.filter((repo) => repo.isNew)
-  );
+  const [errorMessage, setErrorMessage] = useState('');
+  const [analyzingRepositories, setAnalyzingRepositories] = useState([]);
+  const [newRepositories, setNewRepositories] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const inputRef = useRef(null);
   const location = useLocation();
+  const navigate = useNavigate();
 
+  // 페이지 로드 시 데이터 가져오기
   useEffect(() => {
+    loadDashboardData();
+
     if (location.state?.from === 'repositories') {
       inputRef.current?.focus();
     }
   }, [location]);
 
-  const handleAnalyzeRepo = (e) => {
+  // 분석 중인 저장소 상태 폴링
+  useEffect(() => {
+    if (analyzingRepositories.length > 0) {
+      const interval = setInterval(() => {
+        checkAnalysisProgress();
+      }, 5000); // 5초마다 상태 확인
+
+      return () => clearInterval(interval);
+    }
+  }, [analyzingRepositories]);
+
+  const loadDashboardData = async () => {
+    setLoading(true);
+    try {
+      const [analyzingResult, recentResult] = await Promise.all([
+        getAnalyzingRepositories(),
+        getRecentlyAnalyzedRepositories(),
+      ]);
+
+      if (analyzingResult.success) {
+        setAnalyzingRepositories(analyzingResult.data);
+      }
+
+      if (recentResult.success) {
+        setNewRepositories(recentResult.data);
+      }
+    } catch (error) {
+      console.error('대시보드 데이터 로드 오류:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const checkAnalysisProgress = async () => {
+    const updatedRepositories = [];
+    let hasCompletedRepo = false;
+
+    for (const repo of analyzingRepositories) {
+      const statusResult = await getAnalysisStatus(repo.id);
+
+      if (statusResult.success) {
+        const updatedRepo = { ...repo, ...statusResult.data };
+
+        if (updatedRepo.status === 'completed') {
+          hasCompletedRepo = true;
+          // 완료된 저장소는 새로운 저장소 목록으로 이동
+          setNewRepositories((prev) => [updatedRepo, ...prev]);
+        } else {
+          updatedRepositories.push(updatedRepo);
+        }
+      } else {
+        updatedRepositories.push(repo);
+      }
+    }
+
+    setAnalyzingRepositories(updatedRepositories);
+
+    // 완료된 저장소가 있으면 알림 표시
+    if (hasCompletedRepo) {
+      // 여기에 토스트 알림 등을 추가할 수 있습니다
+      console.log('저장소 분석이 완료되었습니다!');
+    }
+  };
+
+  const validateGitHubUrl = (url) => {
+    const githubUrlPattern =
+      /^https:\/\/github\.com\/[a-zA-Z0-9._-]+\/[a-zA-Z0-9._-]+\/?$/;
+    return githubUrlPattern.test(url.trim());
+  };
+
+  const handleAnalyzeRepo = async (e) => {
     e.preventDefault();
 
-    if (!repoUrl.trim() || !repoUrl.includes('github.com')) {
+    if (!repoUrl.trim()) {
+      setErrorMessage('GitHub 저장소 URL을 입력해주세요.');
+      setShowError(true);
+      return;
+    }
+
+    if (!validateGitHubUrl(repoUrl)) {
+      setErrorMessage(
+        '유효한 GitHub 저장소 URL을 입력해주세요. (예: https://github.com/username/repo)'
+      );
       setShowError(true);
       return;
     }
@@ -47,35 +133,75 @@ export default function DashboardPage() {
     setShowError(false);
     setIsAnalyzing(true);
 
-    // 실제로는 저장소 분석 API를 호출하지만, 현재는 테스트를 위해 타이머 후 상태 변경
-    setTimeout(() => {
+    try {
+      const result = await analyzeRepository(repoUrl.trim());
+
+      if (result.success) {
+        setRepoUrl('');
+
+        // 분석 시작된 저장소를 분석 중 목록에 추가
+        const newAnalyzingRepo = {
+          id: result.data.repositoryId,
+          name: result.data.name,
+          fullName: result.data.fullName,
+          description: result.data.description || '분석 중인 저장소',
+          progress: result.data.progress || 0,
+          status: result.data.status || 'analyzing',
+          startedAt: result.data.startedAt || new Date().toISOString(),
+          estimatedCompletion: result.data.estimatedCompletion,
+        };
+
+        setAnalyzingRepositories((prev) => [newAnalyzingRepo, ...prev]);
+
+        // 성공 메시지 표시 (선택사항)
+        console.log('저장소 분석이 시작되었습니다:', result.message);
+      } else {
+        setErrorMessage(result.message);
+        setShowError(true);
+      }
+    } catch (error) {
+      console.error('저장소 분석 요청 오류:', error);
+      setErrorMessage('저장소 분석 요청 중 오류가 발생했습니다.');
+      setShowError(true);
+    } finally {
       setIsAnalyzing(false);
-      setRepoUrl('');
-
-      // 분석 중인 저장소에 추가
-      const repoName = repoUrl.split('/').pop() || 'unknown-repo';
-      const newRepo = {
-        id: `new-${Date.now()}`,
-        name: repoName,
-        fullName: repoUrl.replace('https://github.com/', ''),
-        description: '분석 중인 저장소',
-        progress: 5,
-        startedAt: new Date().toISOString(),
-        estimatedCompletion: new Date(Date.now() + 30 * 60000).toISOString(), // 30분 후
-      };
-
-      setAnalyzingRepositories([newRepo, ...analyzingRepositories]);
-    }, 1500);
+    }
   };
 
   // 남은 시간 계산 함수
   const getRemainingTime = (estimatedCompletion) => {
+    if (!estimatedCompletion) return '계산 중...';
+
     const remaining = new Date(estimatedCompletion).getTime() - Date.now();
     if (remaining <= 0) return '완료 예정';
 
     const minutes = Math.floor(remaining / 60000);
+    if (minutes < 1) return '곧 완료';
     return `약 ${minutes}분 남음`;
   };
+
+  // 분석 완료된 저장소 클릭 시 페이지 이동
+  const handleRepositoryClick = (repo) => {
+    navigate(`/repository/${repo.id}`, {
+      state: {
+        from: 'dashboard',
+        isNewlyAnalyzed: true,
+      },
+    });
+  };
+
+  if (loading) {
+    return (
+      <DashboardLayout>
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600 mx-auto mb-4"></div>
+            <p className="text-muted-foreground">대시보드를 로드하는 중...</p>
+          </div>
+        </div>
+      </DashboardLayout>
+    );
+  }
 
   return (
     <DashboardLayout>
@@ -106,6 +232,7 @@ export default function DashboardPage() {
                   className="pl-9"
                   value={repoUrl}
                   onChange={(e) => setRepoUrl(e.target.value)}
+                  disabled={isAnalyzing}
                 />
               </div>
               <Button type="submit" disabled={isAnalyzing}>
@@ -117,10 +244,7 @@ export default function DashboardPage() {
               <Alert variant="destructive" className="mt-4">
                 <AlertCircle className="h-4 w-4" />
                 <AlertTitle>오류</AlertTitle>
-                <AlertDescription>
-                  유효한 GitHub 저장소 URL을 입력해주세요. (예:
-                  https://github.com/username/repo)
-                </AlertDescription>
+                <AlertDescription>{errorMessage}</AlertDescription>
               </Alert>
             )}
           </CardContent>
@@ -152,14 +276,15 @@ export default function DashboardPage() {
                   <CardContent>
                     <div className="space-y-2">
                       <div className="flex justify-between text-sm">
-                        <span>진행률: {repo.progress}%</span>
+                        <span>진행률: {repo.progress || 0}%</span>
                         <span>
                           {getRemainingTime(repo.estimatedCompletion)}
                         </span>
                       </div>
-                      <Progress value={repo.progress} className="h-2" />
+                      <Progress value={repo.progress || 0} className="h-2" />
                       <p className="text-xs text-gray-600 mt-2 dark:text-gray-400">
-                        분석이 완료되면 알림을 보내드립니다.
+                        분석이 완료되면 자동으로 새로운 저장소 목록으로
+                        이동됩니다.
                       </p>
                     </div>
                   </CardContent>
@@ -175,18 +300,23 @@ export default function DashboardPage() {
             <h2 className="text-xl font-semibold">새로 분석된 저장소</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {newRepositories.map((repo) => (
-                <Link to={`/repository/${repo.id}`} key={repo.id}>
-                  <Card className="h-full transition-all hover:shadow-md dark:hover:shadow-lg">
-                    <CardHeader className="pb-2">
-                      <div className="flex justify-between items-start">
-                        <div className="flex items-center gap-2">
-                          <CardTitle className="text-base font-medium dark:text-white">
-                            {repo.name}
-                          </CardTitle>
-                          <Badge className="bg-green-500 dark:bg-green-600">
-                            NEW
-                          </Badge>
-                        </div>
+                <Card
+                  key={repo.id}
+                  className="h-full transition-all hover:shadow-md dark:hover:shadow-lg cursor-pointer"
+                  onClick={() => handleRepositoryClick(repo)}
+                >
+                  <CardHeader className="pb-2">
+                    <div className="flex justify-between items-start">
+                      <div className="flex items-center gap-2">
+                        <CardTitle className="text-base font-medium dark:text-white">
+                          {repo.name}
+                        </CardTitle>
+                        <Badge className="bg-green-500 dark:bg-green-600">
+                          NEW
+                        </Badge>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <CheckCircle className="h-4 w-4 text-green-500" />
                         <Badge
                           variant={repo.isPrivate ? 'outline' : 'secondary'}
                           className={
@@ -198,18 +328,20 @@ export default function DashboardPage() {
                           {repo.isPrivate ? '비공개' : '공개'}
                         </Badge>
                       </div>
-                      <CardDescription className="line-clamp-2 h-10 dark:text-gray-300">
-                        {repo.description}
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent className="text-xs text-muted-foreground dark:text-gray-400">
-                      <div className="flex items-center gap-1">
-                        <Clock className="h-3.5 w-3.5" />
-                        <span>분석 완료: {repo.lastAnalyzed}</span>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </Link>
+                    </div>
+                    <CardDescription className="line-clamp-2 h-10 dark:text-gray-300">
+                      {repo.description}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="text-xs text-muted-foreground dark:text-gray-400">
+                    <div className="flex items-center gap-1">
+                      <Clock className="h-3.5 w-3.5" />
+                      <span>
+                        분석 완료: {repo.lastAnalyzed || repo.completedAt}
+                      </span>
+                    </div>
+                  </CardContent>
+                </Card>
               ))}
             </div>
           </div>
@@ -228,7 +360,7 @@ export default function DashboardPage() {
               <p className="text-center text-muted-foreground mb-4 dark:text-gray-300">
                 GitHub 저장소 URL을 입력하여 AI 분석을 시작해보세요
               </p>
-              <Button onClick={() => document.querySelector('input').focus()}>
+              <Button onClick={() => inputRef.current?.focus()}>
                 첫 저장소 분석하기
               </Button>
             </CardContent>
