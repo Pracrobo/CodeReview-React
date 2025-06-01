@@ -104,7 +104,7 @@ export default function Sidebar() {
       } dark:border-gray-700`}
     >
       {/* 토글 버튼 */}
-      <div className="px-4 pt-4 pb-2 relative">
+      <div className="px-4 pt-4 pb-4 relative">
         {/* 사이드바 접기 버튼 */}
         <Button
           variant="ghost"
@@ -152,7 +152,7 @@ export default function Sidebar() {
         <nav className="space-y-1 flex-1 p-4">{mainMenuItems.map(renderMenuItem)}</nav>
 
         {/* 하단 네비게이션 */}
-        <div className="relative px-0 pt-4 pb-4">
+        <div className="relative px-0 pt-4 pb-0">
           {/* 경계선만 양쪽 여백 */}
           <div className="absolute left-4 right-4 top-0 h-px bg-border dark:bg-gray-700" />
           <nav className="space-y-1 p-4 pt-0">{bottomMenuItems.map(renderMenuItem)}</nav>
