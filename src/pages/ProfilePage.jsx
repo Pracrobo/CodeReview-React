@@ -93,6 +93,7 @@ export default function ProfilePage() {
 
   // 사용자 정보 및 구독 정보 불러오기
   useEffect(() => {
+    if (logoutLoading) return;
     async function fetchAndHandleUser() {
       if (!localStorage.getItem('accessToken')) {
         setCurrentPlan('free');
@@ -128,7 +129,7 @@ export default function ProfilePage() {
       }
     }
     fetchAndHandleUser();
-  }, [location, handleAutoLogout]);
+  }, [location, handleAutoLogout, logoutLoading]);
 
   // Toss Payments 결제 함수
   const handleProPayment = async () => {
@@ -170,7 +171,7 @@ export default function ProfilePage() {
   const handleLogout = async () => {
     if (logoutLoading) return; // 중복 방지
     setLogoutLoading(true);
-    await logout();
+    logout();
     window.location.replace('/');
   };
 

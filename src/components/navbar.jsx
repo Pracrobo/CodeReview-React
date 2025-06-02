@@ -87,7 +87,7 @@ export default function Navbar({ scrollToTop, scrollToSection, loggedIn }) {
   const handleLogout = async () => {
     if (logoutLoading) return; // 중복 방지
     setLogoutLoading(true);
-    await logout();
+    logout();
     window.location.replace('/');
   };
 
