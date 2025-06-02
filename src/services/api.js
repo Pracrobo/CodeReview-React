@@ -31,7 +31,7 @@ async function apiRequest(endpoint, options = {}) {
     } else {
       await logout(false);
       window.location.replace('/');
-      return;
+      throw new Error('인증이 만료되었습니다. 다시 로그인해주세요.');
     }
   }
 
@@ -39,7 +39,7 @@ async function apiRequest(endpoint, options = {}) {
   if (response.status === 404) {
     await logout(false);
     window.location.replace('/');
-    return;
+    throw new Error('요청하신 리소스를 찾을 수 없습니다.');
   }
 
   if (!response.ok) {

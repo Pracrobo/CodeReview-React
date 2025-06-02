@@ -7,6 +7,11 @@ function handlePostAuthCleanup(redirect) {
   if (redirect) window.location.replace('/');
 }
 
+// 공통 에러 핸들링 함수
+function handleError(error, defaultMsg) {
+  return { success: false, message: error?.message || defaultMsg };
+}
+
 // GitHub OAuth 콜백 처리
 export async function processGithubCallback(code) {
   try {
@@ -17,50 +22,35 @@ export async function processGithubCallback(code) {
     });
     return { success: true, data };
   } catch (error) {
-    return { success: false, message: error.message || 'GitHub 로그인 처리에 실패했습니다.' };
+    return handleError(error, 'GitHub 로그인 처리에 실패했습니다.');
   }
+}
+
+async function postAuthAction(url, method, failMsg, redirect = true) {
+  let result;
+  try {
+    await apiRequest(url, { method, credentials: 'include' });
+    result = { success: true };
+  } catch (error) {
+    result = handleError(error, failMsg);
+  }
+  handlePostAuthCleanup(redirect);
+  return result;
 }
 
 // 로그아웃
-export async function logout(redirect = true) {
-  try {
-    await apiRequest('/auth/logout', {
-      method: 'POST',
-      credentials: 'include',
-    });
-  } catch (error) {
-    console.error('로그아웃 실패:', error);
-  }
-  handlePostAuthCleanup(redirect);
-  return { success: true };
+export function logout(redirect = true) {
+  return postAuthAction('/auth/logout', 'POST', '로그아웃 처리에 실패했습니다.', redirect);
 }
 
 // 계정 연동 해제
-export async function unlinkAccount(redirect = true) {
-  try {
-    await apiRequest('/auth/unlink', {
-      method: 'POST',
-      credentials: 'include',
-    });
-  } catch (error) {
-    console.error('계정 연동 해제 실패:', error);
-  }
-  handlePostAuthCleanup(redirect);
-  return { success: true };
+export function unlinkAccount(redirect = true) {
+  return postAuthAction('/auth/unlink', 'POST', '계정 연동 해제에 실패했습니다.', redirect);
 }
 
 // 계정 삭제
-export async function deleteAccount(redirect = true) {
-  try {
-    await apiRequest('/auth/delete', {
-      method: 'DELETE',
-      credentials: 'include',
-    });
-  } catch (error) {
-    console.error('계정 삭제 실패:', error);
-  }
-  handlePostAuthCleanup(redirect);
-  return { success: true };
+export function deleteAccount(redirect = true) {
+  return postAuthAction('/auth/delete', 'DELETE', '계정 삭제에 실패했습니다.', redirect);
 }
 
 export async function refreshAccessToken() {
@@ -76,6 +66,6 @@ export async function refreshAccessToken() {
     throw new Error('토큰이 없습니다.');
   } catch (error) {
     removeAuthStorage();
-    return { success: false, message: error.message || '토큰 갱신에 실패했습니다.' };
+    return handleError(error, '토큰 갱신에 실패했습니다.');
   }
 }
