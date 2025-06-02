@@ -10,7 +10,7 @@ export function transformRepositoryData(dbRepo) {
     issues: dbRepo.issueTotalCount || 0,
     isPrivate: false, // DB에 없으므로 기본값
     lastAnalyzed: formatDate(dbRepo.lastAnalyzedAt),
-    isStarred: false, // 즐겨찾기 기능은 추후 구현
+    isFavorite: dbRepo.isFavorite || false,
     isNew: isNewRepository(dbRepo.createdAt),
     githubRepoId: dbRepo.githubRepoId,
     language: dbRepo.primaryLanguage,

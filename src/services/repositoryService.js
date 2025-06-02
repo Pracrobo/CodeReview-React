@@ -244,3 +244,24 @@ export async function getRepositoryLanguages(repoId) {
     };
   }
 }
+
+// 즐겨찾기 상태 업데이트
+export async function updateFavoriteStatus(repoId, isFavorite) {
+  try {
+    const response = await apiRequest(`/repositories/${repoId}/favorite`, {
+      method: 'PATCH',
+      body: JSON.stringify({ isFavorite }),
+    });
+    return {
+      success: true,
+      data: response.data || {},
+      message: response.message,
+    };
+  } catch (error) {
+    console.error('즐겨찾기 상태 업데이트 오류:', error);
+    return {
+      success: false,
+      message: error.message || '즐겨찾기 상태 업데이트에 실패했습니다.',
+    };
+  }
+}

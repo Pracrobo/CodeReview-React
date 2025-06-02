@@ -30,6 +30,7 @@ import DashboardLayout from '../components/dashboard-layout';
 import {
   getUserRepositories,
   removeRepositoryFromTracking,
+  updateFavoriteStatus,
 } from '../services/repositoryService';
 import { transformRepositoryData } from '../utils/dataTransformers';
 import { getLanguageColor } from '../utils/languageUtils';
@@ -37,7 +38,7 @@ import { getLanguageColor } from '../utils/languageUtils';
 export default function RepositoriesPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [repositories, setRepositories] = useState([]);
-  const [starredRepositories, setStarredRepositories] = useState([]);
+  const [favoriteRepositories, setFavoriteRepositories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -57,9 +58,9 @@ export default function RepositoriesPage() {
         const transformedRepos = result.data.map(transformRepositoryData);
         setRepositories(transformedRepos);
 
-        // 즐겨찾기 필터링 (추후 DB에서 관리)
-        const starred = transformedRepos.filter((repo) => repo.isStarred);
-        setStarredRepositories(starred);
+        // 즐겨찾기 필터링
+        const favorite = transformedRepos.filter((repo) => repo.isFavorite);
+        setFavoriteRepositories(favorite);
       } else {
         setError(result.message);
       }
@@ -71,32 +72,37 @@ export default function RepositoriesPage() {
     }
   };
 
-  const toggleStar = (e, repoId) => {
+  const toggleFavoriteStatus = async (e, repoId) => {
     e.preventDefault();
     e.stopPropagation();
 
-    // 임시 구현: 로컬 상태만 업데이트
-    const updatedRepositories = repositories.map((repo) => {
-      if (repo.id === repoId) {
-        return { ...repo, isStarred: !repo.isStarred };
-      }
-      return repo;
-    });
-    setRepositories(updatedRepositories);
-
-    // 즐겨찾기 목록 업데이트
     const repo = repositories.find((r) => r.id === repoId);
-    if (repo) {
-      if (repo.isStarred) {
-        setStarredRepositories(
-          starredRepositories.filter((r) => r.id !== repoId)
+    if (!repo) return;
+
+    try {
+      const result = await updateFavoriteStatus(repoId, !repo.isFavorite);
+      if (result.success) {
+        const updatedRepositories = repositories.map((repo) =>
+          repo.id === repoId ? { ...repo, isFavorite: !repo.isFavorite } : repo
         );
+        setRepositories(updatedRepositories);
+
+        if (repo.isFavorite) {
+          setFavoriteRepositories(
+            favoriteRepositories.filter((r) => r.id !== repoId)
+          );
+        } else {
+          setFavoriteRepositories([
+            ...favoriteRepositories,
+            { ...repo, isFavorite: true },
+          ]);
+        }
       } else {
-        setStarredRepositories([
-          ...starredRepositories,
-          { ...repo, isStarred: true },
-        ]);
+        alert(result.message || '즐겨찾기 상태 업데이트에 실패했습니다.');
       }
+    } catch (err) {
+      console.error('즐겨찾기 상태 업데이트 오류:', err);
+      alert('즐겨찾기 상태 업데이트 중 오류가 발생했습니다.');
     }
   };
 
@@ -127,7 +133,7 @@ export default function RepositoriesPage() {
       repo.description.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const filteredStarredRepositories = starredRepositories.filter(
+  const filteredFavoriteRepositories = favoriteRepositories.filter(
     (repo) =>
       repo.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       repo.description.toLowerCase().includes(searchQuery.toLowerCase())
@@ -166,11 +172,11 @@ export default function RepositoriesPage() {
               variant="ghost"
               size="icon"
               className="h-8 w-8"
-              onClick={(e) => toggleStar(e, repo.id)}
+              onClick={(e) => toggleFavoriteStatus(e, repo.id)}
             >
               <Star
                 className={`h-4 w-4 ${
-                  repo.isStarred ? 'fill-yellow-400 text-yellow-400' : ''
+                  repo.isFavorite ? 'fill-yellow-400 text-yellow-400' : ''
                 }`}
               />
             </Button>
@@ -330,9 +336,9 @@ export default function RepositoriesPage() {
             )}
           </TabsContent>
           <TabsContent value="starred">
-            {filteredStarredRepositories.length > 0 ? (
+            {filteredFavoriteRepositories.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {filteredStarredRepositories.map((repo) => (
+                {filteredFavoriteRepositories.map((repo) => (
                   <Link to={`/repository/${repo.id}`} key={repo.id}>
                     {renderRepositoryCard(repo)}
                   </Link>
