@@ -97,7 +97,6 @@ export default function ProfilePage() {
         // DB에 유저 정보가 없으면(404) 자동 로그아웃
         if (data.success === false && data.message && data.message.includes('사용자 정보를 찾을 수 없습니다')) {
           logout(false);
-          alert('인증이 만료되었습니다. 다시 로그인해주세요.');
           window.location.replace('/');
           return;
         }
@@ -120,7 +119,6 @@ export default function ProfilePage() {
         // 401(토큰 만료) 또는 404(유저 없음) 모두 자동 로그아웃
         if (err.status === 401 || err.status === 404) {
           logout(false);
-          alert('인증이 만료되었습니다. 다시 로그인해주세요.');
           window.location.replace('/');
         }
       });
@@ -164,8 +162,7 @@ export default function ProfilePage() {
   };
 
   const handleLogout = async () => {
-    await logout(false); // redirect 없이 로그아웃만
-    alert('로그아웃되었습니다. 다시 로그인해주세요.');
+    await logout(false);
     window.location.replace('/');
   };
 

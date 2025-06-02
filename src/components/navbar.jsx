@@ -84,7 +84,6 @@ export default function Navbar({ scrollToTop, scrollToSection, loggedIn }) {
   // 로그아웃 처리 함수
   const handleLogout = async () => {
     await logout(false); // redirect 없이 로그아웃만
-    alert('로그아웃되었습니다. 다시 로그인해주세요.');
     window.location.replace('/');
   };
 

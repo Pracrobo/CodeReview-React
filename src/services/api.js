@@ -18,7 +18,7 @@ async function apiRequest(endpoint, options = {}) {
 
   let response = await fetch(`${API_BASE_URL}${endpoint}`, config);
 
-  // 토큰 갱신 요청 자체가 아니라면, 401 시 refresh 시도
+  // 401 처리 (토큰 만료)
   if (
     response.status === 401 &&
     endpoint !== '/auth/token/refresh'
@@ -29,11 +29,17 @@ async function apiRequest(endpoint, options = {}) {
       config.headers.Authorization = `Bearer ${accessToken}`;
       response = await fetch(`${API_BASE_URL}${endpoint}`, config);
     } else {
-      await logout(false); // redirect 없이 로그아웃만
-      alert('인증이 만료되었습니다. 다시 로그인해주세요.');
+      await logout(false);
       window.location.replace('/');
       return;
     }
+  }
+
+  // 404 처리 (유저 없음 등)
+  if (response.status === 404) {
+    await logout(false);
+    window.location.replace('/');
+    return;
   }
 
   if (!response.ok) {
