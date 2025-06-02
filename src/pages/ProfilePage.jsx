@@ -90,18 +90,23 @@ export default function ProfilePage() {
 
   // 사용자 정보 및 구독 정보 불러오기
   useEffect(() => {
-    if (!localStorage.getItem('accessToken')) {
-      setCurrentPlan('free');
-      setIsCanceled(false);
-      setUsername('사용자');
-      setEmail('이메일');
-      setAvatarUrl('');
-      return;
-    }
-    fetchUserAndPlan()
-      .then((data) => {
+    async function fetchAndHandleUser() {
+      if (!localStorage.getItem('accessToken')) {
+        setCurrentPlan('free');
+        setIsCanceled(false);
+        setUsername('사용자');
+        setEmail('이메일');
+        setAvatarUrl('');
+        return;
+      }
+      try {
+        const data = await fetchUserAndPlan();
         // DB에 유저 정보가 없으면(404) 자동 로그아웃
-        if (data.success === false && data.message && data.message.includes('사용자 정보를 찾을 수 없습니다')) {
+        if (
+          data.success === false &&
+          data.message &&
+          data.message.includes('사용자 정보를 찾을 수 없습니다')
+        ) {
           handleAutoLogout();
           return;
         }
@@ -119,13 +124,14 @@ export default function ProfilePage() {
           setCurrentPlan('free');
           setIsCanceled(false);
         }
-      })
-      .catch((err) => {
+      } catch (err) {
         // 401(토큰 만료) 또는 404(유저 없음) 모두 자동 로그아웃
         if (err.status === 401 || err.status === 404) {
           handleAutoLogout();
         }
-      });
+      }
+    }
+    fetchAndHandleUser();
   }, [location]);
 
   // Toss Payments 결제 함수
