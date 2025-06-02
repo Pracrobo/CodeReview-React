@@ -121,7 +121,7 @@ export default function ProfilePage() {
       } catch (err) {
         // 401(토큰 만료) 또는 404(유저 없음) 모두 자동 로그아웃
         if (err.status === 401 || err.status === 404) {
-          handleAutoLogout();
+          await handleAutoLogout();
         }
       }
     }
