@@ -1,6 +1,12 @@
 import { apiRequest } from './api.js';
 import { removeAuthStorage } from '../utils/auth.js';
 
+// 공통 후처리 함수
+function handlePostAuthCleanup(redirect) {
+  removeAuthStorage();
+  if (redirect) window.location.replace('/');
+}
+
 // GitHub OAuth 콜백 처리
 export async function processGithubCallback(code) {
   try {
@@ -25,8 +31,7 @@ export async function logout(redirect = true) {
   } catch (error) {
     console.error('로그아웃 실패:', error);
   }
-  removeAuthStorage();
-  if (redirect) window.location.replace('/');
+  handlePostAuthCleanup(redirect);
   return { success: true };
 }
 
@@ -40,8 +45,7 @@ export async function unlinkAccount(redirect = true) {
   } catch (error) {
     console.error('계정 연동 해제 실패:', error);
   }
-  removeAuthStorage();
-  if (redirect) window.location.replace('/');
+  handlePostAuthCleanup(redirect);
   return { success: true };
 }
 
@@ -55,8 +59,7 @@ export async function deleteAccount(redirect = true) {
   } catch (error) {
     console.error('계정 삭제 실패:', error);
   }
-  removeAuthStorage();
-  if (redirect) window.location.replace('/');
+  handlePostAuthCleanup(redirect);
   return { success: true };
 }
 
