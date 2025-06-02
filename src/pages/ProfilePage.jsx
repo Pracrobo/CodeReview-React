@@ -103,15 +103,17 @@ export default function ProfilePage() {
         return;
       }
       try {
-        const data = await fetchUserAndPlan();
-        setUsername(data.username || '사용자');
-        setEmail(data.email || '이메일');
-        setAvatarUrl(data.avatarUrl || '');
-        setCreatedAt(data.createdAt || '');
-        setUpdatedAt(data.updatedAt || '');
-        setProPlanActivatedAt(data.proPlanActivatedAt);
-        setProPlanExpiresAt(data.proPlanExpiresAt);
-        if (data.isProPlan) {
+        const result = await fetchUserAndPlan();
+        if (!result.success) throw new Error(result.message);
+        const user = result.data;
+        setUsername(user.username || '사용자');
+        setEmail(user.email || '이메일');
+        setAvatarUrl(user.avatarUrl || '');
+        setCreatedAt(user.createdAt || '');
+        setUpdatedAt(user.updatedAt || '');
+        setProPlanActivatedAt(user.proPlanActivatedAt);
+        setProPlanExpiresAt(user.proPlanExpiresAt);
+        if (user.isProPlan) {
           setCurrentPlan('pro');
           setIsCanceled(false);
         } else {
