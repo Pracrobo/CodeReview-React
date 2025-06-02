@@ -82,7 +82,11 @@ export default function Navbar({ scrollToTop, scrollToSection, loggedIn }) {
   );
 
   // 로그아웃 처리 함수
+  const [logoutLoading, setLogoutLoading] = useState(false); // 추가
+
   const handleLogout = async () => {
+    if (logoutLoading) return; // 중복 방지
+    setLogoutLoading(true);
     await logout(false); // redirect 없이 로그아웃만
     window.location.replace('/');
   };
@@ -301,8 +305,10 @@ export default function Navbar({ scrollToTop, scrollToSection, loggedIn }) {
             계속 진행하시겠습니까?
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setOpen(false)}>취소</Button>
-            <Button onClick={handleLogout}>로그아웃</Button>
+            <Button variant="outline" onClick={() => setOpen(false)} disabled={logoutLoading}>취소</Button>
+            <Button onClick={handleLogout} disabled={logoutLoading}>
+              {logoutLoading ? "로그아웃 중..." : "로그아웃"}
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

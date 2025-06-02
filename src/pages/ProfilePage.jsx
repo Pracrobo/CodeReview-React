@@ -81,9 +81,12 @@ export default function ProfilePage() {
   const [createdAt, setCreatedAt] = useState('');
   const [updatedAt, setUpdatedAt] = useState('');
   const [open, setOpen] = useState(false);
+  const [logoutLoading, setLogoutLoading] = useState(false); // 추가
 
   // 자동 로그아웃 처리 함수
   const handleAutoLogout = async () => {
+    if (logoutLoading) return; // 중복 방지
+    setLogoutLoading(true);
     await logout(false);
     window.location.replace('/');
   };
@@ -163,6 +166,8 @@ export default function ProfilePage() {
   };
 
   const handleLogout = async () => {
+    if (logoutLoading) return; // 중복 방지
+    setLogoutLoading(true);
     await logout(false);
     window.location.replace('/');
   };
@@ -623,8 +628,10 @@ export default function ProfilePage() {
             계속 진행하시겠습니까?
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setOpen(false)}>취소</Button>
-            <Button variant="destructive" onClick={handleLogout}>로그아웃</Button>
+            <Button variant="outline" onClick={() => setOpen(false)} disabled={logoutLoading}>취소</Button>
+            <Button variant="destructive" onClick={handleLogout} disabled={logoutLoading}>
+              {logoutLoading ? "로그아웃 중..." : "로그아웃"}
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

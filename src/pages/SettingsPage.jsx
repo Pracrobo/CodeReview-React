@@ -25,9 +25,13 @@ function GithubUnlinkButton() {
   const navigate = useNavigate();
   const accessToken = localStorage.getItem('accessToken');
   const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(false); // 추가
 
   const handleUnlink = useCallback(async () => {
+    if (loading) return; // 중복 방지
+    setLoading(true);
     if (!accessToken) {
+      setLoading(false);
       navigate('/login');
       return;
     }
@@ -35,12 +39,13 @@ function GithubUnlinkButton() {
     const result = await unlinkAccount(false);
 
     if (!result.success) {
+      setLoading(false);
       return;
     }
 
     removeAuthStorage();
     window.location.replace('/');
-  }, [accessToken, navigate]);
+  }, [accessToken, navigate, loading]);
 
   return (
     <>
@@ -56,11 +61,11 @@ function GithubUnlinkButton() {
             정말로 연동을 해제하시겠습니까?
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setOpen(false)}>
+            <Button variant="outline" onClick={() => setOpen(false)} disabled={loading}>
               취소
             </Button>
-            <Button variant="destructive" onClick={handleUnlink}>
-              연동 해제
+            <Button variant="destructive" onClick={handleUnlink} disabled={loading}>
+              {loading ? "연동 해제 중..." : "연동 해제"}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -74,9 +79,13 @@ function AccountDeleteButton() {
   const navigate = useNavigate();
   const accessToken = localStorage.getItem('accessToken');
   const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(false); // 추가
 
   const handleDelete = useCallback(async () => {
+    if (loading) return; // 중복 방지
+    setLoading(true);
     if (!accessToken) {
+      setLoading(false);
       navigate('/login');
       return;
     }
@@ -84,12 +93,13 @@ function AccountDeleteButton() {
     const result = await deleteAccount(false);
 
     if (!result.success) {
+      setLoading(false);
       return;
     }
 
     removeAuthStorage();
     window.location.replace('/');
-  }, [accessToken, navigate]);
+  }, [accessToken, navigate, loading]);
 
   return (
     <>
@@ -113,8 +123,8 @@ function AccountDeleteButton() {
             <Button variant="outline" onClick={() => setOpen(false)}>
               취소
             </Button>
-            <Button variant="destructive" onClick={handleDelete}>
-              삭제
+            <Button variant="destructive" onClick={handleDelete} disabled={loading}>
+              {loading ? "삭제 중..." : "삭제"}
             </Button>
           </DialogFooter>
         </DialogContent>
