@@ -101,15 +101,6 @@ export default function ProfilePage() {
       }
       try {
         const data = await fetchUserAndPlan();
-        // DB에 유저 정보가 없으면(404) 자동 로그아웃
-        if (
-          data.success === false &&
-          data.message &&
-          data.message.includes('사용자 정보를 찾을 수 없습니다')
-        ) {
-          handleAutoLogout();
-          return;
-        }
         setUsername(data.username || '사용자');
         setEmail(data.email || '이메일');
         setAvatarUrl(data.avatarUrl || '');
