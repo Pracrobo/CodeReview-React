@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import {
@@ -84,12 +84,12 @@ export default function ProfilePage() {
   const [logoutLoading, setLogoutLoading] = useState(false); // 추가
 
   // 자동 로그아웃 처리 함수
-  const handleAutoLogout = async () => {
+  const handleAutoLogout = useCallback(async () => {
     if (logoutLoading) return; // 중복 방지
     setLogoutLoading(true);
-    await logout(false);
+    await logout();
     window.location.replace('/');
-  };
+  }, [logoutLoading]);
 
   // 사용자 정보 및 구독 정보 불러오기
   useEffect(() => {
@@ -126,7 +126,7 @@ export default function ProfilePage() {
       }
     }
     fetchAndHandleUser();
-  }, [location]);
+  }, [location, handleAutoLogout]);
 
   // Toss Payments 결제 함수
   const handleProPayment = async () => {
@@ -168,7 +168,7 @@ export default function ProfilePage() {
   const handleLogout = async () => {
     if (logoutLoading) return; // 중복 방지
     setLogoutLoading(true);
-    await logout(false);
+    await logout();
     window.location.replace('/');
   };
 

@@ -2,9 +2,8 @@ import { apiRequest } from './api.js';
 import { removeAuthStorage } from '../utils/auth.js';
 
 // 공통 후처리 함수
-function handlePostAuthCleanup(redirect) {
+function handlePostAuthCleanup() {
   removeAuthStorage();
-  if (redirect) window.location.replace('/');
 }
 
 // 공통 에러 핸들링 함수
@@ -27,37 +26,34 @@ export async function processGithubCallback(code) {
 }
 
 // 로그아웃
-export async function logout(redirect = true) {
+export async function logout() {
   try {
     await apiRequest('/auth/logout', { method: 'POST', credentials: 'include' });
-    handlePostAuthCleanup(redirect);
+    handlePostAuthCleanup();
     return { success: true };
   } catch (error) {
-    // 에러 발생 시 후처리 없이 실패 반환
     return handleError(error, '로그아웃 처리에 실패했습니다.');
   }
 }
 
 // 계정 연동 해제
-export async function unlinkAccount(redirect = true) {
+export async function unlinkAccount() {
   try {
     await apiRequest('/auth/unlink', { method: 'POST', credentials: 'include' });
-    handlePostAuthCleanup(redirect);
+    handlePostAuthCleanup();
     return { success: true };
   } catch (error) {
-    // 실패 시 후처리 없이 실패 반환
     return handleError(error, '계정 연동 해제에 실패했습니다.');
   }
 }
 
 // 계정 삭제
-export async function deleteAccount(redirect = true) {
+export async function deleteAccount() {
   try {
     await apiRequest('/auth/delete', { method: 'DELETE', credentials: 'include' });
-    handlePostAuthCleanup(redirect);
+    handlePostAuthCleanup();
     return { success: true };
   } catch (error) {
-    // 실패 시 후처리 없이 실패 반환
     return handleError(error, '계정 삭제에 실패했습니다.');
   }
 }

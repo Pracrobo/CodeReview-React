@@ -29,16 +29,14 @@ async function apiRequest(endpoint, options = {}) {
       config.headers.Authorization = `Bearer ${accessToken}`;
       response = await fetch(`${API_BASE_URL}${endpoint}`, config);
     } else {
-      await logout(false);
-      window.location.replace('/');
+      await logout();
       throw new Error('인증이 만료되었습니다. 다시 로그인해주세요.');
     }
   }
 
   // 404 처리 (유저 없음 등)
   if (response.status === 404) {
-    await logout(false);
-    window.location.replace('/');
+    await logout();
     throw new Error('요청하신 리소스를 찾을 수 없습니다.');
   }
 

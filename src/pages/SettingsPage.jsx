@@ -13,7 +13,6 @@ import { Switch } from '../components/ui/switch';
 import { Label } from '../components/ui/label';
 import { Github } from 'lucide-react';
 import DashboardLayout from '../components/dashboard-layout';
-import { useNavigate } from 'react-router-dom';
 import { removeAuthStorage } from '../utils/auth';
 import {
   unlinkAccount,
@@ -22,21 +21,19 @@ import {
 import { Dialog, DialogContent, DialogHeader, DialogFooter } from '../components/ui/dialog';
 
 function GithubUnlinkButton() {
-  const navigate = useNavigate();
   const accessToken = localStorage.getItem('accessToken');
   const [open, setOpen] = useState(false);
-  const [loading, setLoading] = useState(false); // 추가
+  const [loading, setLoading] = useState(false);
 
   const handleUnlink = useCallback(async () => {
     if (loading) return; // 중복 방지
     setLoading(true);
     if (!accessToken) {
       setLoading(false);
-      navigate('/login');
       return;
     }
 
-    const result = await unlinkAccount(false);
+    const result = await unlinkAccount();
 
     if (!result.success) {
       setLoading(false);
@@ -45,7 +42,7 @@ function GithubUnlinkButton() {
 
     removeAuthStorage();
     window.location.replace('/');
-  }, [accessToken, navigate, loading]);
+  }, [accessToken, loading]);
 
   return (
     <>
@@ -76,21 +73,19 @@ function GithubUnlinkButton() {
 
 // 계정 데이터 삭제 모달 버튼
 function AccountDeleteButton() {
-  const navigate = useNavigate();
   const accessToken = localStorage.getItem('accessToken');
   const [open, setOpen] = useState(false);
-  const [loading, setLoading] = useState(false); // 추가
+  const [loading, setLoading] = useState(false);
 
   const handleDelete = useCallback(async () => {
-    if (loading) return; // 중복 방지
+    if (loading) return;
     setLoading(true);
     if (!accessToken) {
       setLoading(false);
-      navigate('/login');
       return;
     }
 
-    const result = await deleteAccount(false);
+    const result = await deleteAccount();
 
     if (!result.success) {
       setLoading(false);
@@ -99,7 +94,7 @@ function AccountDeleteButton() {
 
     removeAuthStorage();
     window.location.replace('/');
-  }, [accessToken, navigate, loading]);
+  }, [accessToken, loading]);
 
   return (
     <>
