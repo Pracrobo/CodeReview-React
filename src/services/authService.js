@@ -16,48 +16,48 @@ export async function processGithubCallback(code) {
 }
 
 // 로그아웃
-export async function logout() {
+export async function logout(redirect = true) {
   try {
     await apiRequest('/auth/logout', {
       method: 'POST',
       credentials: 'include',
     });
-    removeAuthStorage();
-    window.location.replace('/');
-    return { success: true };
   } catch (error) {
-    return { success: false, message: error.message || '로그아웃에 실패했습니다.' };
+    console.error('로그아웃 실패:', error);
   }
+  removeAuthStorage();
+  if (redirect) window.location.replace('/');
+  return { success: true };
 }
 
 // 계정 연동 해제
-export async function unlinkAccount() {
+export async function unlinkAccount(redirect = true) {
   try {
     await apiRequest('/auth/unlink', {
       method: 'POST',
       credentials: 'include',
     });
-    removeAuthStorage();
-    window.location.replace('/');
-    return { success: true };
   } catch (error) {
-    return { success: false, message: error.message || '연동 해제에 실패했습니다.' };
+    console.error('계정 연동 해제 실패:', error);
   }
+  removeAuthStorage();
+  if (redirect) window.location.replace('/');
+  return { success: true };
 }
 
 // 계정 삭제
-export async function deleteAccount() {
+export async function deleteAccount(redirect = true) {
   try {
     await apiRequest('/auth/delete', {
       method: 'DELETE',
       credentials: 'include',
     });
-    removeAuthStorage();
-    window.location.replace('/');
-    return { success: true };
   } catch (error) {
-    return { success: false, message: error.message || '계정 삭제에 실패했습니다.' };
+    console.error('계정 삭제 실패:', error);
   }
+  removeAuthStorage();
+  if (redirect) window.location.replace('/');
+  return { success: true };
 }
 
 export async function refreshAccessToken() {

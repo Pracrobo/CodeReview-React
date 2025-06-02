@@ -34,7 +34,7 @@ export default function ProPaymentSuccess() {
         }
         navigate("/profile?tab=subscription", { replace: true });
       })
-      .catch((err) => {
+      .catch(() => {
         alert("Pro 플랜 활성화 중 오류가 발생했습니다.");
         navigate("/profile?tab=subscription", { replace: true });
       });

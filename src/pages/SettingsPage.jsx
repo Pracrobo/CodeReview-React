@@ -33,13 +33,14 @@ function GithubUnlinkButton() {
       return;
     }
 
-    const result = await unlinkAccount();
+    const result = await unlinkAccount(false);
 
     if (!result.success) {
       alert('연동 해제 실패: ' + result.message);
       return;
     }
 
+    alert('연동이 해제되었습니다. 다시 로그인해 주세요.');
     removeAuthStorage();
     window.location.replace('/');
   }, [accessToken, navigate]);
@@ -84,13 +85,14 @@ function AccountDeleteButton() {
       return;
     }
 
-    const result = await deleteAccount();
+    const result = await deleteAccount(false);
 
     if (!result.success) {
       alert('계정 삭제 실패: ' + result.message);
       return;
     }
 
+    alert('계정이 삭제되었습니다. 이용해주셔서 감사합니다.');
     removeAuthStorage();
     window.location.replace('/');
   }, [accessToken, navigate]);

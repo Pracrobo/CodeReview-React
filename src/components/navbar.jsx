@@ -9,7 +9,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from './ui/dropdown-menu';
-import { removeAuthStorage } from '../utils/auth';
 import { logout } from '../services/authService';
 import { Dialog, DialogContent, DialogHeader, DialogFooter } from './ui/dialog';
 
@@ -84,9 +83,9 @@ export default function Navbar({ scrollToTop, scrollToSection, loggedIn }) {
 
   // 로그아웃 처리 함수
   const handleLogout = async () => {
-    await logout();
-    setOpen(false);
-    // 이후 리다이렉트 등 처리
+    await logout(false); // redirect 없이 로그아웃만
+    alert('로그아웃되었습니다. 다시 로그인해주세요.');
+    window.location.replace('/');
   };
 
   const isHomePage = location.pathname === '/';
@@ -100,15 +99,6 @@ export default function Navbar({ scrollToTop, scrollToSection, loggedIn }) {
       if (element) {
         element.scrollIntoView({ behavior: 'smooth' });
       }
-    }
-  };
-
-  // 홈으로 스크롤하는 함수
-  const handleScrollToTop = () => {
-    if (scrollToTop) {
-      scrollToTop();
-    } else if (isHomePage) {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
 

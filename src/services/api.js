@@ -1,4 +1,4 @@
-import { refreshAccessToken } from './authService.js';
+import { refreshAccessToken, logout } from './authService.js';
 
 // React 환경에서 환경 변수 접근
 const API_BASE_URL =
@@ -29,14 +29,18 @@ async function apiRequest(endpoint, options = {}) {
       config.headers.Authorization = `Bearer ${accessToken}`;
       response = await fetch(`${API_BASE_URL}${endpoint}`, config);
     } else {
-      window.location.href = '/login';
-      throw new Error('인증이 만료되었습니다. 다시 로그인해주세요.');
+      await logout(false); // redirect 없이 로그아웃만
+      alert('인증이 만료되었습니다. 다시 로그인해주세요.');
+      window.location.replace('/');
+      return;
     }
   }
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.message || `HTTP ${response.status}`);
+    const error = new Error(errorData.message || `HTTP ${response.status}`);
+    error.status = response.status;
+    throw error;
   }
 
   return await response.json();
