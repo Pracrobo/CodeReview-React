@@ -82,6 +82,12 @@ export default function ProfilePage() {
   const [updatedAt, setUpdatedAt] = useState('');
   const [open, setOpen] = useState(false);
 
+  // 자동 로그아웃 처리 함수
+  const handleAutoLogout = async () => {
+    await logout(false);
+    window.location.replace('/');
+  };
+
   // 사용자 정보 및 구독 정보 불러오기
   useEffect(() => {
     if (!localStorage.getItem('accessToken')) {
@@ -96,10 +102,7 @@ export default function ProfilePage() {
       .then((data) => {
         // DB에 유저 정보가 없으면(404) 자동 로그아웃
         if (data.success === false && data.message && data.message.includes('사용자 정보를 찾을 수 없습니다')) {
-          (async () => {
-            await logout(false);
-            window.location.replace('/');
-          })();
+          handleAutoLogout();
           return;
         }
         setUsername(data.username || '사용자');
@@ -120,10 +123,7 @@ export default function ProfilePage() {
       .catch((err) => {
         // 401(토큰 만료) 또는 404(유저 없음) 모두 자동 로그아웃
         if (err.status === 401 || err.status === 404) {
-          (async () => {
-            await logout(false);
-            window.location.replace('/');
-          })();
+          handleAutoLogout();
         }
       });
   }, [location]);
