@@ -10,14 +10,18 @@ export function transformRepositoryData(dbRepo) {
     issues: dbRepo.issueTotalCount || 0,
     isPrivate: false, // DB에 없으므로 기본값
     lastAnalyzed: formatDate(dbRepo.lastAnalyzedAt),
-    isStarred: false, // 즐겨찾기 기능은 추후 구현
+    isFavorite: dbRepo.isFavorite || false,
     isNew: isNewRepository(dbRepo.createdAt),
     githubRepoId: dbRepo.githubRepoId,
-    language: dbRepo.programmingLanguage,
-    languagePercentage: dbRepo.languagePercentage,
+    language: dbRepo.primaryLanguage,
+    languagePercentage: dbRepo.primaryLanguagePercentage,
+    languages: dbRepo.languages || [],
     license: dbRepo.licenseSpdxId,
     readmeSummary: dbRepo.readmeSummaryGpt,
     htmlUrl: dbRepo.htmlUrl,
+    analysisStatus: dbRepo.analysisStatus,
+    analysisProgress: dbRepo.analysisProgress,
+    analysisCompletedAt: dbRepo.analysisCompletedAt,
   };
 }
 

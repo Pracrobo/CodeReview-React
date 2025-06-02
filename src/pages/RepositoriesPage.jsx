@@ -30,13 +30,15 @@ import DashboardLayout from '../components/dashboard-layout';
 import {
   getUserRepositories,
   removeRepositoryFromTracking,
+  updateFavoriteStatus,
 } from '../services/repositoryService';
 import { transformRepositoryData } from '../utils/dataTransformers';
+import { getLanguageColor } from '../utils/languageUtils';
 
 export default function RepositoriesPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [repositories, setRepositories] = useState([]);
-  const [starredRepositories, setStarredRepositories] = useState([]);
+  const [favoriteRepositories, setFavoriteRepositories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -56,9 +58,9 @@ export default function RepositoriesPage() {
         const transformedRepos = result.data.map(transformRepositoryData);
         setRepositories(transformedRepos);
 
-        // 즐겨찾기 필터링 (추후 DB에서 관리)
-        const starred = transformedRepos.filter((repo) => repo.isStarred);
-        setStarredRepositories(starred);
+        // 즐겨찾기 필터링
+        const favorite = transformedRepos.filter((repo) => repo.isFavorite);
+        setFavoriteRepositories(favorite);
       } else {
         setError(result.message);
       }
@@ -70,32 +72,37 @@ export default function RepositoriesPage() {
     }
   };
 
-  const toggleStar = (e, repoId) => {
+  const toggleFavoriteStatus = async (e, repoId) => {
     e.preventDefault();
     e.stopPropagation();
 
-    // 임시 구현: 로컬 상태만 업데이트
-    const updatedRepositories = repositories.map((repo) => {
-      if (repo.id === repoId) {
-        return { ...repo, isStarred: !repo.isStarred };
-      }
-      return repo;
-    });
-    setRepositories(updatedRepositories);
-
-    // 즐겨찾기 목록 업데이트
     const repo = repositories.find((r) => r.id === repoId);
-    if (repo) {
-      if (repo.isStarred) {
-        setStarredRepositories(
-          starredRepositories.filter((r) => r.id !== repoId)
+    if (!repo) return;
+
+    try {
+      const result = await updateFavoriteStatus(repoId, !repo.isFavorite);
+      if (result.success) {
+        const updatedRepositories = repositories.map((repo) =>
+          repo.id === repoId ? { ...repo, isFavorite: !repo.isFavorite } : repo
         );
+        setRepositories(updatedRepositories);
+
+        if (repo.isFavorite) {
+          setFavoriteRepositories(
+            favoriteRepositories.filter((r) => r.id !== repoId)
+          );
+        } else {
+          setFavoriteRepositories([
+            ...favoriteRepositories,
+            { ...repo, isFavorite: true },
+          ]);
+        }
       } else {
-        setStarredRepositories([
-          ...starredRepositories,
-          { ...repo, isStarred: true },
-        ]);
+        alert(result.message || '즐겨찾기 상태 업데이트에 실패했습니다.');
       }
+    } catch (err) {
+      console.error('즐겨찾기 상태 업데이트 오류:', err);
+      alert('즐겨찾기 상태 업데이트 중 오류가 발생했습니다.');
     }
   };
 
@@ -126,7 +133,7 @@ export default function RepositoriesPage() {
       repo.description.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const filteredStarredRepositories = starredRepositories.filter(
+  const filteredFavoriteRepositories = favoriteRepositories.filter(
     (repo) =>
       repo.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       repo.description.toLowerCase().includes(searchQuery.toLowerCase())
@@ -140,6 +147,22 @@ export default function RepositoriesPage() {
             <Github className="h-5 w-5" />
             <CardTitle className="text-base font-medium">{repo.name}</CardTitle>
             {repo.isNew && <Badge className="bg-green-500">NEW</Badge>}
+            {repo.analysisStatus === 'completed' && (
+              <Badge
+                variant="outline"
+                className="bg-green-50 text-green-700 border-green-200"
+              >
+                분석완료
+              </Badge>
+            )}
+            {repo.analysisStatus === 'analyzing' && (
+              <Badge
+                variant="outline"
+                className="bg-blue-50 text-blue-700 border-blue-200"
+              >
+                분석중
+              </Badge>
+            )}
           </div>
           <div className="flex items-center gap-2">
             <Badge variant={repo.isPrivate ? 'outline' : 'secondary'}>
@@ -149,11 +172,11 @@ export default function RepositoriesPage() {
               variant="ghost"
               size="icon"
               className="h-8 w-8"
-              onClick={(e) => toggleStar(e, repo.id)}
+              onClick={(e) => toggleFavoriteStatus(e, repo.id)}
             >
               <Star
                 className={`h-4 w-4 ${
-                  repo.isStarred ? 'fill-yellow-400 text-yellow-400' : ''
+                  repo.isFavorite ? 'fill-yellow-400 text-yellow-400' : ''
                 }`}
               />
             </Button>
@@ -164,7 +187,7 @@ export default function RepositoriesPage() {
         </CardDescription>
       </CardHeader>
       <CardContent className="pb-2">
-        <div className="flex items-center gap-4 text-sm text-muted-foreground">
+        <div className="flex items-center gap-4 text-sm text-muted-foreground mb-2">
           <div className="flex items-center gap-1">
             <Star className="h-4 w-4" />
             <span>{repo.stars}</span>
@@ -178,6 +201,23 @@ export default function RepositoriesPage() {
             <span>{repo.issues}개 이슈</span>
           </div>
         </div>
+        {/* 주요 언어 표시 */}
+        {repo.language && (
+          <div className="flex items-center gap-2 text-sm">
+            <div className="flex items-center gap-1">
+              <div
+                className="w-3 h-3 rounded-full"
+                style={{ backgroundColor: getLanguageColor(repo.language) }}
+              />
+              <span className="font-medium">{repo.language}</span>
+              {repo.languagePercentage && (
+                <span className="text-muted-foreground">
+                  {repo.languagePercentage.toFixed(1)}%
+                </span>
+              )}
+            </div>
+          </div>
+        )}
       </CardContent>
       <CardFooter className="text-xs text-muted-foreground flex justify-between">
         <div className="flex items-center gap-1">
@@ -296,9 +336,9 @@ export default function RepositoriesPage() {
             )}
           </TabsContent>
           <TabsContent value="starred">
-            {filteredStarredRepositories.length > 0 ? (
+            {filteredFavoriteRepositories.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {filteredStarredRepositories.map((repo) => (
+                {filteredFavoriteRepositories.map((repo) => (
                   <Link to={`/repository/${repo.id}`} key={repo.id}>
                     {renderRepositoryCard(repo)}
                   </Link>
