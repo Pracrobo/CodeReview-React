@@ -1,14 +1,10 @@
 import { apiRequest } from './api.js';
 import { removeAuthStorage } from '../utils/auth.js';
+import { handleError } from './errorHandler.js';
 
 // 공통 후처리 함수
 function handlePostAuthCleanup() {
   removeAuthStorage();
-}
-
-// 공통 에러 핸들링 함수
-function handleError(error, defaultMsg) {
-  return { success: false, message: error?.message || defaultMsg };
 }
 
 // GitHub OAuth 콜백 처리
