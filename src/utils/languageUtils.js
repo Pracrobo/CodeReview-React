@@ -1,8 +1,3 @@
-/**
- * 프로그래밍 언어별 색상 매핑 함수
- * @param {string} language - 프로그래밍 언어 이름
- * @returns {string} 해당 언어의 색상 코드
- */
 export const getLanguageColor = (language) => {
   const colors = {
     JavaScript: '#f1e05a',
