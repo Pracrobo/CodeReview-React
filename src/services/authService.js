@@ -25,8 +25,8 @@ export async function processGithubCallback(code) {
 export async function logout() {
   try {
     await apiRequest('/auth/logout', { method: 'POST', credentials: 'include' });
-  } catch {
-    // return handleError(error, '로그아웃 처리에 실패했습니다.');
+  } catch (error) {
+    console.error('로그아웃 처리에 실패했습니다:', error);
   }
   handlePostAuthCleanup();
   return { success: true };
