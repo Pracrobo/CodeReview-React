@@ -87,6 +87,10 @@ export default function ProfilePage() {
     if (!localStorage.getItem('accessToken')) {
       setCurrentPlan('free');
       setIsCanceled(false);
+      setUsername('사용자');
+      setEmail('이메일');
+      setAvatarUrl('');
+      // ...
       return;
     }
     fetchUserAndPlan()
@@ -106,9 +110,11 @@ export default function ProfilePage() {
           setIsCanceled(false);
         }
       })
-      .catch(() => {
-        setCurrentPlan('free');
-        setIsCanceled(false);
+      .catch((err) => {
+        if (err.status === 401) {
+          logout();
+          window.location.replace('/');
+        }
       });
   }, [location]);
 
@@ -157,18 +163,6 @@ export default function ProfilePage() {
   const handleCancelSubscription = async () => {
     // 실제로는 구독 취소 API 호출 필요
     setIsCanceled(true);
-  };
-
-  // 재구독
-  const handleResubscribe = async () => {
-    // 실제로는 재구독 API 호출 필요
-    setIsCanceled(false);
-    setCurrentPlan('pro');
-    // 만료일을 오늘로부터 30일 뒤로 임시 설정 (실제는 서버에서 받아야 함)
-    const newExpire = new Date();
-    newExpire.setHours(0, 0, 0, 0); // 시각을 0시로 맞춤
-    newExpire.setDate(newExpire.getDate() + 30); // 30일 뒤
-    setProPlanExpiresAt(newExpire.toISOString());
   };
 
   // 탭 변경 시 URL 쿼리 파라미터도 변경
