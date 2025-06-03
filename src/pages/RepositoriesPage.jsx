@@ -297,12 +297,12 @@ export default function RepositoriesPage() {
                 <Card className="h-full border-dashed">
                   <Link to="/dashboard" state={{ from: 'repositories' }}>
                     <CardContent className="flex flex-col items-center justify-center h-full p-6 pt-4">
-                      <h3 className="text-xl font-semibold leading-none tracking-tight pb-4">
-                        저장소 추가하기
-                      </h3>
-                      <div className="rounded-full bg-purple-100 p-3">
+                      <div className="rounded-full bg-purple-100 p-3 mb-4">
                         <Plus className="h-6 w-6 text-purple-600" />
                       </div>
+                      <h3 className="text-xl font-semibold leading-none tracking-tight mb-2">
+                        저장소 추가하기
+                      </h3>
                       <p className="text-center text-muted-foreground">
                         새 GitHub 저장소를 분석하고 AI의 도움을 받아보세요
                       </p>
@@ -312,8 +312,8 @@ export default function RepositoriesPage() {
               </div>
             ) : (
               <Card>
-                <CardContent className="flex flex-col items-center justify-center p-6">
-                  <div className="mt-4 rounded-full bg-purple-100 p-3 mb-4">
+                <CardContent className="flex flex-col items-center justify-center p-6 pt-6">
+                  <div className="rounded-full bg-purple-100 p-3 mb-4">
                     <Github className="h-6 w-6 text-purple-600" />
                   </div>
                   <h3 className="text-xl font-medium mb-2">
@@ -328,7 +328,7 @@ export default function RepositoriesPage() {
                   </p>
                   {!searchQuery && (
                     <Button asChild>
-                      <Link to="/dashboard">첫 저장소 분석하기</Link>
+                      <Link to="/dashboard">저장소 분석하기</Link>
                     </Button>
                   )}
                 </CardContent>
@@ -346,7 +346,7 @@ export default function RepositoriesPage() {
               </div>
             ) : (
               <Card>
-                <CardContent className="flex flex-col items-center justify-center p-6">
+                <CardContent className="flex flex-col items-center justify-center p-6 pt-6">
                   <div className="rounded-full bg-amber-100 p-3 mb-4">
                     <Star className="h-6 w-6 text-amber-600" />
                   </div>

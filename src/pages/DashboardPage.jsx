@@ -557,7 +557,7 @@ export default function DashboardPage() {
         {/* 분석 중인 저장소와 새 저장소가 모두 없는 경우 */}
         {analyzingRepositories.length === 0 && newRepositories.length === 0 && (
           <Card>
-            <CardContent className="flex flex-col items-center justify-center p-6">
+            <CardContent className="flex flex-col items-center justify-center p-6 pt-4">
               <div className="rounded-full bg-purple-100 p-3 mb-4 dark:bg-purple-900/30">
                 <Search className="h-6 w-6 text-purple-600 dark:text-purple-400" />
               </div>
@@ -568,7 +568,7 @@ export default function DashboardPage() {
                 GitHub 저장소 URL을 입력하여 AI 분석을 시작해보세요
               </p>
               <Button onClick={() => inputRef.current?.focus()}>
-                첫 저장소 분석하기
+                저장소 분석하기
               </Button>
             </CardContent>
           </Card>
