@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import {
@@ -81,42 +81,55 @@ export default function ProfilePage() {
   const [createdAt, setCreatedAt] = useState('');
   const [updatedAt, setUpdatedAt] = useState('');
   const [open, setOpen] = useState(false);
+  const [logoutLoading, setLogoutLoading] = useState(false); // 추가
+
+  // 자동 로그아웃 처리 함수
+  const handleAutoLogout = useCallback(async () => {
+    if (logoutLoading) return; // 중복 방지
+    setLogoutLoading(true);
+    await logout();
+    window.location.replace('/');
+  }, [logoutLoading]);
 
   // 사용자 정보 및 구독 정보 불러오기
   useEffect(() => {
-    if (!localStorage.getItem('accessToken')) {
-      setCurrentPlan('free');
-      setIsCanceled(false);
-      setUsername('사용자');
-      setEmail('이메일');
-      setAvatarUrl('');
-      // ...
-      return;
-    }
-    fetchUserAndPlan()
-      .then((data) => {
-        setUsername(data.username || '사용자');
-        setEmail(data.email || '이메일');
-        setAvatarUrl(data.avatarUrl || '');
-        setCreatedAt(data.createdAt || '');
-        setUpdatedAt(data.updatedAt || '');
-        setProPlanActivatedAt(data.proPlanActivatedAt);
-        setProPlanExpiresAt(data.proPlanExpiresAt);
-        if (data.isProPlan) {
+    if (logoutLoading) return;
+    async function fetchAndHandleUser() {
+      if (!localStorage.getItem('accessToken')) {
+        setCurrentPlan('free');
+        setIsCanceled(false);
+        setUsername('사용자');
+        setEmail('이메일');
+        setAvatarUrl('');
+        return;
+      }
+      try {
+        const result = await fetchUserAndPlan();
+        if (!result.success) throw new Error(result.message);
+        const user = result.data;
+        setUsername(user.username || '사용자');
+        setEmail(user.email || '이메일');
+        setAvatarUrl(user.avatarUrl || '');
+        setCreatedAt(user.createdAt || '');
+        setUpdatedAt(user.updatedAt || '');
+        setProPlanActivatedAt(user.proPlanActivatedAt);
+        setProPlanExpiresAt(user.proPlanExpiresAt);
+        if (user.isProPlan) {
           setCurrentPlan('pro');
           setIsCanceled(false);
         } else {
           setCurrentPlan('free');
           setIsCanceled(false);
         }
-      })
-      .catch((err) => {
-        if (err.status === 401) {
-          logout();
-          window.location.replace('/');
+      } catch (err) {
+        // 401(토큰 만료) 또는 404(유저 없음) 모두 자동 로그아웃
+        if (err.status === 401 || err.status === 404) {
+          await handleAutoLogout();
         }
-      });
-  }, [location]);
+      }
+    }
+    fetchAndHandleUser();
+  }, [location, handleAutoLogout, logoutLoading]);
 
   // Toss Payments 결제 함수
   const handleProPayment = async () => {
@@ -156,7 +169,10 @@ export default function ProfilePage() {
   };
 
   const handleLogout = async () => {
+    if (logoutLoading) return; // 중복 방지
+    setLogoutLoading(true);
     await logout();
+    window.location.replace('/');
   };
 
   // 구독 취소
@@ -615,8 +631,10 @@ export default function ProfilePage() {
             계속 진행하시겠습니까?
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setOpen(false)}>취소</Button>
-            <Button variant="destructive" onClick={handleLogout}>로그아웃</Button>
+            <Button variant="outline" onClick={() => setOpen(false)} disabled={logoutLoading}>취소</Button>
+            <Button variant="destructive" onClick={handleLogout} disabled={logoutLoading}>
+              {logoutLoading ? "로그아웃 중..." : "로그아웃"}
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

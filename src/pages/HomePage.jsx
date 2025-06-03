@@ -113,7 +113,7 @@ export default function HomePage() {
                 asChild
                 variant="secondary"
                 size="lg"
-                className="bg-white/10 backdrop-blur-sm text-white border-white/30 hover:bg-white/20 font-medium px-8 py-4 text-lg rounded-xl dark:bg-white/5 dark:border-white/20 dark:hover:bg-white/10 cursor-pointer"
+                className="bg-white/10 backdrop-blur-sm text-white border-white/30 hover:bg-white/20 font-medium px-8 py-4 text-lg rounded-xl dark:bg-white/5 dark:border-white/20 dark:hover:bg-white/10 cursor-pointer transform transition-all hover:scale-105"
               >
                 <button onClick={() => scrollToSection('features')}>
                   <svg

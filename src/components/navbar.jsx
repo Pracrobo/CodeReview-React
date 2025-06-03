@@ -9,7 +9,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from './ui/dropdown-menu';
-import { removeAuthStorage } from '../utils/auth';
 import { logout } from '../services/authService';
 import { Dialog, DialogContent, DialogHeader, DialogFooter } from './ui/dialog';
 
@@ -83,10 +82,13 @@ export default function Navbar({ scrollToTop, scrollToSection, loggedIn }) {
   );
 
   // 로그아웃 처리 함수
+  const [logoutLoading, setLogoutLoading] = useState(false); // 추가
+
   const handleLogout = async () => {
+    if (logoutLoading) return; // 중복 방지
+    setLogoutLoading(true);
     await logout();
-    setOpen(false);
-    // 이후 리다이렉트 등 처리
+    window.location.replace('/');
   };
 
   const isHomePage = location.pathname === '/';
@@ -100,15 +102,6 @@ export default function Navbar({ scrollToTop, scrollToSection, loggedIn }) {
       if (element) {
         element.scrollIntoView({ behavior: 'smooth' });
       }
-    }
-  };
-
-  // 홈으로 스크롤하는 함수
-  const handleScrollToTop = () => {
-    if (scrollToTop) {
-      scrollToTop();
-    } else if (isHomePage) {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
 
@@ -312,8 +305,10 @@ export default function Navbar({ scrollToTop, scrollToSection, loggedIn }) {
             계속 진행하시겠습니까?
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setOpen(false)}>취소</Button>
-            <Button onClick={handleLogout}>로그아웃</Button>
+            <Button variant="outline" onClick={() => setOpen(false)} disabled={logoutLoading}>취소</Button>
+            <Button onClick={handleLogout} disabled={logoutLoading}>
+              {logoutLoading ? "로그아웃 중..." : "로그아웃"}
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

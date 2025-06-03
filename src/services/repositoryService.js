@@ -1,4 +1,11 @@
 import { apiRequest } from './api.js';
+import { handleError } from './errorHandler.js';
+
+// handleError 확장: 기본 data 값도 받을 수 있도록 수정
+function handleRepoError(error, defaultMsg, defaultData = []) {
+  const result = handleError(error, defaultMsg);
+  return { ...result, data: defaultData };
+}
 
 // 사용자 트래킹 저장소 목록 조회
 export async function getUserRepositories() {
@@ -10,12 +17,7 @@ export async function getUserRepositories() {
       message: response.message,
     };
   } catch (error) {
-    console.error('저장소 목록 조회 오류:', error);
-    return {
-      success: false,
-      data: [],
-      message: error.message || '저장소 목록을 불러오는데 실패했습니다.',
-    };
+    return handleRepoError(error, '저장소 목록을 불러오는데 실패했습니다.', []);
   }
 }
 
@@ -31,12 +33,7 @@ export async function searchRepositories(query) {
       message: response.message,
     };
   } catch (error) {
-    console.error('저장소 검색 오류:', error);
-    return {
-      success: false,
-      data: [],
-      message: error.message || '저장소 검색에 실패했습니다.',
-    };
+    return handleRepoError(error, '저장소 검색에 실패했습니다.', []);
   }
 }
 
@@ -53,12 +50,7 @@ export async function addRepositoryToTracking(githubRepoId) {
       message: response.message,
     };
   } catch (error) {
-    console.error('저장소 추가 오류:', error);
-    return {
-      success: false,
-      data: [],
-      message: error.message || '저장소 추가에 실패했습니다.',
-    };
+    return handleRepoError(error, '저장소 추가에 실패했습니다.', []);
   }
 }
 
@@ -67,20 +59,15 @@ export async function removeRepositoryFromTracking(githubRepoId) {
   try {
     const response = await apiRequest(
       `/repositories/tracked?githubRepoId=${githubRepoId}`,
-      {
-        method: 'DELETE',
-      }
+      { method: 'DELETE' }
     );
     return {
       success: true,
       message: response.message,
+      data: [],
     };
   } catch (error) {
-    console.error('저장소 삭제 오류:', error);
-    return {
-      success: false,
-      message: error.message || '저장소 삭제에 실패했습니다.',
-    };
+    return handleRepoError(error, '저장소 삭제에 실패했습니다.', []);
   }
 }
 
