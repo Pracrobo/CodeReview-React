@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import {
@@ -44,40 +44,7 @@ export default function DashboardPage() {
     }
   }, [location]);
 
-  // 분석 중인 저장소 상태 폴링
-  useEffect(() => {
-    if (analyzingRepositories.length > 0) {
-      const interval = setInterval(() => {
-        checkAnalysisProgress();
-      }, 5000); // 5초마다 상태 확인
-
-      return () => clearInterval(interval);
-    }
-  }, [analyzingRepositories]);
-
-  const loadDashboardData = async () => {
-    setLoading(true);
-    try {
-      const [analyzingResult, recentResult] = await Promise.all([
-        getAnalyzingRepositories(),
-        getRecentlyAnalyzedRepositories(),
-      ]);
-
-      if (analyzingResult.success) {
-        setAnalyzingRepositories(analyzingResult.data);
-      }
-
-      if (recentResult.success) {
-        setNewRepositories(recentResult.data);
-      }
-    } catch (error) {
-      console.error('대시보드 데이터 로드 오류:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const checkAnalysisProgress = async () => {
+  const checkAnalysisProgress = useCallback(async () => {
     const updatedRepositories = [];
     let hasCompletedRepo = false;
     let hasFailedRepo = false;
@@ -184,6 +151,44 @@ export default function DashboardPage() {
       // 오류 메시지를 더 오래 표시 (여러 저장소 실패 시)
       const hideTimeout = failedRepoMessages.length > 1 ? 10000 : 7000;
       setTimeout(() => setShowError(false), hideTimeout);
+    }
+  }, [
+    analyzingRepositories,
+    setNewRepositories,
+    setErrorMessage,
+    setShowError,
+  ]);
+
+  // 분석 중인 저장소 상태 폴링
+  useEffect(() => {
+    if (analyzingRepositories.length > 0) {
+      const interval = setInterval(() => {
+        checkAnalysisProgress();
+      }, 5000); // 5초마다 상태 확인
+
+      return () => clearInterval(interval);
+    }
+  }, [analyzingRepositories, checkAnalysisProgress]);
+
+  const loadDashboardData = async () => {
+    setLoading(true);
+    try {
+      const [analyzingResult, recentResult] = await Promise.all([
+        getAnalyzingRepositories(),
+        getRecentlyAnalyzedRepositories(),
+      ]);
+
+      if (analyzingResult.success) {
+        setAnalyzingRepositories(analyzingResult.data);
+      }
+
+      if (recentResult.success) {
+        setNewRepositories(recentResult.data);
+      }
+    } catch (error) {
+      console.error('대시보드 데이터 로드 오류:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
