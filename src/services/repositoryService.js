@@ -59,9 +59,7 @@ export async function removeRepositoryFromTracking(githubRepoId) {
   try {
     const response = await apiRequest(
       `/repositories/tracked?githubRepoId=${githubRepoId}`,
-      {
-        method: 'DELETE',
-      }
+      { method: 'DELETE' }
     );
     return {
       success: true,

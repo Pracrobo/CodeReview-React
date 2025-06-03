@@ -2,7 +2,7 @@ import { apiRequest } from './api.js';
 import { removeAuthStorage } from '../utils/auth.js';
 import { handleError } from './errorHandler.js';
 
-// 공통 후처리 함수
+// 인증 후 공통 후처리
 function handlePostAuthCleanup() {
   removeAuthStorage();
 }
@@ -25,10 +25,9 @@ export async function processGithubCallback(code) {
 export async function logout() {
   try {
     await apiRequest('/auth/logout', { method: 'POST', credentials: 'include' });
-  } catch (error) {
-    console.error('로그아웃 처리에 실패했습니다:', error);
+  } finally {
+    handlePostAuthCleanup();
   }
-  handlePostAuthCleanup();
   return { success: true };
 }
 
@@ -54,6 +53,7 @@ export async function deleteAccount() {
   }
 }
 
+// 토큰 갱신
 export async function refreshAccessToken() {
   try {
     const data = await apiRequest('/auth/token/refresh', {

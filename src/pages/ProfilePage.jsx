@@ -171,7 +171,7 @@ export default function ProfilePage() {
   const handleLogout = async () => {
     if (logoutLoading) return; // 중복 방지
     setLogoutLoading(true);
-    logout();
+    await logout();
     window.location.replace('/');
   };
 
