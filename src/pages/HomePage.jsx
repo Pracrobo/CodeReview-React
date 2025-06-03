@@ -526,7 +526,7 @@ export default function HomePage() {
                 </div>
 
                 <p className="text-gray-600 mb-6 text-lg dark:text-gray-300">
-                  AIissue의 핵심 기능을 체험해보세요.
+                  AIssue의 핵심 기능을 체험해보세요.
                 </p>
 
                 {/* 가격 */}
