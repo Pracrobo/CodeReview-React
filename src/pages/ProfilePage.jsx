@@ -24,6 +24,7 @@ import {
   User,
   Check,
   X,
+  AlertTriangle,
 } from 'lucide-react';
 import { Alert, AlertDescription } from '../components/ui/alert';
 import DashboardLayout from '../components/dashboard-layout';
@@ -35,6 +36,7 @@ import {
   DialogFooter,
   DialogHeader,
 } from '../components/ui/dialog';
+import ModalBody from '../components/ui/ModalBody';
 
 // 날짜 포맷 함수
 function formatKoreanDateTime(dateString) {
@@ -624,12 +626,11 @@ export default function ProfilePage() {
       {/* 로그아웃 다이얼로그 */}
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent>
-          <DialogHeader>로그아웃</DialogHeader>
-          <div className="py-2">
-            로그아웃 시, 이 서비스에서만 로그아웃되며
-            GitHub 계정 연동은 유지됩니다.
-            계속 진행하시겠습니까?
-          </div>
+          <ModalBody
+            icon={<AlertTriangle size={28} color="#f59e42" />}
+            title="로그아웃"
+            description={`로그아웃 시, 이 서비스에서만 로그아웃되며\nGitHub 계정 연동은 유지됩니다.\n계속 진행하시겠습니까?`}
+          />
           <DialogFooter>
             <Button variant="outline" onClick={() => setOpen(false)} disabled={logoutLoading}>취소</Button>
             <Button variant="destructive" onClick={handleLogout} disabled={logoutLoading}>
