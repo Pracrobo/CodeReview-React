@@ -115,7 +115,7 @@ function AccountDeleteButton() {
             정말로 계정 데이터를 삭제하시겠습니까?
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setOpen(false)}>
+            <Button variant="outline" onClick={() => setOpen(false)} disabled={loading}>
               취소
             </Button>
             <Button variant="destructive" onClick={handleDelete} disabled={loading}>
