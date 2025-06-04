@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import {
@@ -38,6 +38,11 @@ export default function RepositoryPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // 챗봇 입력 및 메시지 상태
+  const [chatInput, setChatInput] = useState('');
+  const [chatMessages, setChatMessages] = useState([]);
+  const chatEndRef = useRef(null);
+
   // 페이지 로드 시 저장소 정보 가져오기
   useEffect(() => {
     const loadRepositoryData = async () => {
@@ -67,6 +72,43 @@ export default function RepositoryPage() {
 
     loadRepositoryData();
   }, [repoId]);
+
+  // repo가 바뀌면 챗봇 초기화
+  useEffect(() => {
+    if (repo) {
+      setChatMessages([
+        {
+          role: 'bot',
+          content: `안녕하세요! ${repo.fullName?.split('/')[1] || repo.fullName} 저장소에 대해 어떤 것이든 물어보세요. 컨트리뷰션 방법, 코딩 컨벤션, PR 작성 방법 등에 대해 답변해 드릴 수 있습니다.`,
+        },
+      ]);
+    }
+  }, [repo]);
+
+  // 메시지 전송
+  const handleSendMessage = () => {
+    if (!chatInput.trim()) return;
+    setChatMessages((prev) => [
+      ...prev,
+      { role: 'user', content: chatInput.trim() },
+    ]);
+    setChatInput('');
+  };
+
+  // 엔터키 입력 처리
+  const handleInputKeyDown = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSendMessage();
+    }
+  };
+
+  // 메시지 추가 시 스크롤 아래로
+  useEffect(() => {
+    if (chatEndRef.current) {
+      chatEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [chatMessages]);
 
   // 라이선스 정보 및 의무사항
   const licenseInfo = {
@@ -528,24 +570,30 @@ export default function RepositoryPage() {
               </CardHeader>
               <CardContent>
                 <div className="bg-muted p-4 rounded-lg mb-4 h-[400px] overflow-y-auto flex flex-col space-y-4 dark:bg-gray-800">
-                  <div className="bg-primary-foreground p-3 rounded-lg max-w-[80%] self-start dark:bg-gray-700">
-                    <p className="text-sm dark:text-gray-200">
-                      안녕하세요!{' '}
-                      {repo.fullName?.split('/')[1] || repo.fullName} 저장소에
-                      대해 어떤 것이든 물어보세요. 컨트리뷰션 방법, 코딩 컨벤션,
-                      PR 작성 방법 등에 대해 답변해 드릴 수 있습니다.
-                    </p>
-                  </div>
+                  {chatMessages.map((msg, idx) => (
+                    <div
+                      key={idx}
+                      className={`max-w-[80%] rounded-lg p-3 mb-2 ${
+                        msg.role === 'user'
+                          ? 'self-end bg-indigo-100 dark:bg-indigo-900 text-right'
+                          : 'self-start bg-primary-foreground dark:bg-gray-700'
+                      }`}
+                    >
+                      <p className="text-sm dark:text-gray-200">{msg.content}</p>
+                    </div>
+                  ))}
+                  <div ref={chatEndRef} />
                 </div>
-
                 <div className="flex gap-2">
                   <Input
                     placeholder="질문을 입력하세요..."
                     className="flex-1"
+                    value={chatInput}
+                    onChange={(e) => setChatInput(e.target.value)}
+                    onKeyDown={handleInputKeyDown}
                   />
-                  <Button>전송</Button>
+                  <Button onClick={handleSendMessage}>전송</Button>
                 </div>
-
                 <p className="text-xs text-muted-foreground mt-2 dark:text-gray-400">
                   AI 챗봇 기능은 준비 중입니다.
                 </p>
