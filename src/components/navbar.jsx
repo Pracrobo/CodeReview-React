@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Button } from './ui/button';
-import { Github, Menu, X, User, LogOut } from 'lucide-react';
+import { Github, Menu, X, User, LogOut, AlertTriangle } from 'lucide-react';
 import { ModeToggle } from './mode-toggle';
 import {
   DropdownMenu,
@@ -11,6 +11,7 @@ import {
 } from './ui/dropdown-menu';
 import { logout } from '../services/authService';
 import { Dialog, DialogContent, DialogHeader, DialogFooter } from './ui/dialog';
+import ModalBody from './ui/ModalBody';
 
 export default function Navbar({ scrollToTop, scrollToSection, loggedIn }) {
   const location = useLocation();
@@ -298,15 +299,14 @@ export default function Navbar({ scrollToTop, scrollToSection, loggedIn }) {
       {/* 로그아웃 확인 모달 */}
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent>
-          <DialogHeader>로그아웃</DialogHeader>
-          <div className="py-2">
-            로그아웃 시, 이 서비스에서만 로그아웃되며
-            GitHub 계정 연동은 유지됩니다.
-            계속 진행하시겠습니까?
-          </div>
+          <ModalBody
+            icon={<AlertTriangle size={28} color="#f59e42" />}
+            title="로그아웃"
+            description={`로그아웃 시, 이 서비스에서만 로그아웃되며\nGitHub 계정 연동은 유지됩니다.\n계속 진행하시겠습니까?`}
+          />
           <DialogFooter>
             <Button variant="outline" onClick={() => setOpen(false)} disabled={logoutLoading}>취소</Button>
-            <Button onClick={handleLogout} disabled={logoutLoading}>
+            <Button variant="destructive" onClick={handleLogout} disabled={logoutLoading}>
               {logoutLoading ? "로그아웃 중..." : "로그아웃"}
             </Button>
           </DialogFooter>

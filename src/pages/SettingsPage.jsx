@@ -11,7 +11,7 @@ import {
 import { Badge } from '../components/ui/badge';
 import { Switch } from '../components/ui/switch';
 import { Label } from '../components/ui/label';
-import { Github } from 'lucide-react';
+import { Github, AlertTriangle } from 'lucide-react';
 import DashboardLayout from '../components/dashboard-layout';
 import { removeAuthStorage } from '../utils/auth';
 import {
@@ -19,6 +19,7 @@ import {
   deleteAccount,
 } from '../services/authService';
 import { Dialog, DialogContent, DialogHeader, DialogFooter } from '../components/ui/dialog';
+import ModalBody from '../components/ui/ModalBody';
 
 function GithubUnlinkButton() {
   const accessToken = localStorage.getItem('accessToken');
@@ -51,12 +52,12 @@ function GithubUnlinkButton() {
       </Button>
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent>
-          <DialogHeader>GitHub 연동 해제</DialogHeader>
-          <div className="py-2">
-            연동 해제 시, 이 서비스에서 GitHub 계정 연결이 완전히 끊어집니다.
-            연동 해제 후에는 다시 연결해야 서비스를 이용할 수 있습니다.
-            정말로 연동을 해제하시겠습니까?
-          </div>
+          <ModalBody
+            icon={<AlertTriangle size={28} color="#f59e42" />}
+            title="GitHub 연동 해제"
+            description={`연동 해제 시, 이 서비스에서 GitHub 계정 연결이 완전히 끊어집니다.\n연동 해제 후에는 다시 연결해야 서비스를 이용할 수 있습니다.\n정말로 연동을 해제하시겠습니까?`}
+            warning="⚠️ 연동 해제 후 서비스 이용이 제한될 수 있습니다."
+          />
           <DialogFooter>
             <Button variant="outline" onClick={() => setOpen(false)} disabled={loading}>
               취소
@@ -107,13 +108,12 @@ function AccountDeleteButton() {
       </Button>
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent>
-          <DialogHeader>계정 데이터 삭제</DialogHeader>
-          <div className="py-2">
-            계정 데이터를 삭제하면 모든 분석 결과, 설정 및 개인 정보가
-            영구적으로 제거됩니다.
-            이 작업은 되돌릴 수 없습니다.
-            정말로 계정 데이터를 삭제하시겠습니까?
-          </div>
+          <ModalBody
+            icon={<AlertTriangle size={28} color="#ef4444" />}
+            title="계정 데이터 삭제"
+            description={`계정 데이터를 삭제하면 모든 분석 결과, 설정 및 개인 정보가\n영구적으로 제거됩니다.\n이 작업은 되돌릴 수 없습니다.\n정말로 계정 데이터를 삭제하시겠습니까?`}
+            warning="⚠️ 이 작업은 되돌릴 수 없습니다."
+          />
           <DialogFooter>
             <Button variant="outline" onClick={() => setOpen(false)} disabled={loading}>
               취소
