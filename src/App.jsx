@@ -3,6 +3,9 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import OAuthCallback from './pages/OAuthCallback';
+import TermsOfServicePage from './pages/TermsOfServicePage';
+import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
+import CookiePolicyPage from './pages/CookiePolicyPage';
 import { SidebarProvider } from './contexts/SidebarContext';
 import { isLoggedIn } from './utils/auth';
 import ProtectedRoutes from './routes/ProtectedRoutes';
@@ -41,6 +44,9 @@ function App() {
             }
           />
           <Route path="/oauth/callback" element={<OAuthCallback />} />
+          <Route path="/terms-of-service" element={<TermsOfServicePage />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+          <Route path="/cookie-policy" element={<CookiePolicyPage />} />
           <Route
             path="*"
             element={
