@@ -2,26 +2,23 @@ import React from 'react';
 
 function useThemeMode() {
   if (typeof window === 'undefined') return 'light';
-  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  return document.documentElement.classList.contains('dark') ? 'dark' : 'light';
 }
 
 export function Dialog({ open, onOpenChange, children }) {
   const mode = useThemeMode();
 
+  // 라이트 모드: 오버레이 밝게, 글자색 진하게
   const bgOverlay =
     mode === 'dark'
       ? 'rgba(15, 13, 24, 0.85)'
-      : 'rgba(30, 28, 40, 0.75)';
+      : 'rgba(240, 240, 250, 0.7)'; // 더 밝은 오버레이
   const modalBg =
     mode === 'dark'
       ? '#18132a'
-      : '#232136';
-  const modalColor = '#f3e8ff';
+      : '#fff';
+  const modalColor = mode === 'dark' ? '#f3e8ff' : '#232136'; // 라이트모드 글자 진하게
   const borderColor = mode === 'dark' ? '#6d28d9' : '#a5b4fc';
-  const boxShadow =
-    mode === 'dark'
-      ? '0 16px 48px 0 rgba(40, 20, 80, 0.55)'
-      : '0 8px 32px 0 rgba(40, 20, 80, 0.28)';
 
   if (!open) return null;
   return (
@@ -46,16 +43,18 @@ export function Dialog({ open, onOpenChange, children }) {
           background: modalBg,
           color: modalColor,
           borderRadius: 18,
-          minWidth: 420,      // 기존 340 → 420
-          maxWidth: 560,      // 기존 420 → 560
+          minWidth: 420,
+          maxWidth: 560,
           padding: '44px 36px 28px 36px',
-          boxShadow: boxShadow,
+          boxShadow:
+            mode === 'dark'
+              ? '0 16px 48px 0 rgba(40,20,80,0.55)'
+              : '0 8px 32px 0 rgba(40,20,80,0.18)', // 라이트모드 그림자도 연하게
           border: `1.5px solid ${borderColor}`,
-          position: 'relative',
           fontFamily: 'inherit',
           transition: 'background 0.3s, color 0.3s',
         }}
-        onClick={e => e.stopPropagation()}
+        onClick={(e) => e.stopPropagation()}
       >
         {children}
       </div>
@@ -64,6 +63,7 @@ export function Dialog({ open, onOpenChange, children }) {
 }
 
 export function DialogHeader({ children }) {
+  const mode = useThemeMode();
   return (
     <div
       style={{
@@ -71,8 +71,8 @@ export function DialogHeader({ children }) {
         fontSize: 22,
         marginBottom: 20,
         letterSpacing: '0.02em',
-        color: '#f3e8ff',
-        textShadow: '0 1px 8px #1e1b4b33',
+        color: mode === 'dark' ? '#f3e8ff' : '#232136', // 라이트모드에서 진한 색상
+        textShadow: mode === 'dark' ? '0 1px 8px #1e1b4b33' : 'none',
         textAlign: 'center',
       }}
     >
@@ -83,12 +83,13 @@ export function DialogHeader({ children }) {
 
 // DialogContent
 export function DialogContent({ children }) {
+  const mode = useThemeMode();
   return (
     <div
       className="py-2"
       style={{
         fontSize: 16,
-        color: '#f3e8ff',
+        color: mode === 'dark' ? '#f3e8ff' : '#232136', // 라이트모드에서 진한 색상
         lineHeight: 1.7,
         textAlign: 'center',
         wordBreak: 'keep-all',
