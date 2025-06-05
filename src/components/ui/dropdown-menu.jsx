@@ -131,25 +131,17 @@ const DropdownMenuContent = React.forwardRef(
 DropdownMenuContent.displayName = 'DropdownMenuContent';
 
 const DropdownMenuItem = React.forwardRef(
-  ({ className, inset, asChild = false, children, ...props }, ref) => {
-    const itemClass = cn(
-      'relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 hover:bg-accent hover:text-accent-foreground',
-      inset && 'pl-8',
-      className
-    );
-    if (asChild && React.isValidElement(children)) {
-      return React.cloneElement(children, {
-        ref,
-        className: cn(children.props.className, itemClass),
-        ...props,
-      });
-    }
-    return (
-      <div ref={ref} className={itemClass} {...props}>
-        {children}
-      </div>
-    );
-  }
+  ({ className, inset, ...props }, ref) => (
+    <div
+      ref={ref}
+      className={cn(
+        'relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 hover:bg-accent hover:text-accent-foreground',
+        inset && 'pl-8',
+        className
+      )}
+      {...props}
+    />
+  )
 );
 DropdownMenuItem.displayName = 'DropdownMenuItem';
 
