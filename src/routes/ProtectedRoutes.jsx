@@ -27,7 +27,7 @@ export default function ProtectedRoutes() {
       <Route path="/cookie-policy" element={<CookiePolicyPage />} />
       <Route path="/payment/success" element={<PaymentCompletePage />} />
       <Route path="/payment/fail" element={<PaymentFailPage />} />
-      <Route path="*" element={<Navigate to="/profile?tab=subscription" replace />} />
+      <Route path="*" element={<Navigate to="/dashboard" replace />} />
     </Routes>
   );
 }

@@ -601,9 +601,9 @@ export default function RepositoryPage() {
                     <p className="text-sm">{GUIDE_MESSAGE.content}</p>
                   </div>
                   {/* DB에서 불러온 메시지들 */}
-                  {chatMessages.map((msg) => (
+                  {chatMessages.map((msg, idx) => (
                     <div
-                      key={msg.messageId || msg.timestamp || Math.random()}
+                      key={msg.messageId || msg.timestamp || idx}
                       className={`
       max-w-[80%] rounded-lg p-3
       ${msg.senderType === 'User'

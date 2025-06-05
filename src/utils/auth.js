@@ -1,6 +1,7 @@
 export function removeAuthStorage() {
   // 삭제할 항목들을 배열로 관리
   const itemsToRemove = [
+    'userId',
     'accessToken',
     'username',
     'email',

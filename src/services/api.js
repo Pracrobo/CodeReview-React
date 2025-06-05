@@ -34,9 +34,11 @@ async function apiRequest(endpoint, options = {}) {
       if (!isLoggingOut) {
         isLoggingOut = true;
         await logout();
-        window.location.replace('/'); // 홈으로 강제 이동
+        window.location.replace('/');
+        isLoggingOut = false;
       }
-      return; // 무한루프 방지: 더 이상 throw하지 않고 종료
+      // 무한루프 방지: 에러 throw
+      throw new Error('인증이 만료되었습니다. 다시 로그인 해주세요.');
     }
   }
 
@@ -46,8 +48,9 @@ async function apiRequest(endpoint, options = {}) {
       isLoggingOut = true;
       await logout();
       window.location.replace('/');
+      isLoggingOut = false;
     }
-    return;
+    throw new Error('리소스를 찾을 수 없습니다.');
   }
 
   if (!response.ok) {
