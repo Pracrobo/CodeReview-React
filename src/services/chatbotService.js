@@ -15,15 +15,16 @@ export async function getOrCreateConversation({ repoId, userId, accessToken }) {
 
 // 메시지 저장 (GET)
 export async function saveChatMessage({ conversationId, senderType, content, accessToken }) {
-  const params = new URLSearchParams({
-    conversationId,
-    senderType,
-    content,
-  }).toString();
-  return apiRequest(`/chatbot/message?${params}`, {
-    method: 'GET',
+  return apiRequest('/chatbot/message', {
+    method: 'POST',
     headers: {
       Authorization: `Bearer ${accessToken}`,
+      'Content-Type': 'application/json',
     },
+    body: JSON.stringify({
+      conversationId, // camelCase
+      senderType,     // camelCase, 'User' 또는 'Agent'
+      content,
+    }),
   });
 }

@@ -33,6 +33,11 @@ import { getRepositoryDetails } from '../services/repositoryService';
 import { getOrCreateConversation, saveChatMessage } from '../services/chatbotService';
 import { getLanguageColor } from '../utils/languageUtils';
 
+const GUIDE_MESSAGE = {
+  senderType: 'Agent',
+  content: `안녕하세요! 저장소에 대해 어떤 것이든 물어보세요. 컨트리뷰션 방법, 코딩 컨벤션, PR 작성 방법 등에 대해 답변해 드릴 수 있습니다.`,
+};
+
 export default function RepositoryPage() {
   const { id: repoId } = useParams();
   const accessToken = localStorage.getItem('accessToken');
@@ -44,12 +49,7 @@ export default function RepositoryPage() {
 
   // 챗봇 상태
   const [chatInput, setChatInput] = useState('');
-  const [chatMessages, setChatMessages] = useState([
-    {
-      role: 'bot',
-      content: `안녕하세요! 저장소에 대해 어떤 것이든 물어보세요. 컨트리뷰션 방법, 코딩 컨벤션, PR 작성 방법 등에 대해 답변해 드릴 수 있습니다.`,
-    },
-  ]);
+  const [chatMessages, setChatMessages] = useState([]);
   const [conversationId, setConversationId] = useState(null);
   const chatEndRef = useRef(null);
 
@@ -88,21 +88,11 @@ export default function RepositoryPage() {
           if (data.messages && data.messages.length > 0) {
             setChatMessages(data.messages);
           } else {
-            setChatMessages([
-              {
-                role: 'bot',
-                content: `안녕하세요! ${repo.fullName?.split('/')[1] || repo.fullName} 저장소에 대해 어떤 것이든 물어보세요. 컨트리뷰션 방법, 코딩 컨벤션, PR 작성 방법 등에 대해 답변해 드릴 수 있습니다.`,
-              },
-            ]);
+            setChatMessages([]); // 안내 멘트는 렌더링에서만!
           }
         })
         .catch(() => {
-          setChatMessages([
-            {
-              role: 'bot',
-              content: `안녕하세요! ${repo?.fullName?.split('/')[1] || repo?.fullName || ''} 저장소에 대해 어떤 것이든 물어보세요. 컨트리뷰션 방법, 코딩 컨벤션, PR 작성 방법 등에 대해 답변해 드릴 수 있습니다.`,
-            },
-          ]);
+          setChatMessages([]);
         });
     }
   }, [repo, userId, accessToken]);
@@ -110,14 +100,14 @@ export default function RepositoryPage() {
   // 메시지 전송
   const handleSendMessage = () => {
     if (!chatInput.trim()) return;
-    const newMsg = { sender_type: 'User', content: chatInput.trim() };
+    const newMsg = { senderType: 'User', content: chatInput.trim() };
     setChatMessages(prev => [...prev, newMsg]);
     setChatInput('');
     if (conversationId) {
       saveChatMessage({
         conversationId,
         senderType: 'User',
-        content: newMsg.content,
+        content: chatInput.trim(),
         accessToken,
       });
     }
@@ -364,9 +354,8 @@ export default function RepositoryPage() {
                                       ),
                                       width: `${lang.percentage}%`,
                                     }}
-                                    title={`${
-                                      lang.languageName
-                                    }: ${lang.percentage.toFixed(1)}%`}
+                                    title={`${lang.languageName
+                                      }: ${lang.percentage.toFixed(1)}%`}
                                   />
                                 ))}
                               </div>
@@ -559,17 +548,17 @@ export default function RepositoryPage() {
                           repo.analysisStatus === 'completed'
                             ? 'bg-green-50 text-green-700 border-green-200 dark:bg-green-900/30 dark:text-green-300 dark:border-green-600'
                             : repo.analysisStatus === 'analyzing'
-                            ? 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-600'
-                            : 'bg-gray-50 text-gray-700 border-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600'
+                              ? 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-600'
+                              : 'bg-gray-50 text-gray-700 border-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600'
                         }
                       >
                         {repo.analysisStatus === 'completed'
                           ? '분석 완료'
                           : repo.analysisStatus === 'analyzing'
-                          ? '분석 중'
-                          : repo.analysisStatus === 'failed'
-                          ? '분석 실패'
-                          : '분석 전'}
+                            ? '분석 중'
+                            : repo.analysisStatus === 'failed'
+                              ? '분석 실패'
+                              : '분석 전'}
                       </Badge>
                     </div>
                   </CardContent>
@@ -598,17 +587,24 @@ export default function RepositoryPage() {
               </CardHeader>
               <CardContent>
                 <div className="bg-muted p-4 rounded-lg mb-4 h-[400px] overflow-y-auto flex flex-col space-y-4 dark:bg-gray-800">
+                  {/* 안내 메시지 항상 맨 위에 */}
+                  <div
+                    className="max-w-[80%] rounded-lg p-3 self-start bg-primary-foreground text-gray-900 dark:bg-gray-700 dark:text-gray-200 text-left"
+                  >
+                    <p className="text-sm">{GUIDE_MESSAGE.content}</p>
+                  </div>
+                  {/* DB에서 불러온 메시지들 */}
                   {chatMessages.map((msg, idx) => (
                     <div
                       key={idx}
                       className={`
-          max-w-[80%] rounded-lg p-3
-          ${msg.sender_type === 'User'
-            ? 'self-end bg-blue-100 text-blue-900 dark:bg-blue-800 dark:text-blue-100 text-right'
-            : 'self-start bg-primary-foreground text-gray-900 dark:bg-gray-700 dark:text-gray-200 text-left'}
-        `}
+      max-w-[80%] rounded-lg p-3
+      ${msg.senderType === 'User'
+        ? 'self-end bg-blue-100 text-blue-900 dark:bg-blue-800 dark:text-blue-100 text-right'
+        : 'self-start bg-primary-foreground text-gray-900 dark:bg-gray-700 dark:text-gray-200 text-left'}
+    `}
                       style={{
-                        alignSelf: msg.sender_type === 'User' ? 'flex-end' : 'flex-start',
+                        alignSelf: msg.senderType === 'User' ? 'flex-end' : 'flex-start',
                       }}
                     >
                       <p className="text-sm">{msg.content}</p>
