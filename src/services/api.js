@@ -4,6 +4,8 @@ import { refreshAccessToken, logout } from './authService.js';
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001';
 
+let isLoggingOut = false; // 무한루프 방지 플래그
+
 // API 요청 함수
 async function apiRequest(endpoint, options = {}) {
   let accessToken = localStorage.getItem('accessToken');
@@ -18,7 +20,7 @@ async function apiRequest(endpoint, options = {}) {
 
   let response = await fetch(`${API_BASE_URL}${endpoint}`, config);
 
-  // 401 처리 (토큰 만료)
+  // 401 처리 (토큰 만료, refreshToken 없음, user 없음 등)
   if (
     response.status === 401 &&
     endpoint !== '/auth/token/refresh'
@@ -29,15 +31,23 @@ async function apiRequest(endpoint, options = {}) {
       config.headers.Authorization = `Bearer ${accessToken}`;
       response = await fetch(`${API_BASE_URL}${endpoint}`, config);
     } else {
-      await logout();
-      throw new Error('인증이 만료되었습니다. 다시 로그인해주세요.');
+      if (!isLoggingOut) {
+        isLoggingOut = true;
+        await logout();
+        window.location.replace('/'); // 홈으로 강제 이동
+      }
+      return; // 무한루프 방지: 더 이상 throw하지 않고 종료
     }
   }
 
-  // 404 처리 (유저 없음 등)
+  // 404 처리 (user 없음 등)
   if (response.status === 404) {
-    await logout();
-    throw new Error('요청하신 리소스를 찾을 수 없습니다.');
+    if (!isLoggingOut) {
+      isLoggingOut = true;
+      await logout();
+      window.location.replace('/');
+    }
+    return;
   }
 
   if (!response.ok) {

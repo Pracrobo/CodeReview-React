@@ -5,6 +5,7 @@ import { handleError } from './errorHandler.js';
 // 인증 후 공통 후처리
 function handlePostAuthCleanup() {
   removeAuthStorage();
+  window.location.reload();
 }
 
 // GitHub OAuth 콜백 처리
