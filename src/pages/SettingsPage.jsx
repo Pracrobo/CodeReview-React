@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { Button } from '../components/ui/button';
 import {
   Card,
@@ -11,15 +11,17 @@ import {
 import { Badge } from '../components/ui/badge';
 import { Switch } from '../components/ui/switch';
 import { Label } from '../components/ui/label';
-import { Github } from 'lucide-react';
+import { Github, ToggleRight } from 'lucide-react';
 import DashboardLayout from '../components/dashboard-layout';
 import { removeAuthStorage } from '../utils/auth';
+import { unlinkAccount, deleteAccount } from '../services/authService';
+import { permissionNotificationWindow } from '../services/notificationService';
 import {
-  unlinkAccount,
-  deleteAccount,
-} from '../services/authService';
-import { Dialog, DialogContent, DialogHeader, DialogFooter } from '../components/ui/dialog';
-
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogFooter,
+} from '../components/ui/dialog';
 function GithubUnlinkButton() {
   const accessToken = localStorage.getItem('accessToken');
   const [open, setOpen] = useState(false);
@@ -54,15 +56,23 @@ function GithubUnlinkButton() {
           <DialogHeader>GitHub 연동 해제</DialogHeader>
           <div className="py-2">
             연동 해제 시, 이 서비스에서 GitHub 계정 연결이 완전히 끊어집니다.
-            연동 해제 후에는 다시 연결해야 서비스를 이용할 수 있습니다.
-            정말로 연동을 해제하시겠습니까?
+            연동 해제 후에는 다시 연결해야 서비스를 이용할 수 있습니다. 정말로
+            연동을 해제하시겠습니까?
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setOpen(false)} disabled={loading}>
+            <Button
+              variant="outline"
+              onClick={() => setOpen(false)}
+              disabled={loading}
+            >
               취소
             </Button>
-            <Button variant="destructive" onClick={handleUnlink} disabled={loading}>
-              {loading ? "연동 해제 중..." : "연동 해제"}
+            <Button
+              variant="destructive"
+              onClick={handleUnlink}
+              disabled={loading}
+            >
+              {loading ? '연동 해제 중...' : '연동 해제'}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -110,16 +120,19 @@ function AccountDeleteButton() {
           <DialogHeader>계정 데이터 삭제</DialogHeader>
           <div className="py-2">
             계정 데이터를 삭제하면 모든 분석 결과, 설정 및 개인 정보가
-            영구적으로 제거됩니다.
-            이 작업은 되돌릴 수 없습니다.
-            정말로 계정 데이터를 삭제하시겠습니까?
+            영구적으로 제거됩니다. 이 작업은 되돌릴 수 없습니다. 정말로 계정
+            데이터를 삭제하시겠습니까?
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setOpen(false)}>
               취소
             </Button>
-            <Button variant="destructive" onClick={handleDelete} disabled={loading}>
-              {loading ? "삭제 중..." : "삭제"}
+            <Button
+              variant="destructive"
+              onClick={handleDelete}
+              disablDialogFootered={loading}
+            >
+              {loading ? '삭제 중...' : '삭제'}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -129,8 +142,50 @@ function AccountDeleteButton() {
 }
 
 export default function SettingsPage() {
-  const [emailNotifications, setEmailNotifications] = useState(true);
   const username = localStorage.getItem('username') || 'githubuser';
+  const [emailNotifications, setEmailNotifications] = useState(false);
+
+  // 브라우저 알림 관련
+  const NOTIFICATION_PERMISSION_KEY = 'notificationPermissionStatus';
+  const currentStatus = localStorage.getItem(NOTIFICATION_PERMISSION_KEY);
+  // 토글 버튼의 checked 상태를 제어하는 state
+  const [browserNotifications, setBrowserNotifications] = useState(() => {
+    if (
+      !currentStatus ||
+      currentStatus === 'default' ||
+      currentStatus === 'denied'
+    ) {
+      return false;
+    } else if (currentStatus === 'granted') {
+      return true;
+    }
+  });
+
+  // 토글 버튼 클릭 핸들러
+  const handleBrowserNotificationToggle = async (checked) => {
+    // 토글 버튼이 올바르게 됐는지 확인 및 localStorage저장
+    try {
+      console.log('체크', checked);
+      const result = await permissionNotificationWindow();
+      if (checked && result) {
+        localStorage.setItem(NOTIFICATION_PERMISSION_KEY, 'granted');
+        setBrowserNotifications(true);
+      } else if (!checked && !result) {
+        localStorage.setItem(NOTIFICATION_PERMISSION_KEY, 'denied');
+        setBrowserNotifications(false);
+      } else if (checked && !result) {
+        localStorage.setItem(NOTIFICATION_PERMISSION_KEY, 'granted');
+        setBrowserNotifications(true);
+      } else if (!checked && result) {
+        localStorage.setItem(NOTIFICATION_PERMISSION_KEY, 'denied');
+        setBrowserNotifications(false);
+      }
+    } catch (error) {
+      console.error('알림 권한 요청 오류:', error);
+      localStorage.setItem(NOTIFICATION_PERMISSION_KEY, 'denied');
+      setBrowserNotifications(false);
+    }
+  };
 
   return (
     <DashboardLayout>
@@ -167,11 +222,15 @@ export default function SettingsPage() {
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
                 <Label htmlFor="browser-notifications">브라우저 알림</Label>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-mutedhandleBrowserClick-foreground">
                   저장소 분석 완료 시 브라우저 알림을 받습니다
                 </p>
               </div>
-              <Switch id="browser-notifications" defaultChecked />
+              <Switch
+                id="browser-notifications"
+                checked={browserNotifications}
+                onCheckedChange={handleBrowserNotificationToggle}
+              />
             </div>
           </CardContent>
         </Card>
@@ -257,9 +316,8 @@ export default function SettingsPage() {
             <div className="pt-2">
               <p className="text-sm text-muted-foreground mb-4">
                 계정 데이터를 삭제하면 모든 분석 결과, 설정 및 개인 정보가
-                영구적으로 제거됩니다.
-                이 작업은 되돌릴 수 없습니다.
-                정말로 계정 데이터를 삭제하시겠습니까?
+                영구적으로 제거됩니다. 이 작업은 되돌릴 수 없습니다. 정말로 계정
+                데이터를 삭제하시겠습니까?
               </p>
               <AccountDeleteButton />
             </div>
