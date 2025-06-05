@@ -98,18 +98,25 @@ export default function RepositoryPage() {
   }, [repo, userId, accessToken]);
 
   // 메시지 전송
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (!chatInput.trim()) return;
     const newMsg = { senderType: 'User', content: chatInput.trim() };
     setChatMessages(prev => [...prev, newMsg]);
     setChatInput('');
     if (conversationId) {
-      saveChatMessage({
-        conversationId,
-        senderType: 'User',
-        content: chatInput.trim(),
-        accessToken,
-      });
+      try {
+        await saveChatMessage({
+          conversationId,
+          senderType: 'User',
+          content: chatInput.trim(),
+          accessToken,
+        });
+      } catch (err) {
+        // 실패 시 마지막 메시지 롤백 및 안내
+        setChatMessages(prev => prev.slice(0, -1));
+        alert('메시지 전송에 실패했습니다. 다시 시도해 주세요.');
+        console.error('메시지 저장 실패:', err);
+      }
     }
   };
 
@@ -594,18 +601,15 @@ export default function RepositoryPage() {
                     <p className="text-sm">{GUIDE_MESSAGE.content}</p>
                   </div>
                   {/* DB에서 불러온 메시지들 */}
-                  {chatMessages.map((msg, idx) => (
+                  {chatMessages.map((msg) => (
                     <div
-                      key={idx}
+                      key={msg.messageId || msg.timestamp || Math.random()}
                       className={`
       max-w-[80%] rounded-lg p-3
       ${msg.senderType === 'User'
         ? 'self-end bg-blue-100 text-blue-900 dark:bg-blue-800 dark:text-blue-100 text-right'
         : 'self-start bg-primary-foreground text-gray-900 dark:bg-gray-700 dark:text-gray-200 text-left'}
     `}
-                      style={{
-                        alignSelf: msg.senderType === 'User' ? 'flex-end' : 'flex-start',
-                      }}
                     >
                       <p className="text-sm">{msg.content}</p>
                     </div>

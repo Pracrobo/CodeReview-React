@@ -142,45 +142,41 @@ export default function RepositoriesPage() {
   const renderRepositoryCard = (repo) => (
     <Card key={repo.id} className="h-full transition-all hover:shadow-md">
       <CardHeader className="pb-2">
-        <div className="flex justify-between items-start">
-          <div className="flex items-center gap-2">
-            <Github className="h-5 w-5" />
-            <CardTitle className="text-base font-medium">{repo.name}</CardTitle>
-            {repo.isNew && <Badge className="bg-green-500">NEW</Badge>}
-            {repo.analysisStatus === 'completed' && (
-              <Badge
-                variant="outline"
-                className="bg-green-50 text-green-700 border-green-200"
-              >
-                분석완료
-              </Badge>
-            )}
-            {repo.analysisStatus === 'analyzing' && (
-              <Badge
-                variant="outline"
-                className="bg-blue-50 text-blue-700 border-blue-200"
-              >
-                분석중
-              </Badge>
-            )}
-          </div>
-          <div className="flex items-center gap-2">
-            <Badge variant={repo.isPrivate ? 'outline' : 'secondary'}>
-              {repo.isPrivate ? '비공개' : '공개'}
-            </Badge>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8"
-              onClick={(e) => toggleFavoriteStatus(e, repo.id)}
+        <div className="flex flex-wrap items-center gap-2">
+          <Github className="h-5 w-5" />
+          <CardTitle className="text-base font-medium">{repo.name}</CardTitle>
+          {repo.isNew && <Badge className="bg-green-500">NEW</Badge>}
+          {repo.analysisStatus === 'completed' && (
+            <Badge
+              variant="outline"
+              className="bg-green-50 text-green-700 border-green-200"
             >
-              <Star
-                className={`h-4 w-4 ${
-                  repo.isFavorite ? 'fill-yellow-400 text-yellow-400' : ''
-                }`}
-              />
-            </Button>
-          </div>
+              분석완료
+            </Badge>
+          )}
+          {repo.analysisStatus === 'analyzing' && (
+            <Badge
+              variant="outline"
+              className="bg-blue-50 text-blue-700 border-blue-200"
+            >
+              분석중
+            </Badge>
+          )}
+          <Badge variant={repo.isPrivate ? 'outline' : 'secondary'}>
+            {repo.isPrivate ? '비공개' : '공개'}
+          </Badge>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8"
+            onClick={(e) => toggleFavoriteStatus(e, repo.id)}
+          >
+            <Star
+              className={`h-4 w-4 ${
+                repo.isFavorite ? 'fill-yellow-400 text-yellow-400' : ''
+              }`}
+            />
+          </Button>
         </div>
         <CardDescription className="line-clamp-2 h-10">
           {repo.description}
