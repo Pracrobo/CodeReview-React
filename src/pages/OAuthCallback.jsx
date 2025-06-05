@@ -14,7 +14,7 @@ export default function OAuthCallback() {
         .then(({ success, data }) => {
           if (success && data.accessToken) {
             localStorage.setItem('accessToken', data.accessToken);
-            if (data.githubAccessToken) localStorage.setItem('githubAccessToken', data.githubAccessToken);
+            if (data.userId) localStorage.setItem('userId', data.userId);
             if (data.username) localStorage.setItem('username', data.username);
             if (data.email) localStorage.setItem('email', data.email);
             if (data.avatarUrl) localStorage.setItem('avatarUrl', data.avatarUrl);

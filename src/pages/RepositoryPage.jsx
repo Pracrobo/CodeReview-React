@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import {
   Tabs,
@@ -30,28 +30,34 @@ import {
 } from 'lucide-react';
 import DashboardLayout from '../components/dashboard-layout';
 import { getRepositoryDetails } from '../services/repositoryService';
+import { getOrCreateConversation, saveChatMessage } from '../services/chatbotService';
 import { getLanguageColor } from '../utils/languageUtils';
 
 export default function RepositoryPage() {
   const { id: repoId } = useParams();
+  const accessToken = localStorage.getItem('accessToken');
+  const userId = localStorage.getItem('userId');
+
   const [repo, setRepo] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // 챗봇 입력 및 메시지 상태
+  // 챗봇 상태
   const [chatInput, setChatInput] = useState('');
-  const [chatMessages, setChatMessages] = useState([]);
+  const [chatMessages, setChatMessages] = useState([
+    {
+      role: 'bot',
+      content: `안녕하세요! 저장소에 대해 어떤 것이든 물어보세요. 컨트리뷰션 방법, 코딩 컨벤션, PR 작성 방법 등에 대해 답변해 드릴 수 있습니다.`,
+    },
+  ]);
+  const [conversationId, setConversationId] = useState(null);
   const chatEndRef = useRef(null);
 
-  // 페이지 로드 시 저장소 정보 가져오기
+  // 저장소 정보 가져오기
   useEffect(() => {
-    const loadRepositoryData = async () => {
-      if (!repoId) {
-        setError('저장소 ID가 필요합니다.');
-        setLoading(false);
-        return;
-      }
+    if (!repoId) return;
 
+    const loadRepositoryData = async () => {
       try {
         setLoading(true);
         const result = await getRepositoryDetails(repoId);
@@ -73,29 +79,51 @@ export default function RepositoryPage() {
     loadRepositoryData();
   }, [repoId]);
 
-  // repo가 바뀌면 챗봇 초기화
+  // 저장소/유저/토큰 준비되면 대화 불러오기 또는 생성
   useEffect(() => {
-    if (repo) {
-      setChatMessages([
-        {
-          role: 'bot',
-          content: `안녕하세요! ${repo.fullName?.split('/')[1] || repo.fullName} 저장소에 대해 어떤 것이든 물어보세요. 컨트리뷰션 방법, 코딩 컨벤션, PR 작성 방법 등에 대해 답변해 드릴 수 있습니다.`,
-        },
-      ]);
+    if (repo && userId && accessToken) {
+      getOrCreateConversation({ repoId: repo.repoId, userId, accessToken })
+        .then(data => {
+          setConversationId(data.conversationId);
+          if (data.messages && data.messages.length > 0) {
+            setChatMessages(data.messages);
+          } else {
+            setChatMessages([
+              {
+                role: 'bot',
+                content: `안녕하세요! ${repo.fullName?.split('/')[1] || repo.fullName} 저장소에 대해 어떤 것이든 물어보세요. 컨트리뷰션 방법, 코딩 컨벤션, PR 작성 방법 등에 대해 답변해 드릴 수 있습니다.`,
+              },
+            ]);
+          }
+        })
+        .catch(() => {
+          setChatMessages([
+            {
+              role: 'bot',
+              content: `안녕하세요! ${repo?.fullName?.split('/')[1] || repo?.fullName || ''} 저장소에 대해 어떤 것이든 물어보세요. 컨트리뷰션 방법, 코딩 컨벤션, PR 작성 방법 등에 대해 답변해 드릴 수 있습니다.`,
+            },
+          ]);
+        });
     }
-  }, [repo]);
+  }, [repo, userId, accessToken]);
 
   // 메시지 전송
   const handleSendMessage = () => {
     if (!chatInput.trim()) return;
-    setChatMessages((prev) => [
-      ...prev,
-      { role: 'user', content: chatInput.trim() },
-    ]);
+    const newMsg = { sender_type: 'User', content: chatInput.trim() };
+    setChatMessages(prev => [...prev, newMsg]);
     setChatInput('');
+    if (conversationId) {
+      saveChatMessage({
+        conversationId,
+        senderType: 'User',
+        content: newMsg.content,
+        accessToken,
+      });
+    }
   };
 
-  // 엔터키 입력 처리
+  // 엔터키 처리
   const handleInputKeyDown = (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
@@ -573,16 +601,19 @@ export default function RepositoryPage() {
                   {chatMessages.map((msg, idx) => (
                     <div
                       key={idx}
-                      className={`max-w-[80%] rounded-lg p-3 mb-2 ${
-                        msg.role === 'user'
-                          ? 'self-end bg-indigo-100 dark:bg-indigo-900 text-right'
-                          : 'self-start bg-primary-foreground dark:bg-gray-700'
-                      }`}
+                      className={`
+          max-w-[80%] rounded-lg p-3
+          ${msg.sender_type === 'User'
+            ? 'self-end bg-blue-100 text-blue-900 dark:bg-blue-800 dark:text-blue-100 text-right'
+            : 'self-start bg-primary-foreground text-gray-900 dark:bg-gray-700 dark:text-gray-200 text-left'}
+        `}
+                      style={{
+                        alignSelf: msg.sender_type === 'User' ? 'flex-end' : 'flex-start',
+                      }}
                     >
-                      <p className="text-sm dark:text-gray-200">{msg.content}</p>
+                      <p className="text-sm">{msg.content}</p>
                     </div>
                   ))}
-                  <div ref={chatEndRef} />
                 </div>
                 <div className="flex gap-2">
                   <Input
