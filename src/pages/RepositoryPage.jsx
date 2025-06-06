@@ -24,7 +24,7 @@ export default function RepositoryPage() {
   const [repo, setRepo] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [activeTab, setActiveTab] = useState('overview');
+  const [activeTab, setActiveTab] = useState(() => localStorage.getItem('repoActiveTab') || 'overview');
 
   // 챗봇 상태
   const [chatInput, setChatInput] = useState('');
@@ -272,6 +272,12 @@ export default function RepositoryPage() {
     return new Date(dateString).toLocaleDateString('ko-KR');
   };
 
+  // 탭 변경 시 localStorage에 저장
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+    localStorage.setItem('repoActiveTab', tab);
+  };
+
   return (
     <DashboardLayout>
       <div className="space-y-6">
@@ -321,7 +327,7 @@ export default function RepositoryPage() {
           </div>
         </div>
 
-        <Tabs value={activeTab} onValueChange={setActiveTab}>
+        <Tabs value={activeTab} onValueChange={handleTabChange}>
           <TabsList>
             <TabsTrigger value="overview">개요</TabsTrigger>
             <TabsTrigger value="issues">이슈 목록</TabsTrigger>
