@@ -25,6 +25,18 @@ async function createConversation({ repoId, userId, accessToken }) {
   });
 }
 
+// 대화 삭제
+async function deleteConversation({ repoId, userId, accessToken }) {
+  return api.apiRequest('/chatbot/conversation', {
+    method: 'DELETE',
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ repoId, userId }),
+  });
+}
+
 // 메시지 저장
 async function saveChatMessage({ conversationId, senderType, content, accessToken }) {
   return api.apiRequest('/chatbot/message', {
@@ -44,5 +56,6 @@ async function saveChatMessage({ conversationId, senderType, content, accessToke
 export default {
   getConversation,
   createConversation,
+  deleteConversation,
   saveChatMessage,
 };

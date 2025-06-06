@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '../components/ui/card';
 import { Input } from '../components/ui/input';
 import { Badge } from '../components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
-import { AlertCircle, Github, Plus, Search, Star, GitFork, Clock } from 'lucide-react';
+import { AlertCircle, Github, Plus, Search, Star, GitFork, Clock, Trash2 } from 'lucide-react';
 import DashboardLayout from '../components/dashboard-layout';
 import repositoryService from '../services/repositoryService';
 import dataTransformers from '../utils/dataTransformers';
@@ -17,6 +17,8 @@ export default function RepositoriesPage() {
   const [favoriteRepositories, setFavoriteRepositories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const tabValue = searchParams.get('tab') || 'all';
 
   // 저장소 목록 로드
   useEffect(() => {
@@ -112,54 +114,56 @@ export default function RepositoriesPage() {
   const filteredFavoriteRepositories = favoriteRepositories.filter(
     (repo) =>
       repo.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      repo.description.toLowerCase().includes(searchQuery.toLowerCase())
+    repo.description.toLowerCase().includes(searchQuery.toLowerCase())
   );
-
+  
   const renderRepositoryCard = (repo) => (
-    <Card key={repo.id} className="h-full transition-all hover:shadow-md">
-      <CardHeader className="pb-2">
-        <div className="flex flex-wrap items-center gap-2">
-          <Github className="h-5 w-5" />
-          <CardTitle className="text-base font-medium">{repo.name}</CardTitle>
-          {repo.isNew && <Badge className="bg-green-500">NEW</Badge>}
-          {repo.analysisStatus === 'completed' && (
-            <Badge
-              variant="outline"
-              className="bg-green-50 text-green-700 border-green-200"
-            >
-              분석완료
+    <Card
+    key={repo.id}
+    className="h-full min-h-[180px] transition-all hover:shadow-lg rounded-xl bg-white dark:bg-gray-900 group" // border 클래스 제거
+    >
+      <CardHeader className="pb-2 relative">
+        <div className="flex items-center min-w-0 gap-2 flex-nowrap">
+          {/* Github 아이콘을 button으로 변경 */}
+          <button
+            type="button"
+            onClick={e => {
+              e.stopPropagation();
+              window.open(repo.htmlUrl || repo.url, '_blank', 'noopener,noreferrer');
+            }}
+            className="mr-1 p-0 bg-transparent border-0 flex-shrink-0 transition-colors text-gray-500 hover:text-gray-800 dark:hover:text-gray-200"
+            tabIndex={-1}
+            title="GitHub 저장소로 이동"
+          >
+            <Github className="h-5 w-5" />
+          </button>
+          <CardTitle className="text-base font-semibold group-hover:text-purple-700 dark:group-hover:text-purple-300 transition-colors">
+            {repo.name}
+          </CardTitle>
+          <div className="flex flex-wrap items-center gap-2 ml-1">
+            {repo.isNew && <Badge className="bg-green-500 text-white flex-shrink-0">NEW</Badge>}
+            <Badge variant={repo.isPrivate ? 'outline' : 'secondary'} className="flex-shrink-0">
+              {repo.isPrivate ? '비공개' : '공개'}
             </Badge>
-          )}
-          {repo.analysisStatus === 'analyzing' && (
-            <Badge
-              variant="outline"
-              className="bg-blue-50 text-blue-700 border-blue-200"
-            >
-              분석중
-            </Badge>
-          )}
-          <Badge variant={repo.isPrivate ? 'outline' : 'secondary'}>
-            {repo.isPrivate ? '비공개' : '공개'}
-          </Badge>
+          </div>
+          <div className="flex-1" />
           <Button
             variant="ghost"
-            size="icon"
-            className="h-8 w-8"
+            size="sm"
+            className="!h-10 !w-10 min-w-0 p-0 flex-shrink-0"
             onClick={(e) => toggleFavoriteStatus(e, repo.id)}
           >
             <Star
-              className={`h-4 w-4 ${
-                repo.isFavorite ? 'fill-yellow-400 text-yellow-400' : ''
-              }`}
+              className={`h-4 w-4 ${repo.isFavorite ? 'fill-yellow-400 text-yellow-400' : ''}`}
             />
           </Button>
         </div>
-        <CardDescription className="line-clamp-2 h-10">
+        <CardDescription className="line-clamp-2 h-10 mt-3 text-gray-600 dark:text-gray-300">
           {repo.description}
         </CardDescription>
       </CardHeader>
-      <CardContent className="pb-2">
-        <div className="flex items-center gap-4 text-sm text-muted-foreground mb-2">
+      <CardContent className="pb-4">
+        <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground mb-3 mt-0">
           <div className="flex items-center gap-1">
             <Star className="h-4 w-4" />
             <span>{repo.stars}</span>
@@ -172,11 +176,9 @@ export default function RepositoriesPage() {
             <AlertCircle className="h-4 w-4" />
             <span>{repo.issues}개 이슈</span>
           </div>
-        </div>
-        {/* 주요 언어 표시 */}
-        {repo.language && (
-          <div className="flex items-center gap-2 text-sm">
-            <div className="flex items-center gap-1">
+          {/* 주요 언어 표시 */}
+          {repo.language && (
+            <div className="flex items-center gap-1 ml-2">
               <div
                 className="w-3 h-3 rounded-full"
                 style={{ backgroundColor: languageUtils.getLanguageColor(repo.language) }}
@@ -188,25 +190,35 @@ export default function RepositoriesPage() {
                 </span>
               )}
             </div>
-          </div>
-        )}
-      </CardContent>
-      <CardFooter className="text-xs text-muted-foreground flex justify-between">
-        <div className="flex items-center gap-1">
-          <Clock className="h-3.5 w-3.5" />
-          <span>마지막 분석: {repo.lastAnalyzed}</span>
+          )}
         </div>
-        <Button
-          variant="ghost"
-          size="sm"
-          className="h-6 text-red-600 hover:text-red-800"
-          onClick={(e) => handleDeleteRepository(e, repo.githubRepoId)}
-        >
-          삭제
-        </Button>
+      </CardContent>
+      <hr className="border-gray-200 dark:border-gray-700" />
+      <CardFooter className="text-xs text-muted-foreground flex flex-col gap-1 pt-3 pb-3 pr-3 relative">
+        {/* 버튼 위에만 구분선 - 카드 전체 너비로(음수 마진) */}
+        <div className="flex w-full justify-between items-center">
+          <div className="flex items-center gap-1">
+            <Clock className="h-3.5 w-3.5" />
+            <span>마지막 분석: {repo.lastAnalyzed}</span>
+          </div>
+          <Button
+            variant="destructive"
+            size="sm"
+            className="flex items-center text-sm mb-0"
+            onClick={(e) => handleDeleteRepository(e, repo.githubRepoId)}
+            title="저장소 삭제"
+          >
+            <Trash2 className="w-4 h-3" />
+            <span>삭제</span>
+          </Button>
+        </div>
       </CardFooter>
     </Card>
   );
+
+  const handleTabChange = (value) => {
+    setSearchParams({ tab: value });
+  };
 
   if (loading) {
     return (
@@ -232,6 +244,8 @@ export default function RepositoriesPage() {
 
   return (
     <DashboardLayout>
+      {/* 상단 구분선 삭제 */}
+      {/* <hr className="mb-6 border-gray-200 dark:border-gray-700" /> */}
       <div className="space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
@@ -252,14 +266,14 @@ export default function RepositoriesPage() {
           </div>
         </div>
 
-        <Tabs defaultValue="all">
+        <Tabs value={tabValue} onValueChange={handleTabChange}>
           <TabsList>
             <TabsTrigger value="all">모든 저장소</TabsTrigger>
             <TabsTrigger value="starred">즐겨찾기</TabsTrigger>
           </TabsList>
           <TabsContent value="all" className="space-y-4">
             {filteredRepositories.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {filteredRepositories.map((repo) => (
                   <Link to={`/repository/${repo.id}`} key={repo.id}>
                     {renderRepositoryCard(repo)}
@@ -309,7 +323,7 @@ export default function RepositoriesPage() {
           </TabsContent>
           <TabsContent value="starred">
             {filteredFavoriteRepositories.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {filteredFavoriteRepositories.map((repo) => (
                   <Link to={`/repository/${repo.id}`} key={repo.id}>
                     {renderRepositoryCard(repo)}
@@ -338,6 +352,8 @@ export default function RepositoriesPage() {
           </TabsContent>
         </Tabs>
       </div>
+      {/* 하단 구분선 삭제 */}
+      {/* <hr className="mt-8 border-gray-200 dark:border-gray-700" /> */}
     </DashboardLayout>
   );
 }

@@ -6,7 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs'
 import { Badge } from '../components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 import { Input } from '../components/ui/input';
-import { AlertCircle, ArrowLeft, ExternalLink, Github, Star, GitFork, Clock, Info, Shield, FileText } from 'lucide-react';
+import { AlertCircle, ArrowLeft, ExternalLink, Github, Star, GitFork, Clock, Info, Shield, FileText, Trash2 } from 'lucide-react';
 import DashboardLayout from '../components/dashboard-layout';
 import repositoryService from '../services/repositoryService';
 import languageUtils from '../utils/languageUtils';
@@ -271,6 +271,22 @@ export default function RepositoryPage() {
   const handleTabChange = (tab) => {
     setActiveTab(tab);
     localStorage.setItem('repoActiveTab', tab);
+  };
+
+  // 대화 초기화 함수
+  const handleResetConversation = async () => {
+    setChatLoading(true);
+    setChatError('');
+    try {
+      await chatbotService.deleteConversation({ repoId, userId, accessToken });
+      setConversationId(null);
+      setChatMessages([]);
+      setChatInput('');
+      // 대화탭에 진입하면 새 대화가 자동 생성됨
+    } catch {
+      setChatError('대화 초기화에 실패했습니다.');
+    }
+    setChatLoading(false);
   };
 
   return (
@@ -609,11 +625,23 @@ export default function RepositoryPage() {
           {/* AI 챗봇 탭 */}
           <TabsContent value="chatbot" className="space-y-4">
             <Card>
-              <CardHeader>
-                <CardTitle>컨트리뷰션 가이드 AI 챗봇</CardTitle>
-                <CardDescription>
-                  저장소의 컨트리뷰션 문서를 학습한 AI 챗봇에게 질문하세요
-                </CardDescription>
+              <CardHeader className="flex flex-row items-center justify-between">
+                <div className="flex flex-col gap-3">
+                  <CardTitle>컨트리뷰션 가이드 AI 챗봇</CardTitle>
+                  <CardDescription>
+                    저장소의 컨트리뷰션 문서를 학습한 AI 챗봇에게 질문하세요
+                  </CardDescription>
+                </div>
+                <Button
+                  variant="destructive"
+                  className="flex items-center gap-2 px-3 py-2 text-sm"
+                  onClick={handleResetConversation}
+                  disabled={chatLoading}
+                  title="대화 초기화"
+                >
+                  <Trash2 className="w-4 h-4" />
+                  <span>대화 초기화</span>
+                </Button>
               </CardHeader>
               <CardContent>
                 <div className="bg-muted p-4 rounded-lg mb-4 h-[400px] overflow-y-auto flex flex-col space-y-4 dark:bg-gray-800">
@@ -655,9 +683,6 @@ export default function RepositoryPage() {
                 {chatError && (
                   <p className="text-xs text-red-500 mt-2">{chatError}</p>
                 )}
-                <p className="text-xs text-muted-foreground mt-2 dark:text-gray-400">
-                  AI 챗봇 기능은 준비 중입니다.
-                </p>
               </CardContent>
             </Card>
           </TabsContent>
