@@ -11,8 +11,8 @@ async function handleLogoutFlow() {
   try {
     await authService.logout();
   } finally {
-    window.location.replace('/');
     isLoggingOut = false;
+    window.location.replace('/');
   }
 }
 

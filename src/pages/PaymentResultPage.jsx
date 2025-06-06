@@ -16,18 +16,14 @@ export default function PaymentResultPage() {
         }, 1000);
         return;
       }
-      fetch(`${api.API_BASE_URL}/payment/complete`, {
+      api.apiRequest('/payment/complete', {
         method: "POST",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${accessToken}`,
         },
-        credentials: "include",
       })
-        .then(res => {
-          if (!res.ok) throw new Error("HTTP error: " + res.status);
-          return res.json();
-        })
         .then(() => {
           setTimeout(() => {
             navigate("/profile?tab=subscription", { replace: true });
