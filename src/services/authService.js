@@ -58,6 +58,14 @@ async function refreshAccessToken() {
     });
     if (data.accessToken) {
       localStorage.setItem('accessToken', data.accessToken);
+
+      // accessToken에서 payload 추출
+      const payload = authUtils.parseJwt(data.accessToken);
+      if (payload?.userId) localStorage.setItem('userId', payload.userId);
+      if (payload?.username) localStorage.setItem('username', payload.username);
+      if (payload?.email) localStorage.setItem('email', payload.email);
+      if (payload?.avatarUrl) localStorage.setItem('avatarUrl', payload.avatarUrl);
+
       return { success: true, accessToken: data.accessToken };
     }
     throw new Error('토큰이 없습니다.');

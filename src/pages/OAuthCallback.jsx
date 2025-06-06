@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import authService from '../services/authService';
+import authUtils from '../utils/auth';
 
 export default function OAuthCallback() {
   const navigate = useNavigate();
@@ -14,10 +15,14 @@ export default function OAuthCallback() {
         .then(({ success, data }) => {
           if (success && data.accessToken) {
             localStorage.setItem('accessToken', data.accessToken);
-            if (data.userId) localStorage.setItem('userId', data.userId);
-            if (data.username) localStorage.setItem('username', data.username);
-            if (data.email) localStorage.setItem('email', data.email);
-            if (data.avatarUrl) localStorage.setItem('avatarUrl', data.avatarUrl);
+
+            // accessToken에서 payload 추출
+            const payload = authUtils.parseJwt(data.accessToken);
+            if (payload?.userId) localStorage.setItem('userId', payload.userId);
+            if (payload?.username) localStorage.setItem('username', payload.username);
+            if (payload?.email) localStorage.setItem('email', payload.email);
+            if (payload?.avatarUrl) localStorage.setItem('avatarUrl', payload.avatarUrl);
+
             window.location.replace('/dashboard');
           } else {
             navigate('/login', { replace: true });
