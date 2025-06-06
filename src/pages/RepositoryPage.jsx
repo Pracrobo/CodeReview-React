@@ -102,7 +102,14 @@ export default function RepositoryPage() {
         const createResult = await chatbotService.createConversation({ repoId, userId, accessToken });
         if (createResult.success) {
           conversationIdForSend = createResult.conversationId;
-          setChatMessages([]); // 새 대화이므로 메시지 초기화
+          setConversationId(conversationIdForSend);
+          // 새로 만든 conversation의 메시지 목록을 불러옴 (대부분 빈 배열이지만, 혹시라도 있을 수 있음)
+          const fetchResult = await chatbotService.getConversation({ repoId, userId, accessToken });
+          if (fetchResult.success) {
+            setChatMessages(fetchResult.messages || []);
+          } else {
+            setChatMessages([]);
+          }
         } else {
           setChatError('챗봇 대화 생성에 실패했습니다.');
           setChatLoading(false);
