@@ -31,6 +31,7 @@ export default function RepositoryPage() {
   const [chatMessages, setChatMessages] = useState([]);
   const [chatError, setChatError] = useState('');
   const [chatLoading, setChatLoading] = useState(false);
+  const [conversationId, setConversationId] = useState(null);
   const chatEndRef = useRef(null);
 
   // 저장소 정보 가져오기
@@ -72,6 +73,7 @@ export default function RepositoryPage() {
         try {
           const result = await chatbotService.getConversation({ repoId, userId, accessToken });
           if (result.success) {
+            setConversationId(result.conversationId);
             setChatMessages(result.messages || []);
           } else if (result.status === 401) {
             window.location.replace('/login');
@@ -92,24 +94,10 @@ export default function RepositoryPage() {
     if (!chatInput.trim()) return;
     setChatLoading(true);
 
-    let conversationIdForSend = null;
+    let conversationIdForSend = conversationId;
 
-    // 대화가 있는지 조회
-    try {
-      const result = await chatbotService.getConversation({ repoId, userId, accessToken });
-      if (result.success) {
-        conversationIdForSend = result.conversationId;
-      }
-    } catch (err) {
-      if (err.status === 401) {
-        window.location.replace('/login');
-        setChatLoading(false);
-        return;
-      }
-    }
-
-    // 대화가 없으면 생성
     if (!conversationIdForSend) {
+      // 대화가 없으면 생성
       try {
         const createResult = await chatbotService.createConversation({ repoId, userId, accessToken });
         if (createResult.success) {
@@ -629,9 +617,9 @@ export default function RepositoryPage() {
                     <p className="text-sm">{GUIDE_MESSAGE.content}</p>
                   </div>
                   {/* DB에서 불러온 메시지들 */}
-                  {chatMessages.map((msg, idx) => (
+                  {chatMessages.map((msg) => (
                     <div
-                      key={msg.messageId || msg.timestamp || idx}
+                      key={msg.messageId}
                       className={`
       max-w-[80%] rounded-lg p-3
       ${msg.senderType === 'User'
