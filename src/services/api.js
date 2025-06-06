@@ -3,7 +3,18 @@ import authService from './authService.js';
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001';
 
-let isLoggingOut = false; // 무한루프 방지 플래그
+let isLoggingOut = false;
+
+async function handleLogoutFlow() {
+  if (isLoggingOut) return;
+  isLoggingOut = true;
+  try {
+    await authService.logout();
+  } finally {
+    window.location.replace('/');
+    isLoggingOut = false;
+  }
+}
 
 async function apiRequest(endpoint, options = {}) {
   let accessToken = localStorage.getItem('accessToken');
@@ -29,24 +40,14 @@ async function apiRequest(endpoint, options = {}) {
       config.headers.Authorization = `Bearer ${accessToken}`;
       response = await fetch(`${API_BASE_URL}${endpoint}`, config);
     } else {
-      if (!isLoggingOut) {
-        isLoggingOut = true;
-        await authService.logout();
-        window.location.replace('/');
-        isLoggingOut = false;
-      }
+      await handleLogoutFlow();
       throw new Error('인증이 만료되었습니다. 다시 로그인 해주세요.');
     }
   }
 
   // 404 처리 (user 없음 등)
   if (response.status === 404) {
-    if (!isLoggingOut) {
-      isLoggingOut = true;
-      await authService.logout();
-      window.location.replace('/');
-      isLoggingOut = false;
-    }
+    await handleLogoutFlow();
     throw new Error('리소스를 찾을 수 없습니다.');
   }
 

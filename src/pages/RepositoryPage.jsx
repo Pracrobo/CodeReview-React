@@ -128,7 +128,8 @@ export default function RepositoryPage() {
     }
 
     // 메시지 전송
-    const newMsg = { senderType: 'User', content: chatInput.trim() };
+    const tempId = Date.now() + Math.random();
+    const newMsg = { senderType: 'User', content: chatInput.trim(), tempId };
     setChatMessages(prev => [...prev, newMsg]);
     setChatInput('');
     try {
@@ -139,7 +140,7 @@ export default function RepositoryPage() {
         accessToken,
       });
     } catch {
-      setChatMessages(prev => prev.slice(0, -1));
+      setChatMessages(prev => prev.filter(msg => msg.tempId !== tempId));
       setChatError('메시지 전송에 실패했습니다. 다시 시도해 주세요.');
     }
     setChatLoading(false);
