@@ -1,41 +1,16 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '../components/ui/card';
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from '../components/ui/tabs';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '../components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import { Badge } from '../components/ui/badge';
 import { Input } from '../components/ui/input';
-import {
-  AlertCircle,
-  Github,
-  LogOut,
-  User,
-  Check,
-  X,
-  AlertTriangle,
-} from 'lucide-react';
+import { AlertCircle, Github, LogOut, User, Check, X, AlertTriangle } from 'lucide-react';
 import { Alert, AlertDescription } from '../components/ui/alert';
+import { Dialog, DialogContent, DialogHeader, DialogFooter } from '../components/ui/dialog';
 import DashboardLayout from '../components/dashboard-layout';
-import { logout } from '../services/authService';
-import { fetchUserAndPlan } from '../services/userService';
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-} from '../components/ui/dialog';
+import paymentService from '../services/paymentService';
+import authService from '../services/authService';
 import ModalBody from '../components/ui/ModalBody';
 
 // 날짜 포맷 함수
@@ -65,13 +40,11 @@ function formatPeriod(start, end) {
 }
 
 export default function ProfilePage() {
-  // 쿼리 파라미터에서 tab 값 읽기
   const location = useLocation();
   const navigate = useNavigate();
   const params = new URLSearchParams(location.search);
   const initialTab = params.get('tab') || 'account';
 
-  // 상태 선언
   const [tabValue, setTabValue] = useState(initialTab);
   const [currentPlan, setCurrentPlan] = useState('loading');
   const [proPlanActivatedAt, setProPlanActivatedAt] = useState(null);
@@ -83,13 +56,13 @@ export default function ProfilePage() {
   const [createdAt, setCreatedAt] = useState('');
   const [updatedAt, setUpdatedAt] = useState('');
   const [open, setOpen] = useState(false);
-  const [logoutLoading, setLogoutLoading] = useState(false); // 추가
+  const [logoutLoading, setLogoutLoading] = useState(false);
 
   // 자동 로그아웃 처리 함수
   const handleAutoLogout = useCallback(async () => {
-    if (logoutLoading) return; // 중복 방지
+    if (logoutLoading) return;
     setLogoutLoading(true);
-    await logout();
+    await authService.logout();
     window.location.replace('/');
   }, [logoutLoading]);
 
@@ -106,7 +79,7 @@ export default function ProfilePage() {
         return;
       }
       try {
-        const result = await fetchUserAndPlan();
+        const result = await paymentService.paymentStatus();
         if (!result.success) throw new Error(result.message);
         const user = result.data;
         setUsername(user.username || '사용자');
@@ -124,7 +97,6 @@ export default function ProfilePage() {
           setIsCanceled(false);
         }
       } catch (err) {
-        // 401(토큰 만료) 또는 404(유저 없음) 모두 자동 로그아웃
         if (err.status === 401 || err.status === 404) {
           await handleAutoLogout();
         }
@@ -133,10 +105,9 @@ export default function ProfilePage() {
     fetchAndHandleUser();
   }, [location, handleAutoLogout, logoutLoading]);
 
-  // Toss Payments 결제 함수
+  // 결제 버튼 클릭 시
   const handleProPayment = async () => {
     try {
-      // TossPayments 스크립트가 없으면 동적으로 추가
       if (!window.TossPayments) {
         await new Promise((resolve, reject) => {
           const script = document.createElement('script');
@@ -164,6 +135,7 @@ export default function ProfilePage() {
         customerEmail: email,
         customerName: username,
       });
+
     } catch (error) {
       console.error('결제 오류:', error);
       alert('결제 중 오류가 발생했습니다. 다시 시도해주세요.');
@@ -171,15 +143,14 @@ export default function ProfilePage() {
   };
 
   const handleLogout = async () => {
-    if (logoutLoading) return; // 중복 방지
+    if (logoutLoading) return;
     setLogoutLoading(true);
-    await logout();
+    await authService.logout();
     window.location.replace('/');
   };
 
   // 구독 취소
   const handleCancelSubscription = async () => {
-    // 실제로는 구독 취소 API 호출 필요
     setIsCanceled(true);
   };
 
@@ -190,7 +161,6 @@ export default function ProfilePage() {
   };
 
   useEffect(() => {
-    // location.search가 바뀌면 탭 상태도 동기화
     const params = new URLSearchParams(location.search);
     setTabValue(params.get('tab') || 'account');
   }, [location.search]);

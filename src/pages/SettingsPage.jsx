@@ -1,24 +1,14 @@
 import { useState, useCallback } from 'react';
 import { Button } from '../components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '../components/ui/card';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '../components/ui/card';
 import { Badge } from '../components/ui/badge';
 import { Switch } from '../components/ui/switch';
 import { Label } from '../components/ui/label';
 import { Github, AlertTriangle } from 'lucide-react';
-import DashboardLayout from '../components/dashboard-layout';
-import { removeAuthStorage } from '../utils/auth';
-import {
-  unlinkAccount,
-  deleteAccount,
-} from '../services/authService';
 import { Dialog, DialogContent, DialogHeader, DialogFooter } from '../components/ui/dialog';
+import DashboardLayout from '../components/dashboard-layout';
+import authUtils from '../utils/auth';
+import authService from '../services/authService';
 import ModalBody from '../components/ui/ModalBody';
 
 function GithubUnlinkButton() {
@@ -34,14 +24,14 @@ function GithubUnlinkButton() {
       return;
     }
 
-    const result = await unlinkAccount();
+    const result = await authService.unlinkAccount();
 
     if (!result.success) {
       setLoading(false);
       return;
     }
 
-    removeAuthStorage();
+    authUtils.removeAuthStorage();
     window.location.replace('/');
   }, [accessToken, loading]);
 
@@ -86,14 +76,14 @@ function AccountDeleteButton() {
       return;
     }
 
-    const result = await deleteAccount();
+    const result = await authService.deleteAccount();
 
     if (!result.success) {
       setLoading(false);
       return;
     }
 
-    removeAuthStorage();
+    authUtils.removeAuthStorage();
     window.location.replace('/');
   }, [accessToken, loading]);
 

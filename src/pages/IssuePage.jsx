@@ -1,21 +1,8 @@
 import { Link, useParams } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from '../components/ui/tabs';
-import {
-  ArrowLeft,
-  Github,
-  MessageSquare,
-  ThumbsUp,
-  Code,
-  Copy,
-  ExternalLink,
-} from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
+import { ArrowLeft, Github, MessageSquare, ThumbsUp, Code, Copy, ExternalLink } from 'lucide-react';
 import DashboardLayout from '../components/dashboard-layout';
 import { mockIssueDetails } from '../lib/mock-data';
 

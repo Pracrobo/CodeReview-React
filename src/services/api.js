@@ -1,12 +1,10 @@
-import { refreshAccessToken, logout } from './authService.js';
+import authService from './authService.js';
 
-// React 환경에서 환경 변수 접근
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001';
 
 let isLoggingOut = false; // 무한루프 방지 플래그
 
-// API 요청 함수
 async function apiRequest(endpoint, options = {}) {
   let accessToken = localStorage.getItem('accessToken');
   const config = {
@@ -25,7 +23,7 @@ async function apiRequest(endpoint, options = {}) {
     response.status === 401 &&
     endpoint !== '/auth/token/refresh'
   ) {
-    const refreshResult = await refreshAccessToken();
+    const refreshResult = await authService.refreshAccessToken();
     if (refreshResult.success) {
       accessToken = refreshResult.accessToken;
       config.headers.Authorization = `Bearer ${accessToken}`;
@@ -33,11 +31,10 @@ async function apiRequest(endpoint, options = {}) {
     } else {
       if (!isLoggingOut) {
         isLoggingOut = true;
-        await logout();
+        await authService.logout();
         window.location.replace('/');
         isLoggingOut = false;
       }
-      // 무한루프 방지: 에러 throw
       throw new Error('인증이 만료되었습니다. 다시 로그인 해주세요.');
     }
   }
@@ -46,7 +43,7 @@ async function apiRequest(endpoint, options = {}) {
   if (response.status === 404) {
     if (!isLoggingOut) {
       isLoggingOut = true;
-      await logout();
+      await authService.logout();
       window.location.replace('/');
       isLoggingOut = false;
     }
@@ -63,4 +60,7 @@ async function apiRequest(endpoint, options = {}) {
   return await response.json();
 }
 
-export { apiRequest, API_BASE_URL };
+export default {
+  apiRequest,
+  API_BASE_URL,
+};

@@ -1,4 +1,4 @@
-export function removeAuthStorage() {
+function removeAuthStorage() {
   // 삭제할 항목들을 배열로 관리
   const itemsToRemove = [
     'userId',
@@ -10,7 +10,7 @@ export function removeAuthStorage() {
   itemsToRemove.forEach((item) => localStorage.removeItem(item));
 }
 
-export function isLoggedIn() {
+function isLoggedIn() {
   const token = localStorage.getItem('accessToken');
   if (!token) return false;
   try {
@@ -27,3 +27,8 @@ export function isLoggedIn() {
     return false;
   }
 }
+
+export default {
+  removeAuthStorage,
+  isLoggedIn,
+};

@@ -1,39 +1,15 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '../components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '../components/ui/card';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '../components/ui/card';
 import { Input } from '../components/ui/input';
 import { Badge } from '../components/ui/badge';
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from '../components/ui/tabs';
-import {
-  AlertCircle,
-  Github,
-  Plus,
-  Search,
-  Star,
-  GitFork,
-  Clock,
-} from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
+import { AlertCircle, Github, Plus, Search, Star, GitFork, Clock } from 'lucide-react';
 import DashboardLayout from '../components/dashboard-layout';
-import {
-  getUserRepositories,
-  removeRepositoryFromTracking,
-  updateFavoriteStatus,
-} from '../services/repositoryService';
-import { transformRepositoryData } from '../utils/dataTransformers';
-import { getLanguageColor } from '../utils/languageUtils';
+import repositoryService from '../services/repositoryService';
+import dataTransformers from '../utils/dataTransformers';
+import languageUtils from '../utils/languageUtils';
 
 export default function RepositoriesPage() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -52,10 +28,10 @@ export default function RepositoriesPage() {
       setLoading(true);
       setError(null);
 
-      const result = await getUserRepositories();
+      const result = await repositoryService.getUserRepositories();
 
       if (result.success) {
-        const transformedRepos = result.data.map(transformRepositoryData);
+        const transformedRepos = result.data.map(dataTransformers.transformRepositoryData);
         setRepositories(transformedRepos);
 
         // 즐겨찾기 필터링
@@ -80,7 +56,7 @@ export default function RepositoriesPage() {
     if (!repo) return;
 
     try {
-      const result = await updateFavoriteStatus(repoId, !repo.isFavorite);
+      const result = await repositoryService.updateFavoriteStatus(repoId, !repo.isFavorite);
       if (result.success) {
         const updatedRepositories = repositories.map((repo) =>
           repo.id === repoId ? { ...repo, isFavorite: !repo.isFavorite } : repo
@@ -113,7 +89,7 @@ export default function RepositoriesPage() {
     if (!confirm('정말로 이 저장소를 삭제하시겠습니까?')) return;
 
     try {
-      const result = await removeRepositoryFromTracking(githubRepoId);
+      const result = await repositoryService.removeRepositoryFromTracking(githubRepoId);
 
       if (result.success) {
         // 성공 시 목록 새로고침
@@ -203,7 +179,7 @@ export default function RepositoriesPage() {
             <div className="flex items-center gap-1">
               <div
                 className="w-3 h-3 rounded-full"
-                style={{ backgroundColor: getLanguageColor(repo.language) }}
+                style={{ backgroundColor: languageUtils.getLanguageColor(repo.language) }}
               />
               <span className="font-medium">{repo.language}</span>
               {repo.languagePercentage && (

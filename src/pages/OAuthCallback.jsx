@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { processGithubCallback } from '../services/authService';
+import authService from '../services/authService';
 
 export default function OAuthCallback() {
   const navigate = useNavigate();
@@ -10,7 +10,7 @@ export default function OAuthCallback() {
     const code = params.get('code');
 
     if (code) {
-      processGithubCallback(code)
+      authService.processGithubCallback(code)
         .then(({ success, data }) => {
           if (success && data.accessToken) {
             localStorage.setItem('accessToken', data.accessToken);

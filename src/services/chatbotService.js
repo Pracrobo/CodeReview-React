@@ -1,8 +1,8 @@
-import { apiRequest } from './api.js';
+import api from './api.js';
 
-// 대화(conversation) 조회 또는 생성 (GET)
-export async function getOrCreateConversation({ repoId, userId, accessToken }) {
-  return apiRequest(
+// 대화 조회
+async function getConversation({ repoId, userId, accessToken }) {
+  return api.apiRequest(
     `/chatbot/conversation?repoId=${encodeURIComponent(repoId)}&userId=${encodeURIComponent(userId)}`,
     {
       method: 'GET',
@@ -13,18 +13,36 @@ export async function getOrCreateConversation({ repoId, userId, accessToken }) {
   );
 }
 
-// 메시지 저장 (GET)
-export async function saveChatMessage({ conversationId, senderType, content, accessToken }) {
-  return apiRequest('/chatbot/message', {
+// 대화 생성
+async function createConversation({ repoId, userId, accessToken }) {
+  return api.apiRequest('/chatbot/conversation', {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ repoId, userId }),
+  });
+}
+
+// 메시지 저장
+async function saveChatMessage({ conversationId, senderType, content, accessToken }) {
+  return api.apiRequest('/chatbot/message', {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${accessToken}`,
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      conversationId, // camelCase
-      senderType,     // camelCase, 'User' 또는 'Agent'
+      conversationId,
+      senderType,
       content,
     }),
   });
 }
+
+export default {
+  getConversation,
+  createConversation,
+  saveChatMessage,
+};

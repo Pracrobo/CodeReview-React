@@ -1,4 +1,4 @@
-export const getLanguageColor = (language) => {
+function getLanguageColor(language) {
   const colors = {
     JavaScript: '#f1e05a',
     TypeScript: '#2b7489',
@@ -22,4 +22,8 @@ export const getLanguageColor = (language) => {
     Perl: '#0298c3',
   };
   return colors[language] || '#8b5cf6';
+}
+
+export default {
+  getLanguageColor,
 };
