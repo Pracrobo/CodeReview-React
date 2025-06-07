@@ -138,7 +138,7 @@ function AccountDeleteButton() {
             <Button
               variant="destructive"
               onClick={handleDelete}
-              disablDialogFootered={loading}
+              disabled={loading}
             >
               {loading ? '삭제 중...' : '삭제'}
             </Button>
