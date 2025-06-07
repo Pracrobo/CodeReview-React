@@ -13,28 +13,39 @@ export async function permissionNotificationWindow() {
   return false;
 }
 
-export async function sendNotification(data) {
+export function sendNotification(data) {
   try {
-    if (data.type) {
-      new Notification(data.title, {
-        body: `요청하신 ${data.message}`,
-        tag: `${data.status}-${data.repoName}`,
-      });
+    // 데이터 검증
+    if (!data || !data.type) {
+      console.warn('알림 데이터가 유효하지 않습니다.');
+      return;
     }
+
+    // 브라우저 알림 권한 재확인
+    if (Notification.permission !== 'granted') {
+      console.warn('알림 권한이 없어 알림을 표시할 수 없습니다.');
+      return;
+    }
+
+    new Notification(data.title, {
+      body: `요청하신 ${data.message}`,
+      tag: `${data.status}-${data.repoName}`,
+    });
   } catch (error) {
-    console.error('알림 에러', error);
+    console.error('알림 표시 중 오류:', error);
   }
 }
 
+// 기본 내보내기 - 동기/비동기 작업 분리
 export default async function notificationService(data) {
   try {
     const hasPermission = await permissionNotificationWindow();
     if (hasPermission) {
-      await sendNotification(data);
+      sendNotification(data); // 동기 함수로 호출
     } else {
       console.log('알림 권한이 없어 알림을 보낼 수 없습니다.');
     }
   } catch (error) {
-    console.error('알림 서비스 에러:', error);
+    console.error('알림 서비스 오류:', error);
   }
 }
