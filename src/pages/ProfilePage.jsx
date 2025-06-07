@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useContext } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import {
@@ -37,6 +37,7 @@ import {
   DialogHeader,
 } from '../components/ui/dialog';
 import ModalBody from '../components/ui/ModalBody';
+import { NotificationContext } from '../contexts/notificationContext';
 
 // 날짜 포맷 함수
 function formatKoreanDateTime(dateString) {
@@ -61,10 +62,15 @@ function formatPeriod(start, end) {
   const startDate = new Date(start);
   const endDate = new Date(end);
   endDate.setMinutes(endDate.getMinutes() - 1); // 끝나는 시간 1분 줄이기
-  return `${formatKoreanDateTime(startDate)} ~ ${formatKoreanDateTime(endDate)}`;
+  return `${formatKoreanDateTime(startDate)} ~ ${formatKoreanDateTime(
+    endDate
+  )}`;
 }
 
 export default function ProfilePage() {
+  const { isConnected } = useContext(NotificationContext);
+  console.log(`알림 연결 상태: ${isConnected ? '연결됨' : '끊김'}`);
+
   // 쿼리 파라미터에서 tab 값 읽기
   const location = useLocation();
   const navigate = useNavigate();
@@ -240,10 +246,16 @@ export default function ProfilePage() {
                     </div>
                     <div>
                       <div className="flex items-center gap-2">
-                        <h3 className="font-medium text-lg text-slate-800 dark:text-slate-100">{username}</h3>
-                        <span className="text-xs text-slate-500 dark:text-slate-300">@{username}</span>
+                        <h3 className="font-medium text-lg text-slate-800 dark:text-slate-100">
+                          {username}
+                        </h3>
+                        <span className="text-xs text-slate-500 dark:text-slate-300">
+                          @{username}
+                        </span>
                       </div>
-                      <div className="text-xs text-slate-500 dark:text-slate-400">{email}</div>
+                      <div className="text-xs text-slate-500 dark:text-slate-400">
+                        {email}
+                      </div>
                     </div>
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -265,7 +277,7 @@ export default function ProfilePage() {
                           readOnly
                           className="flex-1 bg-transparent border-none outline-none focus:ring-0 focus:ring-offset-0 p-0 m-0 rounded-r-none"
                           tabIndex={-1}
-                        // Input 컴포넌트 대신 input 태그 직접 사용 (불필요한 ring 제거)
+                          // Input 컴포넌트 대신 input 태그 직접 사용 (불필요한 ring 제거)
                         />
                         {/* username과 아이콘 사이 세로 구분선 */}
                         <div className="h-6 w-px bg-slate-200 dark:bg-slate-700 mx-2 self-center" />
@@ -275,11 +287,12 @@ export default function ProfilePage() {
                           rel="noopener noreferrer"
                           tabIndex={0}
                           className="flex items-center px-2 rounded-l-none border-l-0 bg-transparent outline-none focus:ring-0 focus:ring-offset-0 group"
-                          style={{ borderTopLeftRadius: 0, borderBottomLeftRadius: 0 }}
+                          style={{
+                            borderTopLeftRadius: 0,
+                            borderBottomLeftRadius: 0,
+                          }}
                         >
-                          <Github
-                            className="w-5 h-5 text-slate-500 group-hover:text-ring transition-colors"
-                          />
+                          <Github className="w-5 h-5 text-slate-500 group-hover:text-ring transition-colors" />
                         </a>
                       </div>
                     </div>
@@ -287,33 +300,45 @@ export default function ProfilePage() {
                   <div className="border-t pt-4 mt-2 flex flex-row items-center justify-between gap-2 flex-wrap">
                     {/* 가입일 */}
                     <div className="flex items-center gap-2">
-                      <span className="text-sm font-medium text-slate-500 dark:text-slate-300">가입일</span>
+                      <span className="text-sm font-medium text-slate-500 dark:text-slate-300">
+                        가입일
+                      </span>
                       <span className="text-sm text-slate-800 dark:text-slate-100 font-semibold">
                         {createdAt
-                          ? new Date(createdAt).toLocaleString('ko-KR', {
-                              year: 'numeric',
-                              month: '2-digit',
-                              day: '2-digit',
-                              hour: '2-digit',
-                              minute: '2-digit',
-                              hour12: true,
-                            }).replace(/\./g, '.').replace(',','').replace(/\s?$/, '')
+                          ? new Date(createdAt)
+                              .toLocaleString('ko-KR', {
+                                year: 'numeric',
+                                month: '2-digit',
+                                day: '2-digit',
+                                hour: '2-digit',
+                                minute: '2-digit',
+                                hour12: true,
+                              })
+                              .replace(/\./g, '.')
+                              .replace(',', '')
+                              .replace(/\s?$/, '')
                           : '-'}
                       </span>
                     </div>
                     {/* 최근 활동 */}
                     <div className="flex items-center gap-2">
-                      <span className="text-sm font-medium text-slate-500 dark:text-slate-300">최근 활동</span>
+                      <span className="text-sm font-medium text-slate-500 dark:text-slate-300">
+                        최근 활동
+                      </span>
                       <span className="text-sm text-slate-800 dark:text-slate-100 font-semibold">
                         {updatedAt
-                          ? new Date(updatedAt).toLocaleString('ko-KR', {
-                              year: 'numeric',
-                              month: '2-digit',
-                              day: '2-digit',
-                              hour: '2-digit',
-                              minute: '2-digit',
-                              hour12: true,
-                            }).replace(/\./g, '.').replace(',','').replace(/\s?$/, '')
+                          ? new Date(updatedAt)
+                              .toLocaleString('ko-KR', {
+                                year: 'numeric',
+                                month: '2-digit',
+                                day: '2-digit',
+                                hour: '2-digit',
+                                minute: '2-digit',
+                                hour12: true,
+                              })
+                              .replace(/\./g, '.')
+                              .replace(',', '')
+                              .replace(/\s?$/, '')
                           : '-'}
                       </span>
                     </div>
@@ -335,11 +360,23 @@ export default function ProfilePage() {
                     <AlertCircle className="h-6 w-6 text-indigo-600 dark:text-indigo-400 mr-2" />
                     <div>
                       <AlertDescription className="text-sm text-indigo-800 dark:text-indigo-100">
-                        <span className="font-medium">계정 정보</span>는 <span className="font-medium">GitHub 계정</span>과 연동되어 있으며, 일부 정보(프로필 사진, 닉네임, 이메일 등)는 <span className="font-medium">GitHub</span>에서만 변경할 수 있습니다.
+                        <span className="font-medium">계정 정보</span>는{' '}
+                        <span className="font-medium">GitHub 계정</span>과
+                        연동되어 있으며, 일부 정보(프로필 사진, 닉네임, 이메일
+                        등)는 <span className="font-medium">GitHub</span>에서만
+                        변경할 수 있습니다.
                         <ul className="list-disc ml-5 mt-2 space-y-1">
-                          <li>프로필 사진, 닉네임, 이메일 등은 GitHub에서 수정해 주세요.</li>
-                          <li>변경 후 다시 로그인하면 최신 정보가 반영됩니다.</li>
-                          <li>계정 연동을 해제하면 서비스 이용이 제한될 수 있습니다.</li>
+                          <li>
+                            프로필 사진, 닉네임, 이메일 등은 GitHub에서 수정해
+                            주세요.
+                          </li>
+                          <li>
+                            변경 후 다시 로그인하면 최신 정보가 반영됩니다.
+                          </li>
+                          <li>
+                            계정 연동을 해제하면 서비스 이용이 제한될 수
+                            있습니다.
+                          </li>
                         </ul>
                       </AlertDescription>
                     </div>
@@ -356,20 +393,24 @@ export default function ProfilePage() {
                 <CardTitle className="flex items-center gap-3">
                   현재 구독 플랜
                   <Badge
-                    variant={currentPlan === 'pro' || currentPlan === 'free' ? 'outline' : 'default'}
+                    variant={
+                      currentPlan === 'pro' || currentPlan === 'free'
+                        ? 'outline'
+                        : 'default'
+                    }
                     className={
                       currentPlan === 'pro'
                         ? 'bg-purple-100 text-purple-700 border-purple-200 dark:bg-purple-950 dark:text-purple-200 dark:border-purple-800 hover:bg-purple-200 hover:text-purple-800 dark:hover:bg-purple-900 dark:hover:text-purple-100 transition-colors cursor-pointer'
                         : currentPlan === 'free'
-                          ? 'bg-slate-200 text-slate-700 border-slate-300 dark:bg-slate-700 dark:text-slate-200 dark:border-slate-500 hover:bg-slate-300 hover:text-slate-900 dark:hover:bg-slate-600 dark:hover:text-white transition-colors cursor-pointer'
-                          : 'bg-gray-100 text-gray-800'
+                        ? 'bg-slate-200 text-slate-700 border-slate-300 dark:bg-slate-700 dark:text-slate-200 dark:border-slate-500 hover:bg-slate-300 hover:text-slate-900 dark:hover:bg-slate-600 dark:hover:text-white transition-colors cursor-pointer'
+                        : 'bg-gray-100 text-gray-800'
                     }
                   >
                     {currentPlan === 'free'
                       ? '무료 플랜'
                       : currentPlan === 'pro'
-                        ? 'Pro 플랜'
-                        : ''}
+                      ? 'Pro 플랜'
+                      : ''}
                   </Badge>
                   <span className="text-xs text-slate-600 dark:text-slate-300 font-medium">
                     {currentPlan === 'free'
@@ -381,13 +422,19 @@ export default function ProfilePage() {
               <CardContent className="space-y-4">
                 {/* 사용량 섹션 */}
                 <div className="rounded-lg border bg-slate-50 dark:bg-slate-800 p-4 flex flex-col gap-4">
-                  <div className="font-semibold text-slate-800 dark:text-slate-100 mb-1">이번 달 사용량</div>
+                  <div className="font-semibold text-slate-800 dark:text-slate-100 mb-1">
+                    이번 달 사용량
+                  </div>
                   <div className="flex flex-col gap-4">
                     {/* 저장소 분석 */}
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-1">
-                        <span className="text-sm font-medium text-slate-800 dark:text-slate-100">저장소 분석</span>
-                        <span className="text-xs font-semibold text-slate-600 dark:text-white">2/3</span>
+                        <span className="text-sm font-medium text-slate-800 dark:text-slate-100">
+                          저장소 분석
+                        </span>
+                        <span className="text-xs font-semibold text-slate-600 dark:text-white">
+                          2/3
+                        </span>
                       </div>
                       <div className="w-full h-2 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
                         <div
@@ -399,8 +446,12 @@ export default function ProfilePage() {
                     {/* AI 챗봇 메시지 */}
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-1">
-                        <span className="text-sm font-medium text-slate-800 dark:text-slate-100">AI 챗봇 메시지</span>
-                        <span className="text-xs font-semibold text-slate-600 dark:text-white">15/100</span>
+                        <span className="text-sm font-medium text-slate-800 dark:text-slate-100">
+                          AI 챗봇 메시지
+                        </span>
+                        <span className="text-xs font-semibold text-slate-600 dark:text-white">
+                          15/100
+                        </span>
                       </div>
                       <div className="w-full h-2 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
                         <div
@@ -419,7 +470,9 @@ export default function ProfilePage() {
                 {currentPlan === 'pro' && (
                   <div className="space-y-2">
                     <div className="flex items-center gap-2">
-                      <span className="text-sm font-medium">Pro 플랜 이용기간 :</span>
+                      <span className="text-sm font-medium">
+                        Pro 플랜 이용기간 :
+                      </span>
                       <span className="text-sm font-semibold text-slate-700 dark:text-white">
                         {proPlanActivatedAt && proPlanExpiresAt
                           ? formatPeriod(proPlanActivatedAt, proPlanExpiresAt)
@@ -432,7 +485,8 @@ export default function ProfilePage() {
                       <Alert className="mt-4 bg-indigo-50 dark:bg-indigo-900/30 border border-indigo-200 dark:border-indigo-700 flex items-center gap-2">
                         <AlertCircle className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
                         <span className="text-sm text-indigo-800 dark:text-indigo-100">
-                          Pro 플랜은 매월 자동 결제되며, 다양한 프리미엄 기능과 혜택을 계속 이용하실 수 있습니다.
+                          Pro 플랜은 매월 자동 결제되며, 다양한 프리미엄 기능과
+                          혜택을 계속 이용하실 수 있습니다.
                         </span>
                       </Alert>
                     )}
@@ -440,7 +494,8 @@ export default function ProfilePage() {
                       <Alert className="mt-4 bg-indigo-50 dark:bg-indigo-900/30 border border-indigo-200 dark:border-indigo-700 flex items-center gap-2">
                         <AlertCircle className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
                         <span className="text-sm text-indigo-800 dark:text-indigo-100">
-                          구독이 취소되었습니다. 만료일까지 Pro 혜택이 유지됩니다.
+                          구독이 취소되었습니다. 만료일까지 Pro 혜택이
+                          유지됩니다.
                         </span>
                       </Alert>
                     )}
@@ -452,7 +507,8 @@ export default function ProfilePage() {
                   <Alert className="mt-4 bg-indigo-50 dark:bg-indigo-900/30 border border-indigo-200 dark:border-indigo-700 flex items-center gap-2">
                     <AlertCircle className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
                     <span className="text-sm text-indigo-800 dark:text-indigo-100">
-                      Pro 플랜으로 업그레이드하면 더 많은 저장소 분석과 고급 기능을 이용할 수 있습니다.
+                      Pro 플랜으로 업그레이드하면 더 많은 저장소 분석과 고급
+                      기능을 이용할 수 있습니다.
                     </span>
                   </Alert>
                 )}
@@ -507,7 +563,9 @@ export default function ProfilePage() {
                       </div>
                     </div>
                     <div className="p-4 text-center font-medium border-l bg-indigo-100 dark:bg-indigo-900/30">
-                      <div className="text-sm text-indigo-700 dark:text-indigo-300">Pro 플랜</div>
+                      <div className="text-sm text-indigo-700 dark:text-indigo-300">
+                        Pro 플랜
+                      </div>
                       <div className="text-xs text-indigo-600/70 dark:text-indigo-400/70 mt-1">
                         ₩10,000/월
                       </div>
@@ -632,9 +690,19 @@ export default function ProfilePage() {
             description={`로그아웃 시, 이 서비스에서만 로그아웃되며\nGitHub 계정 연동은 유지됩니다.\n계속 진행하시겠습니까?`}
           />
           <DialogFooter>
-            <Button variant="outline" onClick={() => setOpen(false)} disabled={logoutLoading}>취소</Button>
-            <Button variant="destructive" onClick={handleLogout} disabled={logoutLoading}>
-              {logoutLoading ? "로그아웃 중..." : "로그아웃"}
+            <Button
+              variant="outline"
+              onClick={() => setOpen(false)}
+              disabled={logoutLoading}
+            >
+              취소
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleLogout}
+              disabled={logoutLoading}
+            >
+              {logoutLoading ? '로그아웃 중...' : '로그아웃'}
             </Button>
           </DialogFooter>
         </DialogContent>

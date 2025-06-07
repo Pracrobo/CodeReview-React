@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useContext } from 'react';
 import { Button } from '../components/ui/button';
 import {
   Card,
@@ -16,6 +16,8 @@ import DashboardLayout from '../components/dashboard-layout';
 import { removeAuthStorage } from '../utils/auth';
 import { unlinkAccount, deleteAccount } from '../services/authService';
 import { permissionNotificationWindow } from '../services/notificationService';
+import { NotificationContext } from '../contexts/notificationContext';
+
 import {
   Dialog,
   DialogContent,
@@ -148,6 +150,8 @@ function AccountDeleteButton() {
 }
 
 export default function SettingsPage() {
+  const { isConnected } = useContext(NotificationContext);
+  console.log(`알림 연결 상태: ${isConnected ? '연결됨' : '끊김'}`);
   const username = localStorage.getItem('username') || 'githubuser';
   const [emailNotifications, setEmailNotifications] = useState(false);
 
@@ -171,7 +175,6 @@ export default function SettingsPage() {
   const handleBrowserNotificationToggle = async (checked) => {
     // 토글 버튼이 올바르게 됐는지 확인 및 localStorage저장
     try {
-      console.log('체크', checked);
       const result = await permissionNotificationWindow();
       if (checked && result) {
         localStorage.setItem(NOTIFICATION_PERMISSION_KEY, 'granted');

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import {
@@ -31,8 +31,10 @@ import {
 import DashboardLayout from '../components/dashboard-layout';
 import { getRepositoryDetails } from '../services/repositoryService';
 import { getLanguageColor } from '../utils/languageUtils';
+import { NotificationContext } from '../contexts/notificationContext';
 
 export default function RepositoryPage() {
+  const { isConnected } = useContext(NotificationContext);
   const { id: repoId } = useParams();
   const [repo, setRepo] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -40,6 +42,7 @@ export default function RepositoryPage() {
 
   // 페이지 로드 시 저장소 정보 가져오기
   useEffect(() => {
+    console.log(`알림 연결 상태: ${isConnected ? '연결됨' : '끊김'}`);
     const loadRepositoryData = async () => {
       if (!repoId) {
         setError('저장소 ID가 필요합니다.');
