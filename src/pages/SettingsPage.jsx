@@ -1,14 +1,22 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useContext } from 'react';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '../components/ui/card';
 import { Badge } from '../components/ui/badge';
 import { Switch } from '../components/ui/switch';
 import { Label } from '../components/ui/label';
 import { Github, AlertTriangle } from 'lucide-react';
-import { Dialog, DialogContent, DialogHeader, DialogFooter } from '../components/ui/dialog';
 import DashboardLayout from '../components/dashboard-layout';
 import authUtils from '../utils/auth';
 import authService from '../services/authService';
+import { permissionNotificationWindow } from '../services/notificationService';
+import { NotificationContext } from '../contexts/notificationContext';
+
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogFooter,
+} from '../components/ui/dialog';
 import ModalBody from '../components/ui/ModalBody';
 
 function GithubUnlinkButton() {
@@ -49,11 +57,19 @@ function GithubUnlinkButton() {
             warning="⚠️ 연동 해제 후 서비스 이용이 제한될 수 있습니다."
           />
           <DialogFooter>
-            <Button variant="outline" onClick={() => setOpen(false)} disabled={loading}>
+            <Button
+              variant="outline"
+              onClick={() => setOpen(false)}
+              disabled={loading}
+            >
               취소
             </Button>
-            <Button variant="destructive" onClick={handleUnlink} disabled={loading}>
-              {loading ? "연동 해제 중..." : "연동 해제"}
+            <Button
+              variant="destructive"
+              onClick={handleUnlink}
+              disabled={loading}
+            >
+              {loading ? '연동 해제 중...' : '연동 해제'}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -105,11 +121,19 @@ function AccountDeleteButton() {
             warning="⚠️ 이 작업은 되돌릴 수 없습니다."
           />
           <DialogFooter>
-            <Button variant="outline" onClick={() => setOpen(false)} disabled={loading}>
+            <Button
+              variant="outline"
+              onClick={() => setOpen(false)}
+              disabled={loading}
+            >
               취소
             </Button>
-            <Button variant="destructive" onClick={handleDelete} disabled={loading}>
-              {loading ? "삭제 중..." : "삭제"}
+            <Button
+              variant="destructive"
+              onClick={handleDelete}
+              disabled={loading}
+            >
+              {loading ? '삭제 중...' : '삭제'}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -119,8 +143,58 @@ function AccountDeleteButton() {
 }
 
 export default function SettingsPage() {
-  const [emailNotifications, setEmailNotifications] = useState(true);
+  const { isConnected } = useContext(NotificationContext);
+  console.log(`알림 연결 상태: ${isConnected ? '연결됨' : '끊김'}`);
   const username = localStorage.getItem('username') || 'githubuser';
+  const [emailNotifications, setEmailNotifications] = useState(false);
+
+  // 브라우저 알림 관련
+  const NOTIFICATION_PERMISSION_KEY = 'notificationPermissionStatus';
+  const currentStatus = localStorage.getItem(NOTIFICATION_PERMISSION_KEY);
+  // 토글 버튼의 checked 상태를 제어하는 state
+  const [browserNotifications, setBrowserNotifications] = useState(() => {
+    if (
+      !currentStatus ||
+      currentStatus === 'default' ||
+      currentStatus === 'denied'
+    ) {
+      return false;
+    } else if (currentStatus === 'granted') {
+      return true;
+    }
+  });
+
+  // 토글 버튼 클릭 핸들러
+  const handleBrowserNotificationToggle = async (checked) => {
+    try {
+      if (checked) {
+        // 알림을 켜려고 할 때만 권한 요청
+        const permissionGranted = await permissionNotificationWindow();
+        if (permissionGranted) {
+          localStorage.setItem(NOTIFICATION_PERMISSION_KEY, 'granted');
+          setBrowserNotifications(true);
+          // SSE 연결 트리거
+          window.dispatchEvent(new Event('notificationPermissionChanged'));
+        } else {
+          // 권한이 거부되면 토글을 다시 꺼진 상태로
+          localStorage.setItem(NOTIFICATION_PERMISSION_KEY, 'denied');
+          setBrowserNotifications(false);
+          window.dispatchEvent(new Event('notificationPermissionChanged'));
+        }
+      } else {
+        // 알림을 끄려고 할 때는 권한 요청 없이 바로 처리
+        localStorage.setItem(NOTIFICATION_PERMISSION_KEY, 'denied');
+        setBrowserNotifications(false);
+        // SSE 연결 해제 트리거
+        window.dispatchEvent(new Event('notificationPermissionChanged'));
+      }
+    } catch (error) {
+      console.error('알림 권한 요청 오류:', error);
+      localStorage.setItem(NOTIFICATION_PERMISSION_KEY, 'denied');
+      setBrowserNotifications(false);
+      window.dispatchEvent(new Event('notificationPermissionChanged'));
+    }
+  };
 
   return (
     <DashboardLayout>
@@ -161,7 +235,11 @@ export default function SettingsPage() {
                   저장소 분석 완료 시 브라우저 알림을 받습니다
                 </p>
               </div>
-              <Switch id="browser-notifications" defaultChecked />
+              <Switch
+                id="browser-notifications"
+                checked={browserNotifications}
+                onCheckedChange={handleBrowserNotificationToggle}
+              />
             </div>
           </CardContent>
         </Card>
@@ -247,9 +325,8 @@ export default function SettingsPage() {
             <div className="pt-2">
               <p className="text-sm text-muted-foreground mb-4">
                 계정 데이터를 삭제하면 모든 분석 결과, 설정 및 개인 정보가
-                영구적으로 제거됩니다.
-                이 작업은 되돌릴 수 없습니다.
-                정말로 계정 데이터를 삭제하시겠습니까?
+                영구적으로 제거됩니다. 이 작업은 되돌릴 수 없습니다. 정말로 계정
+                데이터를 삭제하시겠습니까?
               </p>
               <AccountDeleteButton />
             </div>

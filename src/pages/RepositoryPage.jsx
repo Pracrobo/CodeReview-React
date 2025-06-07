@@ -10,6 +10,7 @@ import { AlertCircle, ArrowLeft, ExternalLink, Github, Star, GitFork, Clock, Inf
 import DashboardLayout from '../components/dashboard-layout';
 import repositoryService from '../services/repositoryService';
 import languageUtils from '../utils/languageUtils';
+import { NotificationContext } from '../contexts/notificationContext';
 
 const GUIDE_MESSAGE = {
   senderType: 'Agent',
@@ -17,6 +18,7 @@ const GUIDE_MESSAGE = {
 };
 
 export default function RepositoryPage() {
+  const { isConnected } = useContext(NotificationContext);
   const { id: repoId } = useParams();
   const accessToken = localStorage.getItem('accessToken');
   const userId = localStorage.getItem('userId');
@@ -36,7 +38,13 @@ export default function RepositoryPage() {
 
   // 저장소 정보 가져오기
   useEffect(() => {
-    if (!repoId) return;
+    console.log(`알림 연결 상태: ${isConnected ? '연결됨' : '끊김'}`);
+    const loadRepositoryData = async () => {
+      if (!repoId) {
+        setError('저장소 ID가 필요합니다.');
+        setLoading(false);
+        return;
+      }
 
     const loadRepositoryData = async () => {
       try {

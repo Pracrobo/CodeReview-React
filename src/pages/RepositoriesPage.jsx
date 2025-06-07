@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '../components/ui/card';
@@ -10,8 +10,10 @@ import DashboardLayout from '../components/dashboard-layout';
 import repositoryService from '../services/repositoryService';
 import dataTransformers from '../utils/dataTransformers';
 import languageUtils from '../utils/languageUtils';
+import { NotificationContext } from '../contexts/notificationContext';
 
 export default function RepositoriesPage() {
+  const { isConnected } = useContext(NotificationContext);
   const [searchQuery, setSearchQuery] = useState('');
   const [repositories, setRepositories] = useState([]);
   const [favoriteRepositories, setFavoriteRepositories] = useState([]);
@@ -23,6 +25,7 @@ export default function RepositoriesPage() {
   // 저장소 목록 로드
   useEffect(() => {
     loadRepositories();
+    console.log(`알림 연결 상태: ${isConnected ? '연결됨' : '끊김'}`);
   }, []);
 
   const loadRepositories = async () => {

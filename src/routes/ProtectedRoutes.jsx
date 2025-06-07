@@ -9,9 +9,11 @@ import SettingsPage from '../pages/SettingsPage';
 import PrivacyPolicyPage from '../pages/PrivacyPolicyPage';
 import TermsOfServicePage from '../pages/TermsOfServicePage';
 import CookiePolicyPage from '../pages/CookiePolicyPage';
-import PaymentResultPage from '../pages/PaymentResultPage';
+import PaymentCompletePage from '../pages/PaymentCompletePage';
+import PaymentFailPage from '../pages/PaymentFailPage';
 
 export default function ProtectedRoutes() {
+  const notification = useNotification();
   return (
     <Routes>
       <Route path="/dashboard" element={<DashboardPage />} />
@@ -24,9 +26,12 @@ export default function ProtectedRoutes() {
       <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
       <Route path="/terms-of-service" element={<TermsOfServicePage />} />
       <Route path="/cookie-policy" element={<CookiePolicyPage />} />
-      <Route path="/payment/success" element={<PaymentResultPage />} />
-      <Route path="/payment/fail" element={<PaymentResultPage />} />
-      <Route path="*" element={<Navigate to="/dashboard" replace />} />
+      <Route path="/payment/success" element={<PaymentCompletePage />} />
+      <Route path="/payment/fail" element={<PaymentFailPage />} />
+      <Route
+        path="*"
+        element={<Navigate to="/profile?tab=subscription" replace />}
+      />
     </Routes>
   );
 }
