@@ -175,19 +175,22 @@ export default function SettingsPage() {
   const handleBrowserNotificationToggle = async (checked) => {
     // 토글 버튼이 올바르게 됐는지 확인 및 localStorage저장
     try {
-      const result = await permissionNotificationWindow();
-      if (checked && result) {
-        localStorage.setItem(NOTIFICATION_PERMISSION_KEY, 'granted');
-        setBrowserNotifications(true);
-      } else if (!checked && !result) {
-        localStorage.setItem(NOTIFICATION_PERMISSION_KEY, 'denied');
-        setBrowserNotifications(false);
-      } else if (checked && !result) {
-        localStorage.setItem(NOTIFICATION_PERMISSION_KEY, 'granted');
-        setBrowserNotifications(true);
-      } else if (!checked && result) {
-        localStorage.setItem(NOTIFICATION_PERMISSION_KEY, 'denied');
-        setBrowserNotifications(false);
+      const permissionGranted = await permissionNotificationWindow();
+      if ((!permissionGranted && !checked) || (permissionGranted && checked)) {
+        localStorage.setItem(
+          NOTIFICATION_PERMISSION_KEY,
+          checked ? 'granted' : 'denied'
+        );
+        setBrowserNotifications(checked);
+      } else {
+        if (checked && permissionGranted) {
+          localStorage.setItem(NOTIFICATION_PERMISSION_KEY, 'granted');
+          setBrowserNotifications(true);
+        } else {
+          // 사용자가 권한을 허용하지 않았거나, 알림을 끄려고 할 때
+          localStorage.setItem(NOTIFICATION_PERMISSION_KEY, 'denied');
+          setBrowserNotifications(false);
+        }
       }
     } catch (error) {
       console.error('알림 권한 요청 오류:', error);
@@ -231,7 +234,7 @@ export default function SettingsPage() {
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
                 <Label htmlFor="browser-notifications">브라우저 알림</Label>
-                <p className="text-sm text-mutedhandleBrowserClick-foreground">
+                <p className="text-sm text-muted-foreground">
                   저장소 분석 완료 시 브라우저 알림을 받습니다
                 </p>
               </div>
