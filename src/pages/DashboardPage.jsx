@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect, useCallback, useContext } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import {
@@ -8,6 +8,12 @@ import {
   CardHeader,
   CardTitle,
 } from '../components/ui/card';
+import {
+  Dialog,
+  DialogHeader,
+  DialogContent,
+  DialogFooter,
+} from '../components/ui/dialog';
 import { Input } from '../components/ui/input';
 import { Progress } from '../components/ui/progress';
 import { Badge } from '../components/ui/badge';
@@ -21,8 +27,10 @@ import {
   getAnalysisStatus,
   updateRepositoryLastViewed,
 } from '../services/repositoryService';
+import { NotificationContext } from '../contexts/notificationContext';
 
 export default function DashboardPage() {
+  // 브라우저 알림 관련
   const [repoUrl, setRepoUrl] = useState('');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [showError, setShowError] = useState(false);
@@ -30,7 +38,7 @@ export default function DashboardPage() {
   const [analyzingRepositories, setAnalyzingRepositories] = useState([]);
   const [newRepositories, setNewRepositories] = useState([]);
   const [loading, setLoading] = useState(true);
-
+  const { isConnected } = useContext(NotificationContext);
   const inputRef = useRef(null);
   const location = useLocation();
   const navigate = useNavigate();
@@ -38,11 +46,11 @@ export default function DashboardPage() {
   // 페이지 로드 시 데이터 가져오기
   useEffect(() => {
     loadDashboardData();
-
+    console.log(`알림 연결 상태: ${isConnected ? '연결됨' : '끊김'}`);
     if (location.state?.from === 'repositories') {
       inputRef.current?.focus();
     }
-  }, [location]);
+  }, [location, isConnected]);
 
   const checkAnalysisProgress = useCallback(async () => {
     const updatedRepositories = [];
@@ -64,7 +72,6 @@ export default function DashboardPage() {
           estimatedCompletion:
             statusResult.data.estimatedCompletion || repo.estimatedCompletion,
         };
-
         if (updatedRepo.status === 'completed') {
           hasCompletedRepo = true;
           // 완료된 저장소는 새로운 저장소 목록으로 이동
@@ -177,7 +184,6 @@ export default function DashboardPage() {
         getAnalyzingRepositories(),
         getRecentlyAnalyzedRepositories(),
       ]);
-
       if (analyzingResult.success) {
         setAnalyzingRepositories(analyzingResult.data);
       }
