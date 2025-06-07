@@ -7,11 +7,10 @@ export async function permissionNotificationWindow() {
   console.log('허용여부', realPermission);
   if (realPermission === 'granted') {
     return true;
-  } else if (realPermission === 'denied') {
+  } else if (realPermission === 'denied' || realPermission === 'default') {
     return false;
-  } else if (realPermission === 'default') {
-    return true;
   }
+  return false;
 }
 
 export async function sendNotification(data) {
