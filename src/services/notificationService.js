@@ -26,8 +26,15 @@ export async function sendNotification(data) {
   }
 }
 
-// default export
-export default function notificationService(data) {
-  permissionNotificationWindow();
-  sendNotification(data);
+export default async function notificationService(data) {
+  try {
+    const hasPermission = await permissionNotificationWindow();
+    if (hasPermission) {
+      await sendNotification(data);
+    } else {
+      console.log('알림 권한이 없어 알림을 보낼 수 없습니다.');
+    }
+  } catch (error) {
+    console.error('알림 서비스 에러:', error);
+  }
 }
