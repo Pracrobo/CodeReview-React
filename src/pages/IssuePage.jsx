@@ -1,3 +1,4 @@
+import { useContext } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
@@ -18,10 +19,13 @@ import {
 } from 'lucide-react';
 import DashboardLayout from '../components/dashboard-layout';
 import { mockIssueDetails } from '../lib/mock-data';
+import { NotificationContext } from '../contexts/notificationContext';
 
 export default function IssuePage() {
   const { id: repoId, issueId } = useParams();
   const issue = mockIssueDetails;
+  const { isConnected } = useContext(NotificationContext);
+  console.log(`알림 연결 상태: ${isConnected ? '연결됨' : '끊김'}`);
 
   return (
     <DashboardLayout>
