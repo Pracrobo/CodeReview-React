@@ -1,10 +1,12 @@
 import authService from './authService.js';
 
+// API 기본 URL (환경변수 또는 기본값)
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001';
 
 let isLoggingOut = false;
 
+// 로그아웃 플로우 처리 (중복 방지)
 async function handleLogoutFlow() {
   if (isLoggingOut) return;
   isLoggingOut = true;
@@ -16,6 +18,7 @@ async function handleLogoutFlow() {
   }
 }
 
+// API 요청 래퍼 (토큰 자동 갱신 및 에러 처리)
 async function apiRequest(endpoint, options = {}) {
   let accessToken = localStorage.getItem('accessToken');
   const config = {

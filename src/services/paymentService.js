@@ -1,6 +1,7 @@
 import api from './api.js';
 import errorHandler from './errorHandler.js';
 
+// 결제/플랜 상태 조회
 async function paymentStatus() {
   try {
     const data = await api.apiRequest('/payment/status', {

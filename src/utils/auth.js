@@ -1,3 +1,4 @@
+// JWT 토큰을 파싱하여 payload(JSON) 반환
 function parseJwt(token) {
   try {
     const [, payload] = token.split('.');
@@ -16,6 +17,7 @@ function parseJwt(token) {
   }
 }
 
+// 인증 관련 localStorage 항목 삭제
 function removeAuthStorage() {
   // 삭제할 항목들을 배열로 관리
   const itemsToRemove = [
@@ -28,6 +30,7 @@ function removeAuthStorage() {
   itemsToRemove.forEach((item) => localStorage.removeItem(item));
 }
 
+// 로그인 상태 확인 (토큰 존재 및 만료 여부)
 function isLoggedIn() {
   const token = localStorage.getItem('accessToken');
   if (!token) return false;
@@ -47,5 +50,5 @@ function isLoggedIn() {
 export default {
   removeAuthStorage,
   isLoggedIn,
-  parseJwt, // 추가
+  parseJwt,
 };

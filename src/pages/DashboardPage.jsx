@@ -19,9 +19,9 @@ import { Progress } from '../components/ui/progress';
 import { Badge } from '../components/ui/badge';
 import { AlertCircle, Clock, Search, CheckCircle } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '../components/ui/alert';
+import { NotificationContext } from '../contexts/notificationContext';
 import DashboardLayout from '../components/dashboard-layout';
 import repositoryService from '../services/repositoryService';
-import { NotificationContext } from '../contexts/notificationContext';
 
 export default function DashboardPage() {
   const [repoUrl, setRepoUrl] = useState('');

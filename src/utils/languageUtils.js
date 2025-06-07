@@ -1,3 +1,4 @@
+// 언어별 대표 색상 반환
 function getLanguageColor(language) {
   const colors = {
     JavaScript: '#f1e05a',
@@ -21,6 +22,7 @@ function getLanguageColor(language) {
     Gradle: '#02303a',
     Perl: '#0298c3',
   };
+  // 미등록 언어는 보라색 계열 기본값
   return colors[language] || '#8b5cf6';
 }
 

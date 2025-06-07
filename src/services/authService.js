@@ -2,12 +2,13 @@ import api from './api.js';
 import authUtils from '../utils/auth.js';
 import errorHandler from './errorHandler.js';
 
-// 인증 후 공통 후처리
+// 인증 후 공통 후처리 (스토리지 삭제 및 새로고침)
 function handlePostAuthCleanup() {
   authUtils.removeAuthStorage();
   window.location.reload();
 }
 
+// GitHub OAuth 콜백 처리
 async function processGithubCallback(code) {
   try {
     const data = await api.apiRequest('/auth/github/callback', {
@@ -21,6 +22,7 @@ async function processGithubCallback(code) {
   }
 }
 
+// 로그아웃 처리
 async function logout() {
   try {
     await api.apiRequest('/auth/logout', { method: 'POST', credentials: 'include' });
@@ -30,6 +32,7 @@ async function logout() {
   return { success: true };
 }
 
+// 계정 연동 해제 처리
 async function unlinkAccount() {
   try {
     await api.apiRequest('/auth/unlink', { method: 'POST', credentials: 'include' });
@@ -40,6 +43,7 @@ async function unlinkAccount() {
   }
 }
 
+// 계정 삭제 처리
 async function deleteAccount() {
   try {
     await api.apiRequest('/auth/delete', { method: 'DELETE', credentials: 'include' });
@@ -50,6 +54,7 @@ async function deleteAccount() {
   }
 }
 
+// accessToken 갱신 처리
 async function refreshAccessToken() {
   try {
     const data = await api.apiRequest('/auth/token/refresh', {

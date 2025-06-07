@@ -1,16 +1,16 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useContext } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import chatbotService from '../services/chatbotService';
 import { Button } from '../components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import { Badge } from '../components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 import { Input } from '../components/ui/input';
 import { AlertCircle, ArrowLeft, ExternalLink, Github, Star, GitFork, Clock, Info, Shield, FileText, Trash2 } from 'lucide-react';
+import { NotificationContext } from '../contexts/notificationContext';
+import languageUtils from '../utils/languageUtils';
+import chatbotService from '../services/chatbotService';
 import DashboardLayout from '../components/dashboard-layout';
 import repositoryService from '../services/repositoryService';
-import languageUtils from '../utils/languageUtils';
-import { NotificationContext } from '../contexts/notificationContext';
 
 const GUIDE_MESSAGE = {
   senderType: 'Agent',
@@ -45,8 +45,6 @@ export default function RepositoryPage() {
         setLoading(false);
         return;
       }
-
-    const loadRepositoryData = async () => {
       try {
         setLoading(true);
         const result = await repositoryService.getRepositoryDetails(repoId);
@@ -65,7 +63,7 @@ export default function RepositoryPage() {
     };
 
     loadRepositoryData();
-  }, [repoId]);
+  }, [repoId, isConnected]);
 
   // 챗봇탭 클릭 시: conversation 조회만 시도(없으면 생성X)
   useEffect(() => {

@@ -5,11 +5,11 @@ import { Badge } from '../components/ui/badge';
 import { Switch } from '../components/ui/switch';
 import { Label } from '../components/ui/label';
 import { Github, AlertTriangle } from 'lucide-react';
-import DashboardLayout from '../components/dashboard-layout';
+import { NotificationContext } from '../contexts/notificationContext';
 import authUtils from '../utils/auth';
 import authService from '../services/authService';
-import { permissionNotificationWindow } from '../services/notificationService';
-import { NotificationContext } from '../contexts/notificationContext';
+import DashboardLayout from '../components/dashboard-layout';
+import notificationService from '../services/notificationService';
 
 import {
   Dialog,
@@ -169,7 +169,7 @@ export default function SettingsPage() {
     try {
       if (checked) {
         // 알림을 켜려고 할 때만 권한 요청
-        const permissionGranted = await permissionNotificationWindow();
+        const permissionGranted = await notificationService.permissionNotificationWindow();
         if (permissionGranted) {
           localStorage.setItem(NOTIFICATION_PERMISSION_KEY, 'granted');
           setBrowserNotifications(true);

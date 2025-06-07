@@ -6,11 +6,11 @@ import { Input } from '../components/ui/input';
 import { Badge } from '../components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import { AlertCircle, Github, Plus, Search, Star, GitFork, Clock, Trash2 } from 'lucide-react';
-import DashboardLayout from '../components/dashboard-layout';
-import repositoryService from '../services/repositoryService';
-import dataTransformers from '../utils/dataTransformers';
-import languageUtils from '../utils/languageUtils';
 import { NotificationContext } from '../contexts/notificationContext';
+import languageUtils from '../utils/languageUtils';
+import DashboardLayout from '../components/dashboard-layout';
+import dataTransformers from '../utils/dataTransformers';
+import repositoryService from '../services/repositoryService';
 
 export default function RepositoriesPage() {
   const { isConnected } = useContext(NotificationContext);
@@ -26,7 +26,7 @@ export default function RepositoriesPage() {
   useEffect(() => {
     loadRepositories();
     console.log(`알림 연결 상태: ${isConnected ? '연결됨' : '끊김'}`);
-  }, []);
+  }, [isConnected]);
 
   const loadRepositories = async () => {
     try {

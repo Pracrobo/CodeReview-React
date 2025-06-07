@@ -1,11 +1,13 @@
 import api from './api.js';
 import errorHandler from './errorHandler.js';
 
+// 저장소 관련 에러 핸들링 공통 함수
 function handleRepoError(error, defaultMsg, defaultData = []) {
   const result = errorHandler.handleError(error, defaultMsg);
   return { ...result, data: defaultData };
 }
 
+// 내 저장소 목록 조회
 async function getUserRepositories() {
   try {
     const response = await api.apiRequest('/repositories/tracked');
@@ -19,6 +21,7 @@ async function getUserRepositories() {
   }
 }
 
+// 저장소 검색
 async function searchRepositories(query) {
   try {
     const response = await api.apiRequest(
@@ -34,6 +37,7 @@ async function searchRepositories(query) {
   }
 }
 
+// 저장소 트래킹 추가
 async function addRepositoryToTracking(githubRepoId) {
   try {
     const response = await api.apiRequest('/repositories/tracked', {
@@ -50,6 +54,7 @@ async function addRepositoryToTracking(githubRepoId) {
   }
 }
 
+// 저장소 트래킹 삭제
 async function removeRepositoryFromTracking(githubRepoId) {
   try {
     const response = await api.apiRequest(
@@ -66,6 +71,7 @@ async function removeRepositoryFromTracking(githubRepoId) {
   }
 }
 
+// 저장소 분석 요청
 async function analyzeRepository(repoUrl) {
   try {
     const response = await api.apiRequest('/repositories/analyze', {
@@ -98,6 +104,7 @@ async function analyzeRepository(repoUrl) {
   }
 }
 
+// 저장소 분석 상태 조회
 async function getAnalysisStatus(repositoryId) {
   try {
     const response = await api.apiRequest(`/repositories/${repositoryId}/status`);
@@ -126,6 +133,7 @@ async function getAnalysisStatus(repositoryId) {
   }
 }
 
+// 분석 중인 저장소 목록 조회
 async function getAnalyzingRepositories() {
   try {
     const response = await api.apiRequest('/repositories/analyzing');
@@ -144,6 +152,7 @@ async function getAnalyzingRepositories() {
   }
 }
 
+// 최근 분석 완료 저장소 목록 조회
 async function getRecentlyAnalyzedRepositories() {
   try {
     const response = await api.apiRequest('/repositories/recently-analyzed');
@@ -162,6 +171,7 @@ async function getRecentlyAnalyzedRepositories() {
   }
 }
 
+// 저장소 상세 정보 조회
 async function getRepositoryDetails(repoId) {
   try {
     const response = await api.apiRequest(`/repositories/${repoId}/details`);
@@ -180,6 +190,7 @@ async function getRepositoryDetails(repoId) {
   }
 }
 
+// 저장소 마지막 조회 시간 업데이트
 async function updateRepositoryLastViewed(repoId) {
   try {
     const response = await api.apiRequest(`/repositories/${repoId}/viewed`, {
@@ -198,6 +209,7 @@ async function updateRepositoryLastViewed(repoId) {
   }
 }
 
+// 저장소 언어 정보 조회
 async function getRepositoryLanguages(repoId) {
   try {
     const response = await api.apiRequest(`/repositories/${repoId}/languages`);
@@ -216,6 +228,7 @@ async function getRepositoryLanguages(repoId) {
   }
 }
 
+// 저장소 즐겨찾기 상태 업데이트
 async function updateFavoriteStatus(repoId, isFavorite) {
   try {
     const response = await api.apiRequest(`/repositories/${repoId}/favorite`, {
