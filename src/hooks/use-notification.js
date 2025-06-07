@@ -1,8 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import {
-  sendNotification,
-  permissionNotificationWindow,
-} from '../services/notificationService';
+import { sendNotification } from '../services/notificationService';
 
 export function useNotification() {
   const [isConnected, setIsConnected] = useState(false);
@@ -20,8 +17,10 @@ export function useNotification() {
     const connect = () => {
       const currentStatus = localStorage.getItem(NOTIFICATION_PERMISSION_KEY);
 
-      if (!currentStatus) {
-        permissionNotificationWindow();
+      // 권한이 허용된 경우에만 연결 시도
+      if (currentStatus !== 'granted') {
+        console.log('알림 권한이 허용되지 않아 SSE 연결을 생략합니다.');
+        setIsConnected(false);
         return;
       }
 
@@ -66,10 +65,12 @@ export function useNotification() {
         es.close();
         eventSourceRef.current = null;
 
-        if (!reconnectTimeout) {
+        // 권한이 여전히 허용된 상태에서만 재연결 시도
+        const currentStatus = localStorage.getItem(NOTIFICATION_PERMISSION_KEY);
+        if (currentStatus === 'granted' && !reconnectTimeout) {
           reconnectTimeout = setTimeout(() => {
             reconnectTimeout = null;
-            connect(); // 재연결 시도
+            connect();
           }, 3000);
         }
       };
@@ -79,6 +80,26 @@ export function useNotification() {
 
     connect(); // 초기 연결
 
+    // 권한 변경 감지 핸들러
+    const handlePermissionChange = () => {
+      const newStatus = localStorage.getItem(NOTIFICATION_PERMISSION_KEY);
+      if (newStatus === 'granted') {
+        connect();
+      } else {
+        if (eventSourceRef.current) {
+          eventSourceRef.current.close();
+          eventSourceRef.current = null;
+          setIsConnected(false);
+        }
+      }
+    };
+
+    // 커스텀 이벤트로 권한 변경 감지
+    window.addEventListener(
+      'notificationPermissionChanged',
+      handlePermissionChange
+    );
+
     return () => {
       if (eventSourceRef.current) {
         eventSourceRef.current.close();
@@ -86,6 +107,10 @@ export function useNotification() {
       if (reconnectTimeout) {
         clearTimeout(reconnectTimeout);
       }
+      window.removeEventListener(
+        'notificationPermissionChanged',
+        handlePermissionChange
+      );
     };
   }, []);
 

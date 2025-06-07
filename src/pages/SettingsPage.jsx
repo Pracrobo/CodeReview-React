@@ -173,29 +173,33 @@ export default function SettingsPage() {
 
   // 토글 버튼 클릭 핸들러
   const handleBrowserNotificationToggle = async (checked) => {
-    // 토글 버튼이 올바르게 됐는지 확인 및 localStorage저장
     try {
-      const permissionGranted = await permissionNotificationWindow();
-      if ((!permissionGranted && !checked) || (permissionGranted && checked)) {
-        localStorage.setItem(
-          NOTIFICATION_PERMISSION_KEY,
-          checked ? 'granted' : 'denied'
-        );
-        setBrowserNotifications(checked);
-      } else {
-        if (checked && permissionGranted) {
+      if (checked) {
+        // 알림을 켜려고 할 때만 권한 요청
+        const permissionGranted = await permissionNotificationWindow();
+        if (permissionGranted) {
           localStorage.setItem(NOTIFICATION_PERMISSION_KEY, 'granted');
           setBrowserNotifications(true);
+          // SSE 연결 트리거
+          window.dispatchEvent(new Event('notificationPermissionChanged'));
         } else {
-          // 사용자가 권한을 허용하지 않았거나, 알림을 끄려고 할 때
+          // 권한이 거부되면 토글을 다시 꺼진 상태로
           localStorage.setItem(NOTIFICATION_PERMISSION_KEY, 'denied');
           setBrowserNotifications(false);
+          window.dispatchEvent(new Event('notificationPermissionChanged'));
         }
+      } else {
+        // 알림을 끄려고 할 때는 권한 요청 없이 바로 처리
+        localStorage.setItem(NOTIFICATION_PERMISSION_KEY, 'denied');
+        setBrowserNotifications(false);
+        // SSE 연결 해제 트리거
+        window.dispatchEvent(new Event('notificationPermissionChanged'));
       }
     } catch (error) {
       console.error('알림 권한 요청 오류:', error);
       localStorage.setItem(NOTIFICATION_PERMISSION_KEY, 'denied');
       setBrowserNotifications(false);
+      window.dispatchEvent(new Event('notificationPermissionChanged'));
     }
   };
 

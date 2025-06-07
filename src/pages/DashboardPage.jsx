@@ -30,7 +30,6 @@ import {
 import { NotificationContext } from '../contexts/notificationContext';
 
 export default function DashboardPage() {
-  // 브라우저 알림 관련
   const [repoUrl, setRepoUrl] = useState('');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [showError, setShowError] = useState(false);
