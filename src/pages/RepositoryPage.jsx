@@ -1,11 +1,34 @@
 import { useState, useEffect, useRef, useContext } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Button } from '../components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '../components/ui/tabs';
 import { Badge } from '../components/ui/badge';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '../components/ui/card';
 import { Input } from '../components/ui/input';
-import { AlertCircle, ArrowLeft, ExternalLink, Github, Star, GitFork, Clock, Info, Shield, FileText, Trash2 } from 'lucide-react';
+import {
+  AlertCircle,
+  ArrowLeft,
+  ExternalLink,
+  Github,
+  Star,
+  GitFork,
+  Clock,
+  Info,
+  Shield,
+  FileText,
+  Trash2,
+} from 'lucide-react';
 import { NotificationContext } from '../contexts/notificationContext';
 import languageUtils from '../utils/languageUtils';
 import chatbotService from '../services/chatbotService';
@@ -26,7 +49,9 @@ export default function RepositoryPage() {
   const [repo, setRepo] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [activeTab, setActiveTab] = useState(() => localStorage.getItem('repoActiveTab') || 'overview');
+  const [activeTab, setActiveTab] = useState(
+    () => localStorage.getItem('repoActiveTab') || 'overview'
+  );
 
   // 챗봇 상태
   const [chatInput, setChatInput] = useState('');
@@ -67,17 +92,16 @@ export default function RepositoryPage() {
 
   // 챗봇탭 클릭 시: conversation 조회만 시도(없으면 생성X)
   useEffect(() => {
-    if (
-      activeTab === 'chatbot' &&
-      repo &&
-      userId &&
-      accessToken
-    ) {
+    if (activeTab === 'chatbot' && repo && userId && accessToken) {
       const fetchConversation = async () => {
         setChatLoading(true);
         setChatError('');
         try {
-          const result = await chatbotService.getConversation({ repoId, userId, accessToken });
+          const result = await chatbotService.getConversation({
+            repoId,
+            userId,
+            accessToken,
+          });
           if (result.success) {
             setConversationId(result.conversationId);
             setChatMessages(result.messages || []);
@@ -105,12 +129,20 @@ export default function RepositoryPage() {
     if (!conversationIdForSend) {
       // 대화가 없으면 생성
       try {
-        const createResult = await chatbotService.createConversation({ repoId, userId, accessToken });
+        const createResult = await chatbotService.createConversation({
+          repoId,
+          userId,
+          accessToken,
+        });
         if (createResult.success) {
           conversationIdForSend = createResult.conversationId;
           setConversationId(conversationIdForSend);
           // 새로 만든 conversation의 메시지 목록을 불러옴 (대부분 빈 배열이지만, 혹시라도 있을 수 있음)
-          const fetchResult = await chatbotService.getConversation({ repoId, userId, accessToken });
+          const fetchResult = await chatbotService.getConversation({
+            repoId,
+            userId,
+            accessToken,
+          });
           if (fetchResult.success) {
             setChatMessages(fetchResult.messages || []);
           } else {
@@ -131,7 +163,7 @@ export default function RepositoryPage() {
     // 메시지 전송
     const tempId = Date.now() + Math.random();
     const newMsg = { senderType: 'User', content: chatInput.trim(), tempId };
-    setChatMessages(prev => [...prev, newMsg]);
+    setChatMessages((prev) => [...prev, newMsg]);
     setChatInput('');
     try {
       await chatbotService.saveChatMessage({
@@ -141,7 +173,7 @@ export default function RepositoryPage() {
         accessToken,
       });
     } catch {
-      setChatMessages(prev => prev.filter(msg => msg.tempId !== tempId));
+      setChatMessages((prev) => prev.filter((msg) => msg.tempId !== tempId));
       setChatError('메시지 전송에 실패했습니다. 다시 시도해 주세요.');
     }
     setChatLoading(false);
@@ -166,7 +198,8 @@ export default function RepositoryPage() {
   const licenseInfo = {
     MIT: {
       fullName: 'MIT License',
-      description: '간단하고 관대한 라이선스로, 저작권 및 라이선스 고지만 필요합니다.',
+      description:
+        '간단하고 관대한 라이선스로, 저작권 및 라이선스 고지만 필요합니다.',
       permissions: ['상업적 사용', '수정', '배포', '개인 사용'],
       conditions: ['라이선스 및 저작권 고지 포함'],
       limitations: ['책임 면제', '보증 없음'],
@@ -174,7 +207,8 @@ export default function RepositoryPage() {
     },
     'Apache-2.0': {
       fullName: 'Apache License 2.0',
-      description: '특허권 부여와 함께 사용자에게 자유를 제공하는 라이선스입니다.',
+      description:
+        '특허권 부여와 함께 사용자에게 자유를 제공하는 라이선스입니다.',
       permissions: ['상업적 사용', '수정', '배포', '특허권 사용', '개인 사용'],
       conditions: ['라이선스 및 저작권 고지 포함', '상태 변경 명시'],
       limitations: ['상표권 사용 금지', '책임 면제', '보증 없음'],
@@ -182,7 +216,8 @@ export default function RepositoryPage() {
     },
     'GPL-3.0': {
       fullName: 'GNU General Public License v3.0',
-      description: '수정된 코드를 동일한 라이선스로 공개해야 하는 강력한 카피레프트 라이선스입니다.',
+      description:
+        '수정된 코드를 동일한 라이선스로 공개해야 하는 강력한 카피레프트 라이선스입니다.',
       permissions: ['상업적 사용', '수정', '배포', '특허권 사용', '개인 사용'],
       conditions: [
         '소스 코드 공개',
@@ -195,7 +230,8 @@ export default function RepositoryPage() {
     },
     'BSD-3-Clause': {
       fullName: 'BSD 3-Clause License',
-      description: '간단하고 관대한 라이선스로, 저작권 고지와 면책 조항이 필요합니다.',
+      description:
+        '간단하고 관대한 라이선스로, 저작권 고지와 면책 조항이 필요합니다.',
       permissions: ['상업적 사용', '수정', '배포', '개인 사용'],
       conditions: ['라이선스 및 저작권 고지 포함'],
       limitations: ['책임 면제', '보증 없음'],
@@ -401,13 +437,15 @@ export default function RepositoryPage() {
                                     key={lang.languageName}
                                     className="h-full"
                                     style={{
-                                      backgroundColor: languageUtils.getLanguageColor(
-                                        lang.languageName
-                                      ),
+                                      backgroundColor:
+                                        languageUtils.getLanguageColor(
+                                          lang.languageName
+                                        ),
                                       width: `${lang.percentage}%`,
                                     }}
-                                    title={`${lang.languageName
-                                      }: ${lang.percentage.toFixed(1)}%`}
+                                    title={`${
+                                      lang.languageName
+                                    }: ${lang.percentage.toFixed(1)}%`}
                                   />
                                 ))}
                               </div>
@@ -424,9 +462,10 @@ export default function RepositoryPage() {
                                     <div
                                       className="w-3 h-3 rounded-full"
                                       style={{
-                                        backgroundColor: languageUtils.getLanguageColor(
-                                          lang.languageName
-                                        ),
+                                        backgroundColor:
+                                          languageUtils.getLanguageColor(
+                                            lang.languageName
+                                          ),
                                       }}
                                     />
                                     <span className="font-medium">
@@ -600,17 +639,17 @@ export default function RepositoryPage() {
                           repo.analysisStatus === 'completed'
                             ? 'bg-green-50 text-green-700 border-green-200 dark:bg-green-900/30 dark:text-green-300 dark:border-green-600'
                             : repo.analysisStatus === 'analyzing'
-                              ? 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-600'
-                              : 'bg-gray-50 text-gray-700 border-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600'
+                            ? 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-600'
+                            : 'bg-gray-50 text-gray-700 border-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600'
                         }
                       >
                         {repo.analysisStatus === 'completed'
                           ? '분석 완료'
                           : repo.analysisStatus === 'analyzing'
-                            ? '분석 중'
-                            : repo.analysisStatus === 'failed'
-                              ? '분석 실패'
-                              : '분석 전'}
+                          ? '분석 중'
+                          : repo.analysisStatus === 'failed'
+                          ? '분석 실패'
+                          : '분석 전'}
                       </Badge>
                     </div>
                   </CardContent>
@@ -652,9 +691,7 @@ export default function RepositoryPage() {
               <CardContent>
                 <div className="bg-muted p-4 rounded-lg mb-4 h-[400px] overflow-y-auto flex flex-col space-y-4 dark:bg-gray-800">
                   {/* 안내 메시지 항상 맨 위에 */}
-                  <div
-                    className="max-w-[80%] rounded-lg p-3 self-start bg-primary-foreground text-gray-900 dark:bg-gray-700 dark:text-gray-200 text-left"
-                  >
+                  <div className="max-w-[80%] rounded-lg p-3 self-start bg-primary-foreground text-gray-900 dark:bg-gray-700 dark:text-gray-200 text-left">
                     <p className="text-sm">{GUIDE_MESSAGE.content}</p>
                   </div>
                   {/* DB에서 불러온 메시지들 */}
@@ -663,9 +700,11 @@ export default function RepositoryPage() {
                       key={msg.messageId || msg.tempId || idx}
                       className={`
       max-w-[80%] rounded-lg p-3
-      ${msg.senderType === 'User'
-        ? 'self-end bg-blue-100 text-blue-900 dark:bg-blue-800 dark:text-blue-100 text-right'
-        : 'self-start bg-primary-foreground text-gray-900 dark:bg-gray-700 dark:text-gray-200 text-left'}
+      ${
+        msg.senderType === 'User'
+          ? 'self-end bg-blue-100 text-blue-900 dark:bg-blue-800 dark:text-blue-100 text-right'
+          : 'self-start bg-primary-foreground text-gray-900 dark:bg-gray-700 dark:text-gray-200 text-left'
+      }
     `}
                     >
                       <p className="text-sm">{msg.content}</p>
@@ -682,7 +721,10 @@ export default function RepositoryPage() {
                     onKeyDown={handleInputKeyDown}
                     disabled={chatLoading}
                   />
-                  <Button onClick={handleSendMessage} disabled={chatLoading || !chatInput.trim()}>
+                  <Button
+                    onClick={handleSendMessage}
+                    disabled={chatLoading || !chatInput.trim()}
+                  >
                     전송
                   </Button>
                 </div>
