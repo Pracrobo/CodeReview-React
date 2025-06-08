@@ -78,7 +78,7 @@ export default function DashboardPage() {
           if (updatedRepo.errorType) {
             switch (updatedRepo.errorType) {
               case 'REPOSITORY_SIZE_EXCEEDED':
-                userFriendlyMessage = `${updatedRepo.fullName}: 저장소 크기가 5MB를 초과하여 분석할 수 없습니다.`;
+                userFriendlyMessage = `${updatedRepo.fullName}: 저장소 크기가 10MB를 초과하여 분석할 수 없습니다.`;
                 break;
               case 'REPOSITORY_ACCESS_DENIED':
                 userFriendlyMessage = `${updatedRepo.fullName}: 저장소에 접근할 권한이 없습니다.`;
@@ -247,7 +247,7 @@ export default function DashboardPage() {
         if (result.errorType) {
           switch (result.errorType) {
             case 'REPOSITORY_SIZE_EXCEEDED':
-              userFriendlyMessage = `저장소 크기가 너무 큽니다. 현재 서비스는 5MB 이하의 저장소만 분석 가능합니다.\n\n${result.message}`;
+              userFriendlyMessage = `저장소 크기가 너무 큽니다. 현재 서비스는 10MB 이하의 저장소만 분석 가능합니다.\n\n${result.message}`;
               break;
             case 'REPOSITORY_NOT_FOUND':
               userFriendlyMessage =
