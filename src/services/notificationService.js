@@ -5,7 +5,7 @@ async function permissionNotificationWindow() {
     return false;
   }
   const realPermission = await Notification.requestPermission();
-  console.log('허용여부', realPermission);
+  console.log('알람 허용 여부 :', realPermission);
   if (realPermission === 'granted') {
     return true;
   } else if (realPermission === 'denied' || realPermission === 'default') {

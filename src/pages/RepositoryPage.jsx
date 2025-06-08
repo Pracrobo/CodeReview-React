@@ -38,7 +38,6 @@ export default function RepositoryPage() {
 
   // 저장소 정보 가져오기
   useEffect(() => {
-    console.log(`알림 연결 상태: ${isConnected ? '연결됨' : '끊김'}`);
     const loadRepositoryData = async () => {
       if (!repoId) {
         setError('저장소 ID가 필요합니다.');

@@ -25,7 +25,6 @@ export default function RepositoriesPage() {
   // 저장소 목록 로드
   useEffect(() => {
     loadRepositories();
-    console.log(`알림 연결 상태: ${isConnected ? '연결됨' : '끊김'}`);
   }, [isConnected]);
 
   const loadRepositories = async () => {

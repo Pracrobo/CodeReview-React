@@ -39,7 +39,6 @@ export default function DashboardPage() {
   // 페이지 로드 시 데이터 가져오기
   useEffect(() => {
     loadDashboardData();
-    console.log(`알림 연결 상태: ${isConnected ? '연결됨' : '끊김'}`);
     if (location.state?.from === 'repositories') {
       inputRef.current?.focus();
     }

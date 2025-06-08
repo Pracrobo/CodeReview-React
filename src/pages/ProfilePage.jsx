@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useContext } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '../components/ui/card';
@@ -43,9 +43,6 @@ function formatPeriod(start, end) {
 }
 
 export default function ProfilePage() {
-  const { isConnected } = useContext(NotificationContext);
-  console.log(`알림 연결 상태: ${isConnected ? '연결됨' : '끊김'}`);
-
   // 쿼리 파라미터에서 tab 값 읽기
   const location = useLocation();
   const navigate = useNavigate();
