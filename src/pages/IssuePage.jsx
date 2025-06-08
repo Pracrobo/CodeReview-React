@@ -1,18 +1,88 @@
-import { useContext } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
-import { ArrowLeft, Github, MessageSquare, ThumbsUp, Code, Copy, ExternalLink } from 'lucide-react';
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '../components/ui/tabs';
+import {
+  ArrowLeft,
+  Github,
+  MessageSquare,
+  ThumbsUp,
+  Code,
+  Copy,
+  ExternalLink,
+} from 'lucide-react';
 import DashboardLayout from '../components/dashboard-layout';
-import { mockIssueDetails } from '../lib/mock-data';
 import { NotificationContext } from '../contexts/notificationContext';
+import issueService from '../services/issueService';
 
 export default function IssuePage() {
   const { id: repoId, issueId } = useParams();
-  const issue = mockIssueDetails;
+  const [issue, setIssue] = useState(null);
+  const [loading, setLoading] = useState(true);
   const { isConnected } = useContext(NotificationContext);
   console.log(`알림 연결 상태: ${isConnected ? '연결됨' : '끊김'}`);
+
+  useEffect(() => {
+    const fetchIssue = async () => {
+      setLoading(true);
+      const result = await issueService.getIssueDetail(repoId, issueId);
+      if (result.success) {
+        setIssue({
+          ...result.data,
+          repoName:
+            result.data.repoName ||
+            (result.data.repoFullName
+              ? result.data.repoFullName.split('/')[1]
+              : ''),
+          user: result.data.author,
+          createdAt: result.data.createdAtGithub,
+          labels: [],
+          comments: [],
+          aiAnalysis: {
+            summary: result.data.summaryGpt || 'AI 요약 정보 없음',
+            relatedFiles: [],
+            codeSnippets: [],
+            suggestion: '',
+          },
+        });
+        // 이슈 상세 조회 시 최근 본 이슈로 저장
+        if (result.data.issueId) {
+          issueService.saveRecentIssue(result.data.issueId);
+        }
+      }
+      setLoading(false);
+    };
+    fetchIssue();
+  }, [repoId, issueId]);
+
+  if (loading) {
+    return (
+      <DashboardLayout>
+        <div className="flex items-center justify-center h-64">
+          <div className="text-lg">이슈 정보를 불러오는 중...</div>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  if (!issue) {
+    return (
+      <DashboardLayout>
+        <div className="flex flex-col items-center justify-center h-64 space-y-4">
+          <div className="text-lg text-red-600">이슈를 찾을 수 없습니다</div>
+          <Button asChild>
+            <Link to={`/repository/${repoId}`}>저장소로 돌아가기</Link>
+          </Button>
+        </div>
+      </DashboardLayout>
+    );
+  }
 
   return (
     <DashboardLayout>
@@ -235,15 +305,24 @@ export default function IssuePage() {
                         </div>
                         <div className="bg-muted p-3 rounded-lg text-sm font-mono overflow-x-auto">
                           <pre className="text-xs">
-                            <code>{issue.aiAnalysis.codeSnippets[0].code}</code>
+                            <code>
+                              {issue.aiAnalysis.codeSnippets[0]
+                                ? issue.aiAnalysis.codeSnippets[0].code
+                                : ''}
+                            </code>
                           </pre>
                         </div>
                         <div className="flex justify-between items-center mt-2 text-xs">
                           <span className="text-muted-foreground">
-                            {issue.aiAnalysis.codeSnippets[0].file}
+                            {issue.aiAnalysis.codeSnippets[0]
+                              ? issue.aiAnalysis.codeSnippets[0].file
+                              : ''}
                           </span>
                           <span className="text-primary">
-                            관련도: {issue.aiAnalysis.codeSnippets[0].relevance}
+                            관련도:{' '}
+                            {issue.aiAnalysis.codeSnippets[0]
+                              ? issue.aiAnalysis.codeSnippets[0].relevance
+                              : ''}
                             %
                           </span>
                         </div>
@@ -263,15 +342,24 @@ export default function IssuePage() {
                         </div>
                         <div className="bg-muted p-3 rounded-lg text-sm font-mono overflow-x-auto">
                           <pre className="text-xs">
-                            <code>{issue.aiAnalysis.codeSnippets[1].code}</code>
+                            <code>
+                              {issue.aiAnalysis.codeSnippets[1]
+                                ? issue.aiAnalysis.codeSnippets[1].code
+                                : ''}
+                            </code>
                           </pre>
                         </div>
                         <div className="flex justify-between items-center mt-2 text-xs">
                           <span className="text-muted-foreground">
-                            {issue.aiAnalysis.codeSnippets[1].file}
+                            {issue.aiAnalysis.codeSnippets[1]
+                              ? issue.aiAnalysis.codeSnippets[1].file
+                              : ''}
                           </span>
                           <span className="text-primary">
-                            관련도: {issue.aiAnalysis.codeSnippets[1].relevance}
+                            관련도:{' '}
+                            {issue.aiAnalysis.codeSnippets[1]
+                              ? issue.aiAnalysis.codeSnippets[1].relevance
+                              : ''}
                             %
                           </span>
                         </div>

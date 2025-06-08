@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useContext } from 'react';
+import { useState, useEffect, useRef, useContext, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import {
@@ -34,7 +34,7 @@ import languageUtils from '../utils/languageUtils';
 import chatbotService from '../services/chatbotService';
 import DashboardLayout from '../components/dashboard-layout';
 import repositoryService from '../services/repositoryService';
-import { mockIssues } from '../lib/mock-data';
+import issueService from '../services/issueService';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
@@ -64,6 +64,10 @@ export default function RepositoryPage() {
   const [conversationId, setConversationId] = useState(null);
   const chatEndRef = useRef(null);
 
+  // 이슈 목록 상태
+  const [issues, setIssues] = useState([]);
+  const [loadingIssues, setLoadingIssues] = useState(false);
+
   // 저장소 정보 가져오기
   useEffect(() => {
     console.log(`알림 연결 상태: ${isConnected ? '연결됨' : '끊김'}`);
@@ -92,6 +96,29 @@ export default function RepositoryPage() {
 
     loadRepositoryData();
   }, [repoId, isConnected]);
+
+  // 이슈 목록 불러오기 (저장소별)
+  const fetchRepositoryIssues = useCallback(async () => {
+    setLoadingIssues(true);
+    const result = await issueService.getRepositoryIssues(repoId);
+    if (result.success) {
+      setIssues(
+        result.data.map((issue) => ({
+          ...issue,
+          repoName:
+            issue.repoName ||
+            (issue.repoFullName ? issue.repoFullName.split('/')[1] : ''),
+          labels: issue.labels || [],
+        }))
+      );
+    }
+    setLoadingIssues(false);
+  }, [repoId]);
+
+  // 저장소 상세 정보 조회 후 이슈 목록도 불러오기
+  useEffect(() => {
+    fetchRepositoryIssues();
+  }, [repoId, fetchRepositoryIssues]);
 
   // 챗봇탭 클릭 시: conversation 조회만 시도(없으면 생성X)
   useEffect(() => {
@@ -312,12 +339,6 @@ export default function RepositoryPage() {
     return new Date(dateString).toLocaleDateString('ko-KR');
   };
 
-  // 탭 변경 시 localStorage에 저장
-  const handleTabChange = (tab) => {
-    setActiveTab(tab);
-    localStorage.setItem('repoActiveTab', tab);
-  };
-
   // 대화 초기화 함수
   const handleResetConversation = async () => {
     setChatLoading(true);
@@ -383,15 +404,13 @@ export default function RepositoryPage() {
           </div>
         </div>
 
-        <Tabs value={activeTab} onValueChange={handleTabChange}>
+        <Tabs defaultValue="overview">
           <TabsList>
             <TabsTrigger value="overview">개요</TabsTrigger>
             <TabsTrigger value="issues">이슈 목록</TabsTrigger>
             <TabsTrigger value="chatbot">AI 챗봇</TabsTrigger>
           </TabsList>
-
-          {/* 개요 탭 */}
-          <TabsContent value="overview" className="space-y-4">
+          <TabsContent value="overview">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <Card className="md:col-span-2">
                 <CardHeader>
@@ -661,21 +680,21 @@ export default function RepositoryPage() {
               </div>
             </div>
           </TabsContent>
-
-          {/* 이슈 목록 탭 */}
-          <TabsContent value="issues" className="space-y-4">
-            <div className="grid grid-cols-1 gap-4">
-              {mockIssues.map((issue) => (
-                <Link
-                  to={`/repository/${repoId}/issue/${issue.number}`}
-                  key={issue.id}
-                >
-                  <Card className="transition-all hover:shadow-md dark:hover:shadow-lg">
+          <TabsContent value="issues">
+            {loadingIssues ? (
+              <div className="py-8 text-center">이슈를 불러오는 중...</div>
+            ) : issues.length > 0 ? (
+              <div className="space-y-4">
+                {issues.map((issue) => (
+                  <Card key={issue.issueId}>
                     <CardHeader className="pb-2">
-                      <div className="flex justify-between items-start">
-                        <CardTitle className="text-base font-medium dark:text-white">
-                          #{issue.number} {issue.title}
-                        </CardTitle>
+                      <div className="flex items-center gap-2 mb-1">
+                        <Badge
+                          variant="outline"
+                          className="bg-gray-100 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600"
+                        >
+                          {issue.repoName}
+                        </Badge>
                         <Badge
                           variant={
                             issue.state === 'open' ? 'default' : 'secondary'
@@ -688,16 +707,23 @@ export default function RepositoryPage() {
                         >
                           {issue.state === 'open' ? '열림' : '닫힘'}
                         </Badge>
+                        <CardDescription className="dark:text-gray-400">
+                          #{issue.githubIssueNumber}
+                        </CardDescription>
                       </div>
-                      <CardDescription className="dark:text-gray-400">
-                        {issue.user} 님이 {issue.createdAt}에 작성
-                      </CardDescription>
+                      <Link
+                        to={`/repository/${repoId}/issue/${issue.githubIssueNumber}`}
+                      >
+                        <CardTitle className="text-base font-medium hover:text-primary dark:text-white dark:hover:text-purple-400">
+                          {issue.title}
+                        </CardTitle>
+                      </Link>
                     </CardHeader>
-                    <CardContent className="pb-2">
-                      <p className="text-sm text-muted-foreground line-clamp-2 dark:text-gray-300">
+                    <CardContent>
+                      <p className="text-sm text-muted-foreground line-clamp-2 mb-3 dark:text-gray-300">
                         {issue.body}
                       </p>
-                      <div className="flex flex-wrap gap-1 mt-3">
+                      <div className="flex flex-wrap gap-1 mb-2">
                         {issue.labels.map((label) => (
                           <Badge
                             key={label.name}
@@ -712,11 +738,30 @@ export default function RepositoryPage() {
                           </Badge>
                         ))}
                       </div>
+                      <div className="text-xs text-muted-foreground">
+                        <span className="dark:text-gray-400">
+                          {issue.author} 님이 {issue.createdAtGithub}에 작성
+                        </span>
+                      </div>
                     </CardContent>
                   </Card>
-                </Link>
-              ))}
-            </div>
+                ))}
+              </div>
+            ) : (
+              <Card>
+                <CardContent className="flex flex-col items-center justify-center p-6 pt-4">
+                  <div className="rounded-full bg-purple-100 p-3 mb-4 dark:bg-purple-900/30">
+                    <AlertCircle className="h-6 w-6 text-purple-600 dark:text-purple-400" />
+                  </div>
+                  <h3 className="text-xl font-medium mb-2 dark:text-white">
+                    이슈가 없습니다
+                  </h3>
+                  <p className="text-center text-muted-foreground mb-4 dark:text-gray-300">
+                    이 저장소에는 아직 이슈가 없습니다.
+                  </p>
+                </CardContent>
+              </Card>
+            )}
           </TabsContent>
 
           {/* AI 챗봇 탭 */}
