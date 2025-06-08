@@ -34,6 +34,7 @@ import languageUtils from '../utils/languageUtils';
 import chatbotService from '../services/chatbotService';
 import DashboardLayout from '../components/dashboard-layout';
 import repositoryService from '../services/repositoryService';
+import { mockIssues } from '../lib/mock-data';
 
 const GUIDE_MESSAGE = {
   senderType: 'Agent',
@@ -660,10 +661,58 @@ export default function RepositoryPage() {
 
           {/* 이슈 목록 탭 */}
           <TabsContent value="issues" className="space-y-4">
-            <div className="text-center py-8">
-              <p className="text-muted-foreground">
-                이슈 목록 기능은 준비 중입니다.
-              </p>
+            <div className="grid grid-cols-1 gap-4">
+              {mockIssues.map((issue) => (
+                <Link
+                  to={`/repository/${repoId}/issue/${issue.number}`}
+                  key={issue.id}
+                >
+                  <Card className="transition-all hover:shadow-md dark:hover:shadow-lg">
+                    <CardHeader className="pb-2">
+                      <div className="flex justify-between items-start">
+                        <CardTitle className="text-base font-medium dark:text-white">
+                          #{issue.number} {issue.title}
+                        </CardTitle>
+                        <Badge
+                          variant={
+                            issue.state === 'open' ? 'default' : 'secondary'
+                          }
+                          className={
+                            issue.state === 'open'
+                              ? 'bg-green-500 dark:bg-green-600'
+                              : 'dark:bg-gray-600 dark:text-gray-200'
+                          }
+                        >
+                          {issue.state === 'open' ? '열림' : '닫힘'}
+                        </Badge>
+                      </div>
+                      <CardDescription className="dark:text-gray-400">
+                        {issue.user} 님이 {issue.createdAt}에 작성
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className="pb-2">
+                      <p className="text-sm text-muted-foreground line-clamp-2 dark:text-gray-300">
+                        {issue.body}
+                      </p>
+                      <div className="flex flex-wrap gap-1 mt-3">
+                        {issue.labels.map((label) => (
+                          <Badge
+                            key={label.name}
+                            variant="outline"
+                            className="bg-opacity-10 dark:border-opacity-50"
+                            style={{
+                              backgroundColor: `${label.color}20`,
+                              borderColor: label.color,
+                            }}
+                          >
+                            {label.name}
+                          </Badge>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+                </Link>
+              ))}
             </div>
           </TabsContent>
 
