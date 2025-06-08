@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import notificationService from '../services/notificationService';
+import api from '../services/api';
 
 export function useNotification() {
   const [isConnected, setIsConnected] = useState(false);
@@ -28,12 +29,12 @@ export function useNotification() {
         eventSourceRef.current.close();
       }
 
-      const es = new EventSource(
-        `http://localhost:3001/notification/stream/?clientName=${encodeURIComponent(
-          username
-        )}`,
-        { withCredentials: false }
-      );
+      // 수정: api.js의 API_BASE_URL 활용
+      const eventSourceUrl = `${api.API_BASE_URL}/notification/stream/?clientName=${encodeURIComponent(
+        username
+      )}`;
+
+      const es = new EventSource(eventSourceUrl, { withCredentials: false });
 
       es.onopen = () => {
         console.log('SSE 연결 성공');
