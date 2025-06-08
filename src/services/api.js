@@ -62,7 +62,7 @@ async function apiRequest(endpoint, options = {}) {
   // 404 처리 (user 없음 등)
   if (
     response.status === 404 &&
-    logoutEndpoints.some(e => endpoint === e || endpoint.startsWith(e))
+    logoutEndpoints.includes(endpoint)
   ) {
     await handleLogoutFlow();
     throw new Error(`유저 정보를 찾을 수 없습니다: ${endpoint}`);
