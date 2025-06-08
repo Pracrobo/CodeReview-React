@@ -33,7 +33,7 @@ export function useNotification() {
       const eventSourceUrl = `${api.API_BASE_URL}/notification/stream/?clientName=${encodeURIComponent(
         username
       )}`;
-
+      console.log('SSE 연결 시도:', eventSourceUrl);
       const es = new EventSource(eventSourceUrl, { withCredentials: false });
 
       es.onopen = () => {
@@ -50,10 +50,12 @@ export function useNotification() {
             ['analysis_complete', 'analysis_failed', 'analysis_error'].includes(data.type)
           ) {
             notificationService.sendNotification(data);
+            console.log('알림 띄우기 시도:', data);
           }
         } catch (error) {
           console.error('알림 파싱 실패:', error);
         }
+        console.log('SSE 메시지 수신:', event.data);
       };
 
       es.onerror = (error) => {
