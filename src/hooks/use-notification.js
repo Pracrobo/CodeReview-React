@@ -29,11 +29,12 @@ export function useNotification() {
         eventSourceRef.current.close();
       }
 
+      // 수정: api.js의 API_BASE_URL 활용
       const eventSourceUrl = `${api.API_BASE_URL}/notification/stream/?clientName=${encodeURIComponent(
         username
       )}`;
 
-      const es = new EventSource(eventSourceUrl, { withCredentials: true });
+      const es = new EventSource(eventSourceUrl, { withCredentials: false });
 
       es.onopen = () => {
         console.log('SSE 연결 성공');
