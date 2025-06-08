@@ -1,5 +1,6 @@
 import api from './api.js';
 import errorHandler from './errorHandler.js';
+import apiClient from './apiClient';
 
 // 이슈 목록 조회 (저장소별)
 async function getRepositoryIssues(repoId, state = '') {
@@ -105,20 +106,19 @@ async function getIssueDetail(repoId, githubIssueNumber) {
   }
 }
 
-// AI 이슈 분석 요청
-async function analyzeIssue(repoId, githubIssueNumber) {
+// 이슈 AI 분석 요청
+async function analyzeIssue(repoId, issueNumber) {
   try {
-    const response = await api.apiRequest(
-      `/issues/${repoId}/${githubIssueNumber}/analyze`,
-      { method: 'POST' }
+    const response = await apiClient.post(
+      `/api/issues/${repoId}/${issueNumber}/analyze`
     );
-    return {
-      success: response.success,
-      data: response.data,
-      message: response.message,
-    };
+    return response.data;
   } catch (error) {
-    return errorHandler.handleError(error, 'AI 이슈 분석 요청에 실패했습니다.');
+    console.error('이슈 분석 요청 실패:', error);
+    return {
+      success: false,
+      error: error.response?.data?.error || '분석 요청에 실패했습니다.',
+    };
   }
 }
 

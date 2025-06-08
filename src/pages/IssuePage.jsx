@@ -16,6 +16,8 @@ import {
   Code,
   Copy,
   ExternalLink,
+  Loader2,
+  RefreshCw,
 } from 'lucide-react';
 import DashboardLayout from '../components/dashboard-layout';
 import { NotificationContext } from '../contexts/notificationContext';
@@ -26,56 +28,51 @@ export default function IssuePage() {
   const [issue, setIssue] = useState(null);
   const [loading, setLoading] = useState(true);
   const [analyzing, setAnalyzing] = useState(false);
-  const [analyzeError, setAnalyzeError] = useState('');
+  const [analysisComplete, setAnalysisComplete] = useState(false);
   const { isConnected } = useContext(NotificationContext);
   console.log(`알림 연결 상태: ${isConnected ? '연결됨' : '끊김'}`);
 
   useEffect(() => {
     const fetchIssue = async () => {
       setLoading(true);
-      setAnalyzeError('');
-      setAnalyzing(false);
       const result = await issueService.getIssueDetail(repoId, issueId);
       if (result.success) {
-        // AI 분석 결과가 없으면 분석 요청
-        if (!result.data.aiAnalysis || !result.data.aiAnalysis.summary) {
-          setAnalyzing(true);
-          // Express에 AI 분석 요청
-          const analyzeRes = await issueService.analyzeIssue(repoId, issueId);
-          if (analyzeRes.success) {
-            setIssue({
-              ...analyzeRes.data,
-              repoName:
-                analyzeRes.data.repoName ||
-                (analyzeRes.data.repoFullName
-                  ? analyzeRes.data.repoFullName.split('/')[1]
-                  : ''),
-              user: analyzeRes.data.author,
-              createdAt: analyzeRes.data.createdAtGithub,
-              labels: analyzeRes.data.labels || [],
-              comments: analyzeRes.data.comments || [],
-              aiAnalysis: analyzeRes.data.aiAnalysis || {},
-            });
-          } else {
-            setAnalyzeError(analyzeRes.message || 'AI 분석에 실패했습니다.');
-          }
-          setAnalyzing(false);
+        const issueData = {
+          ...result.data,
+          repoName:
+            result.data.repoName ||
+            (result.data.repoFullName
+              ? result.data.repoFullName.split('/')[1]
+              : ''),
+          user: result.data.author,
+          createdAt: result.data.createdAtGithub,
+          // 실제 데이터 사용
+          labels: result.data.labels || [],
+          comments: result.data.comments || [],
+          aiAnalysis: result.data.aiAnalysis || {
+            summary: '',
+            relatedFiles: [],
+            codeSnippets: [],
+            suggestion: '',
+          },
+        };
+
+        setIssue(issueData);
+
+        // AI 분석이 이미 완료되었는지 확인
+        const hasAnalysis =
+          issueData.aiAnalysis.summary &&
+          issueData.aiAnalysis.summary.trim() !== '' &&
+          issueData.aiAnalysis.summary !== 'AI 요약 정보 없음';
+
+        if (!hasAnalysis) {
+          // 분석이 없으면 자동으로 분석 시작
+          handleAnalyzeIssue(issueData);
         } else {
-          setIssue({
-            ...result.data,
-            repoName:
-              result.data.repoName ||
-              (result.data.repoFullName
-                ? result.data.repoFullName.split('/')[1]
-                : ''),
-            user: result.data.author,
-            createdAt: result.data.createdAtGithub,
-            labels: result.data.labels || [],
-            comments: result.data.comments || [],
-            aiAnalysis: result.data.aiAnalysis || {},
-          });
+          setAnalysisComplete(true);
         }
-        // 최근 본 이슈 저장
+
+        // 이슈 상세 조회 시 최근 본 이슈로 저장
         if (result.data.issueId) {
           issueService.saveRecentIssue(result.data.issueId);
         }
@@ -85,27 +82,58 @@ export default function IssuePage() {
     fetchIssue();
   }, [repoId, issueId]);
 
-  if (loading || analyzing) {
+  const handleAnalyzeIssue = async (issueData = issue) => {
+    if (!issueData) return;
+
+    setAnalyzing(true);
+    try {
+      const result = await issueService.analyzeIssue(repoId, issueId);
+
+      if (result.success) {
+        if (result.alreadyAnalyzed) {
+          // 이미 분석된 경우, 페이지 새로고침하여 최신 데이터 가져오기
+          window.location.reload();
+        } else {
+          // 새로 분석된 결과 적용
+          setIssue((prev) => ({
+            ...prev,
+            aiAnalysis: {
+              summary: result.data.summary || 'AI 요약 정보 없음',
+              relatedFiles: result.data.relatedFiles || [],
+              codeSnippets: result.data.codeSnippets || [],
+              suggestion: result.data.solutionSuggestion || '',
+            },
+          }));
+          setAnalysisComplete(true);
+        }
+      } else {
+        console.error('분석 실패:', result.error);
+        // 분석 실패 시 기본값 설정
+        setIssue((prev) => ({
+          ...prev,
+          aiAnalysis: {
+            summary: 'AI 분석 중 오류가 발생했습니다.',
+            relatedFiles: [],
+            codeSnippets: [],
+            suggestion: '분석을 다시 시도해주세요.',
+          },
+        }));
+      }
+    } catch (error) {
+      console.error('분석 요청 오류:', error);
+    } finally {
+      setAnalyzing(false);
+    }
+  };
+
+  if (loading) {
     return (
       <DashboardLayout>
         <div className="flex items-center justify-center h-64">
-          <div className="text-lg">
-            {analyzing ? 'AI 분석 중입니다...' : '이슈 정보를 불러오는 중...'}
+          <div className="flex items-center space-x-2">
+            <Loader2 className="h-5 w-5 animate-spin" />
+            <div className="text-lg">이슈 정보를 불러오는 중...</div>
           </div>
-        </div>
-      </DashboardLayout>
-    );
-  }
-
-  if (analyzeError) {
-    return (
-      <DashboardLayout>
-        <div className="flex flex-col items-center justify-center h-64 space-y-4">
-          <div className="text-lg text-red-600">AI 분석 실패</div>
-          <div className="text-sm text-gray-600">{analyzeError}</div>
-          <Button asChild>
-            <Link to={`/repository/${repoId}`}>저장소로 돌아가기</Link>
-          </Button>
         </div>
       </DashboardLayout>
     );
@@ -269,39 +297,83 @@ export default function IssuePage() {
             {/* 사이드바 - AI 분석 결과 */}
             <div className="md:w-1/4 p-4 border-l">
               <div className="space-y-6">
+                {/* AI 분석 상태 표시 */}
+                {analyzing && (
+                  <div className="flex items-center justify-center p-4 bg-blue-50 rounded-lg">
+                    <div className="flex items-center space-x-2">
+                      <Loader2 className="h-4 w-4 animate-spin text-blue-600" />
+                      <span className="text-sm text-blue-600 font-medium">
+                        AI 분석 중...
+                      </span>
+                    </div>
+                  </div>
+                )}
+
                 <div>
-                  <h3 className="text-sm font-medium mb-2">AI 분석 요약</h3>
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="text-sm font-medium">AI 분석 요약</h3>
+                    {!analyzing && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleAnalyzeIssue()}
+                        className="h-6 w-6 p-0"
+                      >
+                        <RefreshCw className="h-3 w-3" />
+                      </Button>
+                    )}
+                  </div>
                   <p className="text-sm text-muted-foreground">
-                    {issue.aiAnalysis.summary}
+                    {analyzing
+                      ? '이슈를 분석하고 있습니다...'
+                      : issue.aiAnalysis.summary ||
+                        'AI 분석이 완료되지 않았습니다.'}
                   </p>
                 </div>
 
                 <div>
                   <h3 className="text-sm font-medium mb-2">관련 파일</h3>
-                  <ul className="space-y-2">
-                    {issue.aiAnalysis.relatedFiles.map((file, index) => (
-                      <li key={index}>
-                        <a
-                          href={`https://github.com/${issue.repoFullName}/blob/main/${file.path}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-sm text-primary hover:underline flex items-center gap-1"
-                        >
-                          <Code className="h-3.5 w-3.5" />
-                          <span>{file.path}</span>
-                        </a>
-                        <p className="text-xs text-muted-foreground mt-0.5">
-                          관련도: {file.relevance}%
+                  {analyzing ? (
+                    <div className="flex justify-center py-4">
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    </div>
+                  ) : (
+                    <ul className="space-y-2">
+                      {issue.aiAnalysis.relatedFiles &&
+                      issue.aiAnalysis.relatedFiles.length > 0 ? (
+                        issue.aiAnalysis.relatedFiles.map((file, index) => (
+                          <li key={index}>
+                            <a
+                              href={`https://github.com/${issue.repoFullName}/blob/main/${file.path}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-sm text-primary hover:underline flex items-center gap-1"
+                            >
+                              <Code className="h-3.5 w-3.5" />
+                              <span>{file.path}</span>
+                            </a>
+                            <p className="text-xs text-muted-foreground mt-0.5">
+                              관련도: {file.relevance}%
+                            </p>
+                          </li>
+                        ))
+                      ) : (
+                        <p className="text-sm text-muted-foreground">
+                          관련 파일이 없습니다.
                         </p>
-                      </li>
-                    ))}
-                  </ul>
+                      )}
+                    </ul>
+                  )}
                 </div>
 
                 <div>
                   <h3 className="text-sm font-medium mb-2">코드 스니펫</h3>
-                  {issue.aiAnalysis.codeSnippets &&
-                  issue.aiAnalysis.codeSnippets.length > 0 ? (
+                  {analyzing ? (
+                    <div className="flex justify-center py-4">
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    </div>
+                  ) : issue.aiAnalysis.codeSnippets &&
+                    issue.aiAnalysis.codeSnippets.length > 0 ? (
                     <Tabs defaultValue="snippet0" className="w-full">
                       <TabsList className="w-full">
                         {issue.aiAnalysis.codeSnippets
@@ -369,10 +441,16 @@ export default function IssuePage() {
 
                 <div>
                   <h3 className="text-sm font-medium mb-2">AI 해결 제안</h3>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    {issue.aiAnalysis.suggestion ||
-                      'AI 해결 제안이 아직 준비되지 않았습니다.'}
-                  </p>
+                  {analyzing ? (
+                    <div className="flex justify-center py-4">
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    </div>
+                  ) : (
+                    <p className="text-sm text-muted-foreground mb-4">
+                      {issue.aiAnalysis.suggestion ||
+                        'AI 해결 제안이 아직 준비되지 않았습니다.'}
+                    </p>
+                  )}
                 </div>
               </div>
             </div>
