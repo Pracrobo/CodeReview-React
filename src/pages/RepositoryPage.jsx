@@ -35,6 +35,8 @@ import chatbotService from '../services/chatbotService';
 import DashboardLayout from '../components/dashboard-layout';
 import repositoryService from '../services/repositoryService';
 import { mockIssues } from '../lib/mock-data';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 const GUIDE_MESSAGE = {
   senderType: 'Agent',
@@ -400,11 +402,12 @@ export default function RepositoryPage() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="prose prose-sm max-w-none">
-                    <p>
-                      {repo.readmeSummaryGpt ||
-                        repo.description ||
-                        '분석된 README 요약이 없습니다.'}
-                    </p>
+                    {/* README 요약을 마크다운으로 렌더링 (개행 보정) */}
+                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                      {repo.readmeSummaryGpt
+                        ? repo.readmeSummaryGpt.replace(/\n{2,}/g, '\n\n')
+                        : repo.description || '분석된 README 요약이 없습니다.'}
+                    </ReactMarkdown>
                   </div>
                   <Button variant="outline" size="sm" className="gap-1" asChild>
                     <a
