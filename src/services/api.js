@@ -18,6 +18,17 @@ async function handleLogoutFlow() {
   }
 }
 
+// 404에서 로그아웃이 필요한 엔드포인트
+const logoutEndpoints = [
+  '/auth/github/callback',
+  '/auth/logout',
+  '/auth/unlink',
+  '/auth/delete',
+  '/auth/token/refresh',
+  '/payment/status',
+  '/payment/complete',
+];
+
 // API 요청 래퍼 (토큰 자동 갱신 및 에러 처리)
 async function apiRequest(endpoint, options = {}) {
   let accessToken = localStorage.getItem('accessToken');
@@ -49,9 +60,16 @@ async function apiRequest(endpoint, options = {}) {
   }
 
   // 404 처리 (user 없음 등)
-  if (response.status === 404) {
+  if (
+    response.status === 404 &&
+    logoutEndpoints.some(e => endpoint === e || endpoint.startsWith(e))
+  ) {
     await handleLogoutFlow();
-    throw new Error('리소스를 찾을 수 없습니다.');
+    throw new Error(`유저 정보를 찾을 수 없습니다: ${endpoint}`);
+  }
+
+  if (response.status === 404) {
+    throw new Error(`리소스를 찾을 수 없습니다: ${endpoint}`);
   }
 
   if (!response.ok) {
