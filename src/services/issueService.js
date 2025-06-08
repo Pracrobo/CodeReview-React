@@ -105,10 +105,28 @@ async function getIssueDetail(repoId, githubIssueNumber) {
   }
 }
 
+// AI 이슈 분석 요청
+async function analyzeIssue(repoId, githubIssueNumber) {
+  try {
+    const response = await api.apiRequest(
+      `/issues/${repoId}/${githubIssueNumber}/analyze`,
+      { method: 'POST' }
+    );
+    return {
+      success: response.success,
+      data: response.data,
+      message: response.message,
+    };
+  } catch (error) {
+    return errorHandler.handleError(error, 'AI 이슈 분석 요청에 실패했습니다.');
+  }
+}
+
 export default {
   getRepositoryIssues,
   getIssuesByRepoIds,
   getRecentIssues,
   saveRecentIssue,
   getIssueDetail,
+  analyzeIssue,
 };
