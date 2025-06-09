@@ -1,11 +1,32 @@
 import { useState, useEffect, useContext } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { Button } from '../components/ui/button';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '../components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '../components/ui/card';
 import { Input } from '../components/ui/input';
 import { Badge } from '../components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
-import { AlertCircle, Github, Plus, Search, Star, GitFork, Clock, Trash2 } from 'lucide-react';
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '../components/ui/tabs';
+import {
+  AlertCircle,
+  Github,
+  Plus,
+  Search,
+  Star,
+  GitFork,
+  Clock,
+  Trash2,
+} from 'lucide-react';
 import { NotificationContext } from '../contexts/notificationContext';
 import languageUtils from '../utils/languageUtils';
 import DashboardLayout from '../components/dashboard-layout';
@@ -36,7 +57,9 @@ export default function RepositoriesPage() {
       const result = await repositoryService.getUserRepositories();
 
       if (result.success) {
-        const transformedRepos = result.data.map(dataTransformers.transformRepositoryData);
+        const transformedRepos = result.data.map(
+          dataTransformers.transformRepositoryData
+        );
         setRepositories(transformedRepos);
 
         // 즐겨찾기 필터링
@@ -61,7 +84,10 @@ export default function RepositoriesPage() {
     if (!repo) return;
 
     try {
-      const result = await repositoryService.updateFavoriteStatus(repoId, !repo.isFavorite);
+      const result = await repositoryService.updateFavoriteStatus(
+        repoId,
+        !repo.isFavorite
+      );
       if (result.success) {
         const updatedRepositories = repositories.map((repo) =>
           repo.id === repoId ? { ...repo, isFavorite: !repo.isFavorite } : repo
@@ -94,7 +120,9 @@ export default function RepositoriesPage() {
     if (!confirm('정말로 이 저장소를 삭제하시겠습니까?')) return;
 
     try {
-      const result = await repositoryService.removeRepositoryFromTracking(githubRepoId);
+      const result = await repositoryService.removeRepositoryFromTracking(
+        githubRepoId
+      );
 
       if (result.success) {
         // 성공 시 목록 새로고침
@@ -117,22 +145,26 @@ export default function RepositoriesPage() {
   const filteredFavoriteRepositories = favoriteRepositories.filter(
     (repo) =>
       repo.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    repo.description.toLowerCase().includes(searchQuery.toLowerCase())
+      repo.description.toLowerCase().includes(searchQuery.toLowerCase())
   );
-  
+
   const renderRepositoryCard = (repo) => (
     <Card
-    key={repo.id}
-    className="h-full min-h-[180px] transition-all hover:shadow-lg rounded-xl bg-white dark:bg-gray-900 group" // border 클래스 제거
+      key={repo.id}
+      className="h-full min-h-[180px] transition-all hover:shadow-lg rounded-xl bg-white dark:bg-gray-900 group" // border 클래스 제거
     >
       <CardHeader className="pb-2 relative">
         <div className="flex items-center min-w-0 gap-2 flex-nowrap">
           {/* Github 아이콘을 button으로 변경 */}
           <button
             type="button"
-            onClick={e => {
+            onClick={(e) => {
               e.stopPropagation();
-              window.open(repo.htmlUrl || repo.url, '_blank', 'noopener,noreferrer');
+              window.open(
+                repo.htmlUrl || repo.url,
+                '_blank',
+                'noopener,noreferrer'
+              );
             }}
             className="mr-1 p-0 bg-transparent border-0 flex-shrink-0 transition-colors text-gray-500 hover:text-gray-800 dark:hover:text-gray-200"
             tabIndex={-1}
@@ -144,8 +176,15 @@ export default function RepositoriesPage() {
             {repo.name}
           </CardTitle>
           <div className="flex flex-wrap items-center gap-2 ml-1">
-            {repo.isNew && <Badge className="bg-green-500 text-white flex-shrink-0">NEW</Badge>}
-            <Badge variant={repo.isPrivate ? 'outline' : 'secondary'} className="flex-shrink-0">
+            {repo.isNew && (
+              <Badge className="bg-green-500 text-white flex-shrink-0">
+                NEW
+              </Badge>
+            )}
+            <Badge
+              variant={repo.isPrivate ? 'outline' : 'secondary'}
+              className="flex-shrink-0"
+            >
               {repo.isPrivate ? '비공개' : '공개'}
             </Badge>
           </div>
@@ -157,7 +196,9 @@ export default function RepositoriesPage() {
             onClick={(e) => toggleFavoriteStatus(e, repo.id)}
           >
             <Star
-              className={`h-4 w-4 ${repo.isFavorite ? 'fill-yellow-400 text-yellow-400' : ''}`}
+              className={`h-4 w-4 ${
+                repo.isFavorite ? 'fill-yellow-400 text-yellow-400' : ''
+              }`}
             />
           </Button>
         </div>
@@ -184,7 +225,11 @@ export default function RepositoriesPage() {
             <div className="flex items-center gap-1 ml-2">
               <div
                 className="w-3 h-3 rounded-full"
-                style={{ backgroundColor: languageUtils.getLanguageColor(repo.language) }}
+                style={{
+                  backgroundColor: languageUtils.getLanguageColor(
+                    repo.language
+                  ),
+                }}
               />
               <span className="font-medium">{repo.language}</span>
               {repo.languagePercentage && (

@@ -45,7 +45,7 @@ const GUIDE_MESSAGE = {
 
 export default function RepositoryPage() {
   const { isConnected } = useContext(NotificationContext);
-  const { id: repoId } = useParams();
+  const { repoId } = useParams();
   const accessToken = localStorage.getItem('accessToken');
   const userId = localStorage.getItem('userId');
 
