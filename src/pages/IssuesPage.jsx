@@ -1,14 +1,25 @@
 import { useState, useMemo, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '../components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '../components/ui/card';
 import { Badge } from '../components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '../components/ui/tabs';
 import { Input } from '../components/ui/input';
 import { AlertCircle, Clock, Pin, PinOff, Search } from 'lucide-react';
 import DashboardLayout from '../components/dashboard-layout';
 import { mockIssues, mockRecentIssues } from '../lib/mock-data';
-import { NotificationContext } from '../contexts/notificationContext';
+import NotificationContext from '../contexts/notificationContext';
 
 export default function IssuesPage() {
   const [searchQuery, setSearchQuery] = useState('');

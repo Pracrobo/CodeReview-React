@@ -1,11 +1,10 @@
 // React 환경에서 환경 변수 접근
-import { API_BASE_URL } from './api';
+import api from './api';
 
 async function requestEmailService(checked) {
-  c;
   const userEmail = localStorage.getItem('email');
   try {
-    const response = await fetch(`${API_BASE_URL}/notification/email`, {
+    const response = await fetch(`${api.API_BASE_URL}/notification/email`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -26,4 +25,4 @@ async function requestEmailService(checked) {
   }
 }
 
-export { requestEmailService };
+export default { requestEmailService };

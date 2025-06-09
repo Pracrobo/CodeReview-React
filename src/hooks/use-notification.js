@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import notificationService from '../services/notificationService';
 import api from '../services/api';
 
-export function useNotification() {
+function useNotification() {
   const [isConnected, setIsConnected] = useState(false);
   const eventSourceRef = useRef(null);
 
@@ -30,9 +30,9 @@ export function useNotification() {
       }
 
       // 수정: api.js의 API_BASE_URL 활용
-      const eventSourceUrl = `${api.API_BASE_URL}/notification/stream/?clientName=${encodeURIComponent(
-        username
-      )}`;
+      const eventSourceUrl = `${
+        api.API_BASE_URL
+      }/notification/stream/?clientName=${encodeURIComponent(username)}`;
       console.log('SSE 연결 시도:', eventSourceUrl);
       const es = new EventSource(eventSourceUrl, { withCredentials: false });
 
@@ -44,10 +44,14 @@ export function useNotification() {
       es.onmessage = (event) => {
         try {
           const data = JSON.parse(event.data);
-          const updatedStatus = localStorage.getItem(NOTIFICATION_PERMISSION_KEY);
+          const updatedStatus = localStorage.getItem(
+            NOTIFICATION_PERMISSION_KEY
+          );
           if (
             updatedStatus === 'granted' &&
-            ['analysis_complete', 'analysis_failed', 'analysis_error'].includes(data.type)
+            ['analysis_complete', 'analysis_failed', 'analysis_error'].includes(
+              data.type
+            )
           ) {
             notificationService.sendNotification(data);
             console.log('알림 띄우기 시도:', data);
@@ -115,3 +119,5 @@ export function useNotification() {
 
   return { isConnected };
 }
+
+export default { useNotification };

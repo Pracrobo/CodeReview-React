@@ -12,12 +12,12 @@ import { Badge } from '../components/ui/badge';
 import { Switch } from '../components/ui/switch';
 import { Label } from '../components/ui/label';
 import { Github, AlertTriangle } from 'lucide-react';
-import { NotificationContext } from '../contexts/notificationContext';
+import NotificationContext from '../contexts/notificationContext';
 import authUtils from '../utils/auth';
 import authService from '../services/authService';
 import DashboardLayout from '../components/dashboard-layout';
 import notificationService from '../services/notificationService';
-import { requestEmailService } from '../services/emailNotificationService';
+import emailNotificationService from '../services/emailNotificationService';
 import {
   Dialog,
   DialogContent,
@@ -157,7 +157,7 @@ export default function SettingsPage() {
   // gmail 수신 관련
   const handleEmailNotificationToggle = async (checked) => {
     setEmailNotifications(checked);
-    await requestEmailService(checked);
+    await emailNotificationService.requestEmailService(checked);
   };
 
   // 브라우저 알림 관련

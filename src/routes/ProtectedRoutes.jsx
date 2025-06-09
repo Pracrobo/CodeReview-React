@@ -10,8 +10,8 @@ import PrivacyPolicyPage from '../pages/PrivacyPolicyPage';
 import TermsOfServicePage from '../pages/TermsOfServicePage';
 import CookiePolicyPage from '../pages/CookiePolicyPage';
 import PaymentResultPage from '../pages/PaymentResultPage';
-import { useNotification } from '../hooks/use-notification';
-import { NotificationContext } from '../contexts/notificationContext';
+import useNotification from '../hooks/use-notification';
+import NotificationContext from '../contexts/notificationContext';
 
 export default function ProtectedRoutes() {
   const notification = useNotification();

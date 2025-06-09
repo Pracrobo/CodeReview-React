@@ -1,4 +1,6 @@
 import { createContext, useContext } from 'react';
 
-export const NotificationContext = createContext(null);
-export const useNotificationContext = () => useContext(NotificationContext);
+const NotificationContext = createContext(null);
+const useNotificationContext = () => useContext(NotificationContext);
+
+export default { NotificationContext, useNotificationContext };

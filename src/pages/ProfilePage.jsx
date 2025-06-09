@@ -1,14 +1,39 @@
 import { useState, useEffect, useCallback, useContext } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/button';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '../components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '../components/ui/card';
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '../components/ui/tabs';
 import { Badge } from '../components/ui/badge';
 import { Input } from '../components/ui/input';
-import { AlertCircle, Github, LogOut, User, Check, X, AlertTriangle } from 'lucide-react';
+import {
+  AlertCircle,
+  Github,
+  LogOut,
+  User,
+  Check,
+  X,
+  AlertTriangle,
+} from 'lucide-react';
 import { Alert, AlertDescription } from '../components/ui/alert';
-import { Dialog, DialogContent, DialogHeader, DialogFooter } from '../components/ui/dialog';
-import { NotificationContext } from '../contexts/notificationContext';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogFooter,
+} from '../components/ui/dialog';
+import NotificationContext from '../contexts/notificationContext';
 import authService from '../services/authService';
 import ModalBody from '../components/ui/ModalBody';
 import paymentService from '../services/paymentService';
@@ -142,7 +167,6 @@ export default function ProfilePage() {
         customerEmail: email,
         customerName: username,
       });
-
     } catch (error) {
       console.error('결제 오류:', error);
       alert('결제 중 오류가 발생했습니다. 다시 시도해주세요.');
