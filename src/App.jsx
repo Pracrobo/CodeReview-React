@@ -8,20 +8,50 @@ import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
 import CookiePolicyPage from './pages/CookiePolicyPage';
 import { SidebarProvider } from './contexts/SidebarContext';
 import authUtils from './utils/auth';
+import authService from './services/authService';
 import ProtectedRoutes from './routes/ProtectedRoutes';
 
 function App() {
-  const [loggedIn, setLoggedIn] = useState(authUtils.isLoggedIn());
+  const [loggedIn, setLoggedIn] = useState(false);
   const [checked, setChecked] = useState(false);
 
   useEffect(() => {
-    const checkLogin = () => setLoggedIn(authUtils.isLoggedIn());
-    window.addEventListener('storage', checkLogin);
-    window.addEventListener('loginStateChanged', checkLogin);
-    setChecked(true);
+    const checkLogin = async () => {
+      let accessToken = localStorage.getItem('accessToken');
+      if (!accessToken) {
+        try {
+          const refreshResult = await authService.refreshAccessToken();
+          if (refreshResult.success && refreshResult.accessToken) {
+            accessToken = refreshResult.accessToken;
+            localStorage.setItem('accessToken', accessToken);
+            setLoggedIn(true);
+            setChecked(true);
+            return;
+          }
+        } catch (error) {
+          console.error('refreshAccessToken 에러:', error);
+        }
+        setLoggedIn(false);
+        setChecked(true);
+        return;
+      }
+      setLoggedIn(authUtils.isLoggedIn());
+      setChecked(true);
+    };
+
+    checkLogin();
+
+    // 로그인 상태 변경 이벤트 핸들러
+    const handleLoginStateChanged = () => {
+      setChecked(false);
+      checkLogin();
+    };
+    window.addEventListener('storage', handleLoginStateChanged);
+    window.addEventListener('loginStateChanged', handleLoginStateChanged);
+
     return () => {
-      window.removeEventListener('storage', checkLogin);
-      window.removeEventListener('loginStateChanged', checkLogin);
+      window.removeEventListener('storage', handleLoginStateChanged);
+      window.removeEventListener('loginStateChanged', handleLoginStateChanged);
     };
   }, []);
 
@@ -50,7 +80,7 @@ function App() {
           <Route
             path="*"
             element={
-              loggedIn ? <ProtectedRoutes /> : <Navigate to="/login" replace />
+              checked && loggedIn ? <ProtectedRoutes /> : <Navigate to="/login" replace />
             }
           />
         </Routes>

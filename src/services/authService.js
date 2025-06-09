@@ -5,7 +5,7 @@ import errorHandler from './errorHandler.js';
 // 인증 후 공통 후처리 (스토리지 삭제 및 새로고침)
 function handlePostAuthCleanup() {
   authUtils.removeAuthStorage();
-  window.location.reload();
+  // window.location.reload();
 }
 
 // GitHub OAuth 콜백 처리

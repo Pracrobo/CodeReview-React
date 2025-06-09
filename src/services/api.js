@@ -12,13 +12,13 @@ async function handleLogoutFlow() {
   isLoggingOut = true;
   try {
     await authService.logout();
+    window.location.replace('/');
   } finally {
     isLoggingOut = false;
-    window.location.replace('/');
   }
 }
 
-// 404에서 로그아웃이 필요한 엔드포인트
+// 404 발생 시 로그아웃이 필요한 엔드포인트 목록
 const logoutEndpoints = [
   '/auth/github/callback',
   '/auth/logout',
@@ -29,9 +29,60 @@ const logoutEndpoints = [
   '/payment/complete',
 ];
 
+// 인증이 필요 없는 엔드포인트 목록 (이 엔드포인트는 토큰/refresh 체크 없이 바로 요청)
+const publicEndpoints = [
+  '/auth/github/login',
+  '/auth/github/callback',
+  '/auth/token/refresh',
+  '/auth/login',
+  '/oauth/callback',
+  '/login',
+];
+
+// accessToken이 없거나 만료된 경우 refresh 시도
+async function getValidAccessToken() {
+  let accessToken = localStorage.getItem('accessToken');
+  if (accessToken) return accessToken;
+
+  // accessToken이 없으면 refresh 시도 (쿠키 기반)
+  try {
+    const refreshResult = await authService.refreshAccessToken();
+    if (refreshResult.success && refreshResult.accessToken) {
+      return refreshResult.accessToken;
+    }
+  } catch (error) {
+    // refresh 요청 자체가 실패(네트워크 등)해도 아래로 진행
+    console.error('refreshAccessToken 에러:', error);
+  }
+
+  // refreshToken도 없거나 만료/실패 (최초 로그인 포함)
+  await handleLogoutFlow();
+  throw new Error('인증이 만료되었습니다. 다시 로그인 해주세요.');
+}
+
 // API 요청 래퍼 (토큰 자동 갱신 및 에러 처리)
 async function apiRequest(endpoint, options = {}) {
   let accessToken = localStorage.getItem('accessToken');
+
+  // 1. 인증이 필요 없는 엔드포인트는 토큰/refresh 없이 바로 요청
+  if (publicEndpoints.some((pub) => endpoint.startsWith(pub))) {
+    const config = {
+      headers: {
+        'Content-Type': 'application/json',
+        ...options.headers,
+      },
+      ...options,
+    };
+    const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
+    return await response.json();
+  }
+
+  // 2. 그 외 엔드포인트만 accessToken 없을 때 refresh 시도
+  if (!accessToken && endpoint !== '/auth/token/refresh') {
+    accessToken = await getValidAccessToken();
+    // 실패 시 throw
+  }
+
   const config = {
     headers: {
       'Content-Type': 'application/json',
@@ -43,23 +94,18 @@ async function apiRequest(endpoint, options = {}) {
 
   let response = await fetch(`${API_BASE_URL}${endpoint}`, config);
 
-  // 401 처리 (토큰 만료, refreshToken 없음, user 없음 등)
+  // 401 응답 처리 (토큰 만료, refreshToken 없음, user 없음 등)
   if (
     response.status === 401 &&
     endpoint !== '/auth/token/refresh'
   ) {
-    const refreshResult = await authService.refreshAccessToken();
-    if (refreshResult.success) {
-      accessToken = refreshResult.accessToken;
-      config.headers.Authorization = `Bearer ${accessToken}`;
-      response = await fetch(`${API_BASE_URL}${endpoint}`, config);
-    } else {
-      await handleLogoutFlow();
-      throw new Error('인증이 만료되었습니다. 다시 로그인 해주세요.');
-    }
+    // accessToken이 있는데 만료된 경우 refresh 시도
+    accessToken = await getValidAccessToken();
+    config.headers.Authorization = `Bearer ${accessToken}`;
+    response = await fetch(`${API_BASE_URL}${endpoint}`, config);
   }
 
-  // 404 처리 (user 없음 등)
+  // 404 응답 처리 (user 없음 등)
   if (
     response.status === 404 &&
     logoutEndpoints.includes(endpoint)
@@ -72,6 +118,7 @@ async function apiRequest(endpoint, options = {}) {
     throw new Error(`리소스를 찾을 수 없습니다: ${endpoint}`);
   }
 
+  // 기타 에러 처리
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
     const error = new Error(errorData.message || `HTTP ${response.status}`);

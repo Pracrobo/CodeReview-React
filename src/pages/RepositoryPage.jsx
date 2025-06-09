@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useContext } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import { Badge } from '../components/ui/badge';
@@ -18,6 +18,7 @@ const GUIDE_MESSAGE = {
 };
 
 export default function RepositoryPage() {
+  const navigate = useNavigate();
   const { isConnected } = useContext(NotificationContext);
   const { id: paramRepoId } = useParams();
   const repoId = paramRepoId || localStorage.getItem('repoId');
@@ -89,7 +90,7 @@ export default function RepositoryPage() {
             setConversationId(result.conversationId);
             setChatMessages(result.messages || []);
           } else if (result.status === 401) {
-            window.location.replace('/login');
+            navigate('/login', { replace: true });
           } else {
             setChatError(result.message || '챗봇 대화 조회에 실패했습니다.');
           }

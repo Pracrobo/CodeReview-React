@@ -23,7 +23,10 @@ export default function OAuthCallback() {
             if (payload?.email) localStorage.setItem('email', payload.email);
             if (payload?.avatarUrl) localStorage.setItem('avatarUrl', payload.avatarUrl);
 
-            window.location.replace('/dashboard');
+            // 로그인 상태 변경 이벤트 발생
+            window.dispatchEvent(new Event('loginStateChanged'));
+
+            navigate('/dashboard', { replace: true });
           } else {
             navigate('/login', { replace: true });
           }

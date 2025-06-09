@@ -22,15 +22,6 @@ export default function RepositoriesPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const tabValue = searchParams.get('tab') || 'all';
 
-  // 로그인 확인
-  useEffect(() => {
-    const accessToken = localStorage.getItem('accessToken');
-    if (!accessToken) {
-      window.location.replace('/login');
-      return null;
-    }
-  }, []);
-
   // 저장소 목록 로드
   useEffect(() => {
     loadRepositories();
