@@ -39,32 +39,61 @@ const publicEndpoints = [
   '/login',
 ];
 
+// refresh 중복 방지용 Promise
+let refreshPromise = null;
+
+function isPublicPath() {
+  // 브라우저 환경에서만 동작
+  if (typeof window === 'undefined') return false;
+  const publicPaths = [
+    '/',
+    '/login',
+    '/auth/login',
+    '/oauth/callback',
+  ];
+  return publicPaths.includes(window.location.pathname);
+}
+
 // accessToken이 없거나 만료된 경우 refresh 시도
-async function getValidAccessToken() {
+async function getValidAccessToken(endpoint) {
   let accessToken = localStorage.getItem('accessToken');
   if (accessToken) return accessToken;
 
-  // accessToken이 없으면 refresh 시도 (쿠키 기반)
-  try {
-    const refreshResult = await authService.refreshAccessToken();
-    if (refreshResult.success && refreshResult.accessToken) {
-      return refreshResult.accessToken;
-    }
-  } catch (error) {
-    // refresh 요청 자체가 실패(네트워크 등)해도 아래로 진행
-    console.error('refreshAccessToken 에러:', error);
+  // 인증이 필요 없는 엔드포인트거나, 현재 경로가 publicPath면 refresh 시도하지 않음
+  if (
+    publicEndpoints.some((pub) => endpoint.startsWith(pub)) ||
+    isPublicPath()
+  ) {
+    return null;
   }
 
-  // refreshToken도 없거나 만료/실패 (최초 로그인 포함)
-  await handleLogoutFlow();
-  throw new Error('인증이 만료되었습니다. 다시 로그인 해주세요.');
+  // 이미 refresh 요청 중이면 기존 Promise 반환
+  if (refreshPromise) return refreshPromise;
+  refreshPromise = (async () => {
+    try {
+      const refreshResult = await authService.refreshAccessToken();
+      if (refreshResult.success && refreshResult.accessToken) {
+        return refreshResult.accessToken;
+      }
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error('refreshAccessToken 에러:', error);
+    }
+    await handleLogoutFlow();
+    throw new Error('인증이 만료되었습니다. 다시 로그인 해주세요.');
+  })();
+  try {
+    return await refreshPromise;
+  } finally {
+    refreshPromise = null;
+  }
 }
 
 // API 요청 래퍼 (토큰 자동 갱신 및 에러 처리)
 async function apiRequest(endpoint, options = {}) {
   let accessToken = localStorage.getItem('accessToken');
 
-  // 1. 인증이 필요 없는 엔드포인트는 토큰/refresh 없이 바로 요청
+  // 인증이 필요 없는 엔드포인트는 토큰/refresh 없이 바로 요청
   if (publicEndpoints.some((pub) => endpoint.startsWith(pub))) {
     const config = {
       headers: {
@@ -77,9 +106,9 @@ async function apiRequest(endpoint, options = {}) {
     return await response.json();
   }
 
-  // 2. 그 외 엔드포인트만 accessToken 없을 때 refresh 시도
+  // accessToken이 없으면 refresh 시도 (단, publicEndpoints는 제외)
   if (!accessToken && endpoint !== '/auth/token/refresh') {
-    accessToken = await getValidAccessToken();
+    accessToken = await getValidAccessToken(endpoint);
     // 실패 시 throw
   }
 
@@ -92,41 +121,52 @@ async function apiRequest(endpoint, options = {}) {
     ...options,
   };
 
-  let response = await fetch(`${API_BASE_URL}${endpoint}`, config);
+  let hasRetried = false;
+  while (true) {
+    let response = await fetch(`${API_BASE_URL}${endpoint}`, config);
 
-  // 401 응답 처리 (토큰 만료, refreshToken 없음, user 없음 등)
-  if (
-    response.status === 401 &&
-    endpoint !== '/auth/token/refresh'
-  ) {
-    // accessToken이 있는데 만료된 경우 refresh 시도
-    accessToken = await getValidAccessToken();
-    config.headers.Authorization = `Bearer ${accessToken}`;
-    response = await fetch(`${API_BASE_URL}${endpoint}`, config);
+    // 401 응답 처리 (한 번만 refresh 시도)
+    if (
+      response.status === 401 &&
+      endpoint !== '/auth/token/refresh' &&
+      !hasRetried
+    ) {
+      accessToken = await getValidAccessToken(endpoint);
+      if (!accessToken) {
+        throw new Error('인증이 만료되었습니다. 다시 로그인 해주세요.');
+      }
+      config.headers.Authorization = `Bearer ${accessToken}`;
+      hasRetried = true;
+      continue;
+    }
+
+    if (response.status === 401) {
+      await handleLogoutFlow();
+      throw new Error('인증이 만료되었습니다. 다시 로그인 해주세요.');
+    }
+
+    // 이하 기존 404, 기타 에러 처리 동일
+    if (
+      response.status === 404 &&
+      logoutEndpoints.includes(endpoint)
+    ) {
+      await handleLogoutFlow();
+      throw new Error(`유저 정보를 찾을 수 없습니다: ${endpoint}`);
+    }
+
+    if (response.status === 404) {
+      throw new Error(`리소스를 찾을 수 없습니다: ${endpoint}`);
+    }
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      const error = new Error(errorData.message || `HTTP ${response.status}`);
+      error.status = response.status;
+      throw error;
+    }
+
+    return await response.json();
   }
-
-  // 404 응답 처리 (user 없음 등)
-  if (
-    response.status === 404 &&
-    logoutEndpoints.includes(endpoint)
-  ) {
-    await handleLogoutFlow();
-    throw new Error(`유저 정보를 찾을 수 없습니다: ${endpoint}`);
-  }
-
-  if (response.status === 404) {
-    throw new Error(`리소스를 찾을 수 없습니다: ${endpoint}`);
-  }
-
-  // 기타 에러 처리
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    const error = new Error(errorData.message || `HTTP ${response.status}`);
-    error.status = response.status;
-    throw error;
-  }
-
-  return await response.json();
 }
 
 export default {

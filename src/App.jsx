@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import OAuthCallback from './pages/OAuthCallback';
@@ -12,12 +12,25 @@ import authService from './services/authService';
 import ProtectedRoutes from './routes/ProtectedRoutes';
 
 function App() {
+  const location = useLocation();
   const [loggedIn, setLoggedIn] = useState(false);
   const [checked, setChecked] = useState(false);
 
   useEffect(() => {
     const checkLogin = async () => {
       let accessToken = localStorage.getItem('accessToken');
+      const publicPaths = [
+        '/login',
+        '/auth/login',
+        '/oauth/callback',
+      ];
+      // publicPaths에서는 refresh 시도하지 않음
+      if (!accessToken && publicPaths.some((p) => location.pathname.startsWith(p))) {
+        setLoggedIn(false);
+        setChecked(true);
+        return;
+      }
+      // accessToken이 없으면 refreshToken(쿠키)로 갱신 시도
       if (!accessToken) {
         try {
           const refreshResult = await authService.refreshAccessToken();
@@ -29,12 +42,15 @@ function App() {
             return;
           }
         } catch (error) {
+          // eslint-disable-next-line no-console
           console.error('refreshAccessToken 에러:', error);
         }
+        // refreshToken도 없거나 만료된 경우
         setLoggedIn(false);
         setChecked(true);
         return;
       }
+      // accessToken이 있으면 만료 여부 체크
       setLoggedIn(authUtils.isLoggedIn());
       setChecked(true);
     };
@@ -53,7 +69,7 @@ function App() {
       window.removeEventListener('storage', handleLoginStateChanged);
       window.removeEventListener('loginStateChanged', handleLoginStateChanged);
     };
-  }, []);
+  }, [location.pathname]);
 
   if (!checked) return null;
 
