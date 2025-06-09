@@ -24,7 +24,7 @@ import { NotificationContext } from '../contexts/notificationContext';
 import issueService from '../services/issueService';
 
 export default function IssuePage() {
-  const { id: repoId, issueId } = useParams();
+  const { repoId, issueId } = useParams();
   const [issue, setIssue] = useState(null);
   const [loading, setLoading] = useState(true);
   const [analyzing, setAnalyzing] = useState(false);
