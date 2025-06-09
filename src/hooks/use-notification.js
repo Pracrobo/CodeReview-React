@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
-import { sendNotification } from '../services/notificationService';
+import notificationService from '../services/notificationService';
+import api from '../services/api';
 
 export function useNotification() {
   const [isConnected, setIsConnected] = useState(false);
@@ -28,12 +29,12 @@ export function useNotification() {
         eventSourceRef.current.close();
       }
 
-      const es = new EventSource(
-        `http://localhost:3001/notification/stream/?clientName=${encodeURIComponent(
-          username
-        )}`,
-        { withCredentials: false }
-      );
+      // 수정: api.js의 API_BASE_URL 활용
+      const eventSourceUrl = `${api.API_BASE_URL}/notification/stream/?clientName=${encodeURIComponent(
+        username
+      )}`;
+      console.log('SSE 연결 시도:', eventSourceUrl);
+      const es = new EventSource(eventSourceUrl, { withCredentials: false });
 
       es.onopen = () => {
         console.log('SSE 연결 성공');
@@ -43,20 +44,18 @@ export function useNotification() {
       es.onmessage = (event) => {
         try {
           const data = JSON.parse(event.data);
-          const updatedStatus = localStorage.getItem(
-            NOTIFICATION_PERMISSION_KEY
-          );
+          const updatedStatus = localStorage.getItem(NOTIFICATION_PERMISSION_KEY);
           if (
             updatedStatus === 'granted' &&
-            ['analysis_complete', 'analysis_failed', 'analysis_error'].includes(
-              data.type
-            )
+            ['analysis_complete', 'analysis_failed', 'analysis_error'].includes(data.type)
           ) {
-            sendNotification(data);
+            notificationService.sendNotification(data);
+            console.log('알림 띄우기 시도:', data);
           }
         } catch (error) {
           console.error('알림 파싱 실패:', error);
         }
+        console.log('SSE 메시지 수신:', event.data);
       };
 
       es.onerror = (error) => {

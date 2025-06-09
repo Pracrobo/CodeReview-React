@@ -12,11 +12,11 @@ import { Badge } from '../components/ui/badge';
 import { Switch } from '../components/ui/switch';
 import { Label } from '../components/ui/label';
 import { Github, AlertTriangle } from 'lucide-react';
-import DashboardLayout from '../components/dashboard-layout';
-import { removeAuthStorage } from '../utils/auth';
-import { unlinkAccount, deleteAccount } from '../services/authService';
-import { permissionNotificationWindow } from '../services/notificationService';
 import { NotificationContext } from '../contexts/notificationContext';
+import authUtils from '../utils/auth';
+import authService from '../services/authService';
+import DashboardLayout from '../components/dashboard-layout';
+import notificationService from '../services/notificationService';
 import { requestEmailService } from '../services/emailNotificationService';
 import {
   Dialog,
@@ -39,14 +39,14 @@ function GithubUnlinkButton() {
       return;
     }
 
-    const result = await unlinkAccount();
+    const result = await authService.unlinkAccount();
 
     if (!result.success) {
       setLoading(false);
       return;
     }
 
-    removeAuthStorage();
+    authUtils.removeAuthStorage();
     window.location.replace('/');
   }, [accessToken, loading]);
 
@@ -99,14 +99,14 @@ function AccountDeleteButton() {
       return;
     }
 
-    const result = await deleteAccount();
+    const result = await authService.deleteAccount();
 
     if (!result.success) {
       setLoading(false);
       return;
     }
 
-    removeAuthStorage();
+    authUtils.removeAuthStorage();
     window.location.replace('/');
   }, [accessToken, loading]);
 
@@ -181,7 +181,8 @@ export default function SettingsPage() {
     try {
       if (checked) {
         // 알림을 켜려고 할 때만 권한 요청
-        const permissionGranted = await permissionNotificationWindow();
+        const permissionGranted =
+          await notificationService.permissionNotificationWindow();
         if (permissionGranted) {
           localStorage.setItem(NOTIFICATION_PERMISSION_KEY, 'granted');
           setBrowserNotifications(true);
