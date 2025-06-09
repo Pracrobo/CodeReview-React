@@ -17,7 +17,7 @@ import { removeAuthStorage } from '../utils/auth';
 import { unlinkAccount, deleteAccount } from '../services/authService';
 import { permissionNotificationWindow } from '../services/notificationService';
 import { NotificationContext } from '../contexts/notificationContext';
-
+import { requestEmailService } from '../services/emailNotificationService';
 import {
   Dialog,
   DialogContent,
@@ -154,6 +154,11 @@ export default function SettingsPage() {
   console.log(`알림 연결 상태: ${isConnected ? '연결됨' : '끊김'}`);
   const username = localStorage.getItem('username') || 'githubuser';
   const [emailNotifications, setEmailNotifications] = useState(false);
+  // gmail 수신 관련
+  const handleEmailNotificationToggle = async (checked) => {
+    setEmailNotifications(checked);
+    await requestEmailService(checked);
+  };
 
   // 브라우저 알림 관련
   const NOTIFICATION_PERMISSION_KEY = 'notificationPermissionStatus';
@@ -232,7 +237,7 @@ export default function SettingsPage() {
               <Switch
                 id="email-notifications"
                 checked={emailNotifications}
-                onCheckedChange={setEmailNotifications}
+                onCheckedChange={handleEmailNotificationToggle}
               />
             </div>
             <div className="flex items-center justify-between">
