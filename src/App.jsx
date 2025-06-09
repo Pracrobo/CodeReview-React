@@ -24,8 +24,11 @@ function App() {
         '/auth/login',
         '/oauth/callback',
       ];
-      // publicPaths에서는 refresh 시도하지 않음
-      if (!accessToken && publicPaths.some((p) => location.pathname.startsWith(p))) {
+      // "/" 경로에서 accessToken이 없으면 refresh 시도하지 않음
+      if (
+        !accessToken &&
+        (publicPaths.some((p) => location.pathname.startsWith(p)) || location.pathname === '/')
+      ) {
         setLoggedIn(false);
         setChecked(true);
         return;
