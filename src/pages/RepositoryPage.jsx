@@ -152,7 +152,7 @@ export default function RepositoryPage() {
       if (res && res.answer) {
         setChatMessages(prev => [
           ...prev,
-          { senderType: 'Bot', content: res.answer }
+          { senderType: 'Agent', content: res.answer }
         ]);
       }
     } catch {
