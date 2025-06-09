@@ -107,7 +107,9 @@ async function analyzeRepository(repoUrl) {
 // 저장소 분석 상태 조회
 async function getAnalysisStatus(repositoryId) {
   try {
-    const response = await api.apiRequest(`/repositories/${repositoryId}/status`);
+    const response = await api.apiRequest(
+      `/repositories/${repositoryId}/status`
+    );
     return {
       success: true,
       data: response.data || {},
@@ -249,6 +251,53 @@ async function updateFavoriteStatus(repoId, isFavorite) {
   }
 }
 
+// 여러 저장소의 이슈를 한 번에 불러오기 (페이지네이션)
+async function getIssuesByRepoIds({
+  repoIds,
+  limit = 20,
+  offset = 0,
+  search = '',
+  state = null,
+}) {
+  try {
+    const response = await api.apiRequest('/issues/bulk', {
+      method: 'POST',
+      body: JSON.stringify({ repoIds, limit, offset, search, state }),
+    });
+    return {
+      success: true,
+      data: response.data || [],
+      message: response.message,
+    };
+  } catch (error) {
+    return errorHandler.handleError(
+      error,
+      '이슈 목록을 불러오는데 실패했습니다.',
+      []
+    );
+  }
+}
+
+// 최근 본 이슈 목록 조회 (페이지네이션)
+async function getRecentIssues({ limit = 20, offset = 0 }) {
+  try {
+    const response = await api.apiRequest(
+      `/issues/recent?limit=${limit}&offset=${offset}`
+    );
+    return {
+      success: true,
+      data: response.data || [],
+      message: response.message,
+    };
+  } catch (error) {
+    return errorHandler.handleError(
+      error,
+      '최근 본 이슈를 불러오는데 실패했습니다.',
+      []
+    );
+  }
+}
+
 export default {
   getUserRepositories,
   searchRepositories,
@@ -262,4 +311,6 @@ export default {
   updateRepositoryLastViewed,
   getRepositoryLanguages,
   updateFavoriteStatus,
+  getIssuesByRepoIds,
+  getRecentIssues,
 };
