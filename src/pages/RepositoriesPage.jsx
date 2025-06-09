@@ -22,6 +22,15 @@ export default function RepositoriesPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const tabValue = searchParams.get('tab') || 'all';
 
+  // 로그인 확인
+  useEffect(() => {
+    const accessToken = localStorage.getItem('accessToken');
+    if (!accessToken) {
+      window.location.replace('/login');
+      return null;
+    }
+  }, []);
+
   // 저장소 목록 로드
   useEffect(() => {
     loadRepositories();
@@ -278,7 +287,11 @@ export default function RepositoriesPage() {
             {filteredRepositories.length > 0 ? (
               <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
                 {filteredRepositories.map((repo) => (
-                  <Link to={`/repository/${repo.id}`} key={repo.id}>
+                  <Link
+                    to={`/repository/${repo.id}`}
+                    key={repo.id}
+                    onClick={() => localStorage.setItem('repoId', repo.id)}
+                  >
                     {renderRepositoryCard(repo)}
                   </Link>
                 ))}
