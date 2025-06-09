@@ -116,8 +116,9 @@ async function analyzeIssue(repoId, issueNumber) {
     );
     return {
       success: true,
-      data: response,
+      data: response.data, // 백엔드에서 분석 결과가 data에 들어옴
       message: response.message || '분석 요청에 성공했습니다.',
+      alreadyAnalyzed: response.alreadyAnalyzed,
     };
   } catch (error) {
     console.error('이슈 분석 요청 실패:', error);

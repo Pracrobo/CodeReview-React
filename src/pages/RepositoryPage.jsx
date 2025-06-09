@@ -355,9 +355,27 @@ export default function RepositoryPage() {
     setChatLoading(false);
   };
 
+  // GitHub 파일 URL 생성 함수 개선
+  const getGitHubFileUrl = (fileType) => {
+    if (!repo?.htmlUrl) return '#';
+
+    const defaultBranch = repo.defaultBranch || 'main';
+    let filename;
+
+    if (fileType === 'readme') {
+      filename = repo.readmeFilename || 'README.md';
+    } else if (fileType === 'license') {
+      filename = repo.licenseFilename || 'LICENSE';
+    } else {
+      filename = fileType;
+    }
+
+    return `${repo.htmlUrl}/blob/${defaultBranch}/${filename}`;
+  };
+
   return (
     <DashboardLayout>
-      <div className="space-y-6">
+      <div className="space-y-6 max-w-7xl mx-auto">
         <div className="flex flex-col space-y-2">
           <div className="flex items-center gap-2">
             <Button variant="ghost" size="icon" asChild className="h-8 w-8">
@@ -430,7 +448,7 @@ export default function RepositoryPage() {
                   </div>
                   <Button variant="outline" size="sm" className="gap-1" asChild>
                     <a
-                      href={`${repo.htmlUrl}/blob/main/README.md`}
+                      href={getGitHubFileUrl('readme')}
                       target="_blank"
                       rel="noopener noreferrer"
                     >
@@ -602,7 +620,7 @@ export default function RepositoryPage() {
 
                         <div className="mt-3 text-xs text-center">
                           <a
-                            href={`${repo.htmlUrl}/blob/main/LICENSE`}
+                            href={getGitHubFileUrl('license')}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="text-primary hover:underline inline-flex items-center gap-1 dark:text-purple-400"
