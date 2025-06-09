@@ -103,15 +103,11 @@ export default function IssuePage() {
         };
         console.log('[AIssue] 분석 요청 후 받은 AI 분석 결과:', aiAnalysis);
 
-        if (result.alreadyAnalyzed) {
-          window.location.reload();
-        } else {
-          setIssue((prev) => ({
-            ...prev,
-            aiAnalysis,
-          }));
-          setAnalysisComplete(true);
-        }
+        setIssue((prev) => ({
+          ...prev,
+          aiAnalysis,
+        }));
+        setAnalysisComplete(true);
       } else {
         console.error('분석 실패:', result.error);
         setIssue((prev) => ({
@@ -159,7 +155,7 @@ export default function IssuePage() {
 
   return (
     <DashboardLayout>
-      <div className="space-y-6 max-w-7xl mx-auto">
+      <div className="space-y-6 max-w-5xl mx-auto">
         {/* 이슈 헤더 */}
         <div className="flex flex-col space-y-2">
           <div className="flex items-center gap-2">

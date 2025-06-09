@@ -115,22 +115,6 @@ export default function IssuesPage() {
     fetchRecentIssues();
   }, []);
 
-  // 무한 스크롤: 스크롤 하단 도달 시 추가 로딩
-  useEffect(() => {
-    const handleScroll = () => {
-      if (
-        window.innerHeight + window.scrollY >=
-          document.body.offsetHeight - 300 &&
-        allIssuesHasMore &&
-        !loadingAll
-      ) {
-        fetchAllIssues();
-      }
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [fetchAllIssues, allIssuesHasMore, loadingAll]);
-
   // 핀 고정/해제 (localStorage 활용 예시)
   const togglePin = (issueId) => {
     setRecentIssues((prev) =>
