@@ -160,12 +160,12 @@ export default function RepositoriesPage() {
             />
           </Button>
         </div>
-        <CardDescription className="line-clamp-2 h-10 mt-5 text-gray-600 dark:text-gray-300">
+        <CardDescription className="line-clamp-2 h-10 mt-3 mb-5 text-gray-600 dark:text-gray-300">
           {repo.description}
         </CardDescription>
       </CardHeader>
       <CardContent className="!p-6 pb-0 flex-1 mb-0 p-0">
-        <div className="flex items-center justify-between gap-x-4 text-sm text-muted-foreground mb-3 mt-0 w-full flex-nowrap">
+        <div className="flex items-center gap-x-6 text-sm text-muted-foreground mb-0 mt-0 w-full">
           <div className="flex items-center gap-2 min-w-0">
             <Star className="h-4 w-4 flex-shrink-0" />
             <span className="truncate">{repo.stars}</span>
@@ -179,7 +179,7 @@ export default function RepositoriesPage() {
             <span className="truncate">{repo.issues}개 이슈</span>
           </div>
           {repo.language ? (
-            <div className="flex items-center gap-2 min-w-0 ml-auto mr-3">
+            <div className="flex items-center gap-2 min-w-0">
               <div
                 className="w-3 h-3 rounded-full flex-shrink-0"
                 style={{ backgroundColor: languageUtils.getLanguageColor(repo.language) }}
@@ -192,7 +192,7 @@ export default function RepositoriesPage() {
               )}
             </div>
           ) : (
-            <div className="w-[60px] h-5 ml-auto" />
+            <div className="w-[60px] h-5" />
           )}
         </div>
       </CardContent>
