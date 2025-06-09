@@ -1,16 +1,42 @@
-import { useState, useEffect, useRef, useContext } from 'react';
+import { useState, useEffect, useRef, useContext, useCallback } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '../components/ui/tabs';
 import { Badge } from '../components/ui/badge';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '../components/ui/card';
 import { Input } from '../components/ui/input';
-import { AlertCircle, ArrowLeft, ExternalLink, Github, Star, GitFork, Clock, Info, Shield, FileText, Trash2 } from 'lucide-react';
+import {
+  AlertCircle,
+  ArrowLeft,
+  ExternalLink,
+  Github,
+  Star,
+  GitFork,
+  Clock,
+  Info,
+  Shield,
+  FileText,
+  Trash2,
+} from 'lucide-react';
 import { NotificationContext } from '../contexts/notificationContext';
 import languageUtils from '../utils/languageUtils';
 import chatbotService from '../services/chatbotService';
 import DashboardLayout from '../components/dashboard-layout';
 import repositoryService from '../services/repositoryService';
+import issueService from '../services/issueService';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 const GUIDE_MESSAGE = {
   senderType: 'Agent',
@@ -28,7 +54,9 @@ export default function RepositoryPage() {
   const [repo, setRepo] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [activeTab, setActiveTab] = useState(() => localStorage.getItem('repoActiveTab') || 'overview');
+  const [activeTab] = useState(
+    () => localStorage.getItem('repoActiveTab') || 'overview'
+  );
 
   // 챗봇 상태
   const [chatInput, setChatInput] = useState('');
@@ -44,6 +72,9 @@ export default function RepositoryPage() {
       localStorage.removeItem('repoId');
     };
   }, []);
+  // 이슈 목록 상태
+  const [issues, setIssues] = useState([]);
+  const [loadingIssues, setLoadingIssues] = useState(false);
 
   // 저장소 정보 가져오기
   useEffect(() => {
@@ -73,19 +104,41 @@ export default function RepositoryPage() {
     loadRepositoryData();
   }, [repoId, isConnected]);
 
+  // 이슈 목록 불러오기 (저장소별)
+  const fetchRepositoryIssues = useCallback(async () => {
+    setLoadingIssues(true);
+    const result = await issueService.getRepositoryIssues(repoId);
+    if (result.success) {
+      setIssues(
+        result.data.map((issue) => ({
+          ...issue,
+          repoName:
+            issue.repoName ||
+            (issue.repoFullName ? issue.repoFullName.split('/')[1] : ''),
+          labels: issue.labels || [],
+        }))
+      );
+    }
+    setLoadingIssues(false);
+  }, [repoId]);
+
+  // 저장소 상세 정보 조회 후 이슈 목록도 불러오기
+  useEffect(() => {
+    fetchRepositoryIssues();
+  }, [repoId, fetchRepositoryIssues]);
+
   // 챗봇탭 클릭 시: conversation 조회만 시도(없으면 생성X)
   useEffect(() => {
-    if (
-      activeTab === 'chatbot' &&
-      repo &&
-      userId &&
-      accessToken
-    ) {
+    if (activeTab === 'chatbot' && repo && userId && accessToken) {
       const fetchConversation = async () => {
         setChatLoading(true);
         setChatError('');
         try {
-          const result = await chatbotService.getConversation({ repoId, userId, accessToken });
+          const result = await chatbotService.getConversation({
+            repoId,
+            userId,
+            accessToken,
+          });
           if (result.success) {
             setConversationId(result.conversationId);
             setChatMessages(result.messages || []);
@@ -114,11 +167,20 @@ export default function RepositoryPage() {
     // 대화가 없으면 생성
     if (!conversationIdForSend) {
       try {
-        const createResult = await chatbotService.createConversation({ repoId, userId, accessToken });
+        const createResult = await chatbotService.createConversation({
+          repoId,
+          userId,
+          accessToken,
+        });
         if (createResult.success) {
           conversationIdForSend = createResult.conversationId;
           setConversationId(conversationIdForSend);
-          const fetchResult = await chatbotService.getConversation({ repoId, userId, accessToken });
+          // 새로 만든 conversation의 메시지 목록을 불러옴 (대부분 빈 배열이지만, 혹시라도 있을 수 있음)
+          const fetchResult = await chatbotService.getConversation({
+            repoId,
+            userId,
+            accessToken,
+          });
           if (fetchResult.success) {
             setChatMessages(fetchResult.messages || []);
           }
@@ -137,7 +199,7 @@ export default function RepositoryPage() {
     // 사용자 메시지 임시 추가
     const tempId = Date.now() + Math.random();
     const newMsg = { senderType: 'User', content: chatInput.trim(), tempId };
-    setChatMessages(prev => [...prev, newMsg]);
+    setChatMessages((prev) => [...prev, newMsg]);
     setChatInput('');
     try {
       // 메시지 저장 및 답변 요청
@@ -157,7 +219,7 @@ export default function RepositoryPage() {
         ]);
       }
     } catch {
-      setChatMessages(prev => prev.filter(msg => msg.tempId !== tempId));
+      setChatMessages((prev) => prev.filter((msg) => msg.tempId !== tempId));
       setChatError('메시지 전송에 실패했습니다. 다시 시도해 주세요.');
     }
     setChatLoading(false);
@@ -182,7 +244,8 @@ export default function RepositoryPage() {
   const licenseInfo = {
     MIT: {
       fullName: 'MIT License',
-      description: '간단하고 관대한 라이선스로, 저작권 및 라이선스 고지만 필요합니다.',
+      description:
+        '간단하고 관대한 라이선스로, 저작권 및 라이선스 고지만 필요합니다.',
       permissions: ['상업적 사용', '수정', '배포', '개인 사용'],
       conditions: ['라이선스 및 저작권 고지 포함'],
       limitations: ['책임 면제', '보증 없음'],
@@ -190,7 +253,8 @@ export default function RepositoryPage() {
     },
     'Apache-2.0': {
       fullName: 'Apache License 2.0',
-      description: '특허권 부여와 함께 사용자에게 자유를 제공하는 라이선스입니다.',
+      description:
+        '특허권 부여와 함께 사용자에게 자유를 제공하는 라이선스입니다.',
       permissions: ['상업적 사용', '수정', '배포', '특허권 사용', '개인 사용'],
       conditions: ['라이선스 및 저작권 고지 포함', '상태 변경 명시'],
       limitations: ['상표권 사용 금지', '책임 면제', '보증 없음'],
@@ -198,7 +262,8 @@ export default function RepositoryPage() {
     },
     'GPL-3.0': {
       fullName: 'GNU General Public License v3.0',
-      description: '수정된 코드를 동일한 라이선스로 공개해야 하는 강력한 카피레프트 라이선스입니다.',
+      description:
+        '수정된 코드를 동일한 라이선스로 공개해야 하는 강력한 카피레프트 라이선스입니다.',
       permissions: ['상업적 사용', '수정', '배포', '특허권 사용', '개인 사용'],
       conditions: [
         '소스 코드 공개',
@@ -211,7 +276,8 @@ export default function RepositoryPage() {
     },
     'BSD-3-Clause': {
       fullName: 'BSD 3-Clause License',
-      description: '간단하고 관대한 라이선스로, 저작권 고지와 면책 조항이 필요합니다.',
+      description:
+        '간단하고 관대한 라이선스로, 저작권 고지와 면책 조항이 필요합니다.',
       permissions: ['상업적 사용', '수정', '배포', '개인 사용'],
       conditions: ['라이선스 및 저작권 고지 포함'],
       limitations: ['책임 면제', '보증 없음'],
@@ -289,12 +355,6 @@ export default function RepositoryPage() {
     return new Date(dateString).toLocaleDateString('ko-KR');
   };
 
-  // 탭 변경 시 localStorage에 저장
-  const handleTabChange = (tab) => {
-    setActiveTab(tab);
-    localStorage.setItem('repoActiveTab', tab);
-  };
-
   // 대화 초기화 함수
   const handleResetConversation = async () => {
     setChatLoading(true);
@@ -311,9 +371,27 @@ export default function RepositoryPage() {
     setChatLoading(false);
   };
 
+  // GitHub 파일 URL 생성 함수 개선
+  const getGitHubFileUrl = (fileType) => {
+    if (!repo?.htmlUrl) return '#';
+
+    const defaultBranch = repo.defaultBranch || 'main';
+    let filename;
+
+    if (fileType === 'readme') {
+      filename = repo.readmeFilename || 'README.md';
+    } else if (fileType === 'license') {
+      filename = repo.licenseFilename || 'LICENSE';
+    } else {
+      filename = fileType;
+    }
+
+    return `${repo.htmlUrl}/blob/${defaultBranch}/${filename}`;
+  };
+
   return (
     <DashboardLayout>
-      <div className="space-y-6">
+      <div className="space-y-6 max-w-7xl mx-auto">
         <div className="flex flex-col space-y-2">
           <div className="flex items-center gap-2">
             <Button variant="ghost" size="icon" asChild className="h-8 w-8">
@@ -360,15 +438,13 @@ export default function RepositoryPage() {
           </div>
         </div>
 
-        <Tabs value={activeTab} onValueChange={handleTabChange}>
+        <Tabs defaultValue="overview">
           <TabsList>
             <TabsTrigger value="overview">개요</TabsTrigger>
             <TabsTrigger value="issues">이슈 목록</TabsTrigger>
             <TabsTrigger value="chatbot">AI 챗봇</TabsTrigger>
           </TabsList>
-
-          {/* 개요 탭 */}
-          <TabsContent value="overview" className="space-y-4">
+          <TabsContent value="overview">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <Card className="md:col-span-2">
                 <CardHeader>
@@ -379,15 +455,16 @@ export default function RepositoryPage() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="prose prose-sm max-w-none">
-                    <p>
-                      {repo.readmeSummaryGpt ||
-                        repo.description ||
-                        '분석된 README 요약이 없습니다.'}
-                    </p>
+                    {/* README 요약을 마크다운으로 렌더링 (개행 보정) */}
+                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                      {repo.readmeSummaryGpt
+                        ? repo.readmeSummaryGpt.replace(/\n{2,}/g, '\n\n')
+                        : repo.description || '분석된 README 요약이 없습니다.'}
+                    </ReactMarkdown>
                   </div>
                   <Button variant="outline" size="sm" className="gap-1" asChild>
                     <a
-                      href={`${repo.htmlUrl}/blob/main/README.md`}
+                      href={getGitHubFileUrl('readme')}
                       target="_blank"
                       rel="noopener noreferrer"
                     >
@@ -417,13 +494,15 @@ export default function RepositoryPage() {
                                     key={lang.languageName}
                                     className="h-full"
                                     style={{
-                                      backgroundColor: languageUtils.getLanguageColor(
-                                        lang.languageName
-                                      ),
+                                      backgroundColor:
+                                        languageUtils.getLanguageColor(
+                                          lang.languageName
+                                        ),
                                       width: `${lang.percentage}%`,
                                     }}
-                                    title={`${lang.languageName
-                                      }: ${lang.percentage.toFixed(1)}%`}
+                                    title={`${
+                                      lang.languageName
+                                    }: ${lang.percentage.toFixed(1)}%`}
                                   />
                                 ))}
                               </div>
@@ -440,9 +519,10 @@ export default function RepositoryPage() {
                                     <div
                                       className="w-3 h-3 rounded-full"
                                       style={{
-                                        backgroundColor: languageUtils.getLanguageColor(
-                                          lang.languageName
-                                        ),
+                                        backgroundColor:
+                                          languageUtils.getLanguageColor(
+                                            lang.languageName
+                                          ),
                                       }}
                                     />
                                     <span className="font-medium">
@@ -556,7 +636,7 @@ export default function RepositoryPage() {
 
                         <div className="mt-3 text-xs text-center">
                           <a
-                            href={`${repo.htmlUrl}/blob/main/LICENSE`}
+                            href={getGitHubFileUrl('license')}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="text-primary hover:underline inline-flex items-center gap-1 dark:text-purple-400"
@@ -616,17 +696,17 @@ export default function RepositoryPage() {
                           repo.analysisStatus === 'completed'
                             ? 'bg-green-50 text-green-700 border-green-200 dark:bg-green-900/30 dark:text-green-300 dark:border-green-600'
                             : repo.analysisStatus === 'analyzing'
-                              ? 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-600'
-                              : 'bg-gray-50 text-gray-700 border-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600'
+                            ? 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-600'
+                            : 'bg-gray-50 text-gray-700 border-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600'
                         }
                       >
                         {repo.analysisStatus === 'completed'
                           ? '분석 완료'
                           : repo.analysisStatus === 'analyzing'
-                            ? '분석 중'
-                            : repo.analysisStatus === 'failed'
-                              ? '분석 실패'
-                              : '분석 전'}
+                          ? '분석 중'
+                          : repo.analysisStatus === 'failed'
+                          ? '분석 실패'
+                          : '분석 전'}
                       </Badge>
                     </div>
                   </CardContent>
@@ -634,14 +714,88 @@ export default function RepositoryPage() {
               </div>
             </div>
           </TabsContent>
-
-          {/* 이슈 목록 탭 */}
-          <TabsContent value="issues" className="space-y-4">
-            <div className="text-center py-8">
-              <p className="text-muted-foreground">
-                이슈 목록 기능은 준비 중입니다.
-              </p>
-            </div>
+          <TabsContent value="issues">
+            {loadingIssues ? (
+              <div className="py-8 text-center">이슈를 불러오는 중...</div>
+            ) : issues.length > 0 ? (
+              <div className="space-y-4">
+                {issues.map((issue) => (
+                  <Card key={issue.issueId}>
+                    <CardHeader className="pb-2">
+                      <div className="flex items-center gap-2 mb-1">
+                        <Badge
+                          variant="outline"
+                          className="bg-gray-100 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600"
+                        >
+                          {issue.repoName}
+                        </Badge>
+                        <Badge
+                          variant={
+                            issue.state === 'open' ? 'default' : 'secondary'
+                          }
+                          className={
+                            issue.state === 'open'
+                              ? 'bg-green-500 dark:bg-green-600'
+                              : 'dark:bg-gray-600 dark:text-gray-200'
+                          }
+                        >
+                          {issue.state === 'open' ? '열림' : '닫힘'}
+                        </Badge>
+                        <CardDescription className="dark:text-gray-400">
+                          #{issue.githubIssueNumber}
+                        </CardDescription>
+                      </div>
+                      <Link
+                        to={`/repository/${repoId}/issue/${issue.githubIssueNumber}`}
+                      >
+                        <CardTitle className="text-base font-medium hover:text-primary dark:text-white dark:hover:text-purple-400">
+                          {issue.title}
+                        </CardTitle>
+                      </Link>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-sm text-muted-foreground line-clamp-2 mb-3 dark:text-gray-300">
+                        {issue.body}
+                      </p>
+                      <div className="flex flex-wrap gap-1 mb-2">
+                        {issue.labels.map((label) => (
+                          <Badge
+                            key={label.name}
+                            variant="outline"
+                            className="bg-opacity-10 dark:border-opacity-50"
+                            style={{
+                              backgroundColor: `${label.color}20`,
+                              borderColor: label.color,
+                            }}
+                          >
+                            {label.name}
+                          </Badge>
+                        ))}
+                      </div>
+                      <div className="text-xs text-muted-foreground">
+                        <span className="dark:text-gray-400">
+                          {issue.author} 님이 {issue.createdAtGithub}에 작성
+                        </span>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            ) : (
+              <Card>
+                <CardContent className="flex flex-col items-center justify-center p-6 pt-4">
+                  <div className="rounded-full bg-purple-100 p-3 mb-4 dark:bg-purple-900/30">
+                    <AlertCircle className="h-6 w-6 text-purple-600 dark:text-purple-400" />
+                  </div>
+                  <h3 className="text-xl font-medium mb-2 dark:text-white">
+                    이슈가 없습니다
+                  </h3>
+                  <p className="text-center text-muted-foreground mb-4 dark:text-gray-300">
+                    이 저장소에는 아직 이슈가 없습니다.
+                  </p>
+                </CardContent>
+              </Card>
+            )}
           </TabsContent>
 
           {/* AI 챗봇 탭 */}
@@ -668,9 +822,7 @@ export default function RepositoryPage() {
               <CardContent>
                 <div className="bg-muted p-4 rounded-lg mb-4 h-[400px] overflow-y-auto flex flex-col space-y-4 dark:bg-gray-800">
                   {/* 안내 메시지 항상 맨 위에 */}
-                  <div
-                    className="max-w-[80%] rounded-lg p-3 self-start bg-primary-foreground text-gray-900 dark:bg-gray-700 dark:text-gray-200 text-left"
-                  >
+                  <div className="max-w-[80%] rounded-lg p-3 self-start bg-primary-foreground text-gray-900 dark:bg-gray-700 dark:text-gray-200 text-left">
                     <p className="text-sm">{GUIDE_MESSAGE.content}</p>
                   </div>
                   {/* DB에서 불러온 메시지들 */}
@@ -679,9 +831,11 @@ export default function RepositoryPage() {
                       key={msg.messageId || msg.tempId || idx}
                       className={`
       max-w-[80%] rounded-lg p-3
-      ${msg.senderType === 'User'
-        ? 'self-end bg-blue-100 text-blue-900 dark:bg-blue-800 dark:text-blue-100 text-right'
-        : 'self-start bg-primary-foreground text-gray-900 dark:bg-gray-700 dark:text-gray-200 text-left'}
+      ${
+        msg.senderType === 'User'
+          ? 'self-end bg-blue-100 text-blue-900 dark:bg-blue-800 dark:text-blue-100 text-right'
+          : 'self-start bg-primary-foreground text-gray-900 dark:bg-gray-700 dark:text-gray-200 text-left'
+      }
     `}
                     >
                       <p className="text-sm">{msg.content}</p>
@@ -698,7 +852,10 @@ export default function RepositoryPage() {
                     onKeyDown={handleInputKeyDown}
                     disabled={chatLoading}
                   />
-                  <Button onClick={handleSendMessage} disabled={chatLoading || !chatInput.trim()}>
+                  <Button
+                    onClick={handleSendMessage}
+                    disabled={chatLoading || !chatInput.trim()}
+                  >
                     전송
                   </Button>
                 </div>
