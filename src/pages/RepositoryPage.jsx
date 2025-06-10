@@ -54,7 +54,7 @@ export default function RepositoryPage() {
   const [repo, setRepo] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [activeTab] = useState(
+  const [activeTab, setActiveTab] = useState(
     () => localStorage.getItem('repoActiveTab') || 'overview'
   );
 
@@ -175,7 +175,7 @@ export default function RepositoryPage() {
         if (createResult.success) {
           conversationIdForSend = createResult.conversationId;
           setConversationId(conversationIdForSend);
-          // 새로 만든 conversation의 메시지 목록을 불러옴 (대부분 빈 배열이지만, 혹시라도 있을 수 있음)
+          // 새로 만든 conversation의 메시지 목록을 불러옴
           const fetchResult = await chatbotService.getConversation({
             repoId,
             userId,
@@ -196,26 +196,36 @@ export default function RepositoryPage() {
       }
     }
 
-    // 사용자 메시지 임시 추가
+    // 기존 메시지 + 새 메시지로 messages 배열 생성
     const tempId = Date.now() + Math.random();
     const newMsg = { senderType: 'User', content: chatInput.trim(), tempId };
     setChatMessages((prev) => [...prev, newMsg]);
     setChatInput('');
+
     try {
-      // 메시지 저장 및 답변 요청
+      // Express에 messages 배열로 전달
+      const messagesForAsk = [
+        ...chatMessages.map((msg) => ({
+          role: msg.senderType === 'User' ? 'user' : 'assistant',
+          content: msg.content,
+        })),
+        { role: 'user', content: chatInput.trim() },
+      ];
+
       const res = await chatbotService.saveChatMessage({
         conversationId: conversationIdForSend,
         senderType: 'User',
-        content: newMsg.content,
-        accessToken,
+        content: chatInput.trim(),
         repoId,
+        accessToken,
+        messages: messagesForAsk, // 추가: messages 배열 전달
       });
 
       // answer가 있으면 챗봇 답변 메시지 추가
       if (res && res.answer) {
-        setChatMessages(prev => [
-          ...prev,
-          { senderType: 'Agent', content: res.answer }
+        setChatMessages((prev) => [
+          ...prev.filter((msg) => msg.tempId !== tempId),
+          { senderType: 'Agent', content: res.answer },
         ]);
       }
     } catch {
@@ -394,7 +404,7 @@ export default function RepositoryPage() {
           </div>
         </div>
 
-        <Tabs defaultValue="overview">
+        <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList>
             <TabsTrigger value="overview">개요</TabsTrigger>
             <TabsTrigger value="issues">이슈 목록</TabsTrigger>
