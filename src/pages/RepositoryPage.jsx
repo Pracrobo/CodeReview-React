@@ -175,7 +175,6 @@ export default function RepositoryPage() {
         if (createResult.success) {
           conversationIdForSend = createResult.conversationId;
           setConversationId(conversationIdForSend);
-          // 새로 만든 conversation의 메시지 목록을 불러옴
           const fetchResult = await chatbotService.getConversation({
             repoId,
             userId,
@@ -218,18 +217,17 @@ export default function RepositoryPage() {
         content: chatInput.trim(),
         repoId,
         accessToken,
-        messages: messagesForAsk, // 추가: messages 배열 전달
+        messages: messagesForAsk,
       });
 
-      // answer가 있으면 챗봇 답변 메시지 추가
+      // answer가 있으면 답변 메시지를 추가 (질문은 그대로 두고)
       if (res && res.answer) {
         setChatMessages((prev) => [
-          ...prev.filter((msg) => msg.tempId !== tempId),
+          ...prev,
           { senderType: 'Agent', content: res.answer },
         ]);
       }
     } catch {
-      setChatMessages((prev) => prev.filter((msg) => msg.tempId !== tempId));
       setChatError('메시지 전송에 실패했습니다. 다시 시도해 주세요.');
     }
     setChatLoading(false);
