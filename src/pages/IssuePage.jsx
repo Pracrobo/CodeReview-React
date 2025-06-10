@@ -22,13 +22,17 @@ import {
 import DashboardLayout from '../components/dashboard-layout';
 import { NotificationContext } from '../contexts/notificationContext';
 import issueService from '../services/issueService';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 export default function IssuePage() {
   const { repoId, issueId } = useParams();
   const [issue, setIssue] = useState(null);
   const [loading, setLoading] = useState(true);
   const [analyzing, setAnalyzing] = useState(false);
-  const [ setAnalysisComplete] = useState(false);
+  const [analysisComplete, setAnalysisComplete] = useState(false);
   const { isConnected } = useContext(NotificationContext);
   console.log(`알림 연결 상태: ${isConnected ? '연결됨' : '끊김'}`);
 
@@ -101,7 +105,7 @@ export default function IssuePage() {
           suggestion:
             result.data?.solutionSuggestion || result.data?.suggestion || '',
         };
-        console.log('[AIssue] 분석 요청 후 받은 AI 분석 결과:', aiAnalysis);
+        console.log('[AIissue] 분석 요청 후 받은 AI 분석 결과:', aiAnalysis);
 
         setIssue((prev) => ({
           ...prev,
@@ -125,6 +129,27 @@ export default function IssuePage() {
     } finally {
       setAnalyzing(false);
     }
+  };
+
+  // 코드 블록 렌더러 정의
+  const markdownComponents = {
+    code({ inline, className, children, ...props }) {
+      const match = /language-(\w+)/.exec(className || '');
+      return !inline && match ? (
+        <SyntaxHighlighter
+          style={oneDark}
+          language={match[1]}
+          PreTag="div"
+          {...props}
+        >
+          {String(children).replace(/\n$/, '')}
+        </SyntaxHighlighter>
+      ) : (
+        <code className={className} {...props}>
+          {children}
+        </code>
+      );
+    },
   };
 
   if (loading) {
@@ -160,14 +185,17 @@ export default function IssuePage() {
         <div className="flex flex-col space-y-2">
           <div className="flex items-center gap-2">
             <Button variant="ghost" size="icon" asChild className="h-8 w-8">
-              <Link to={`/repository/${repoId}`}>
+              <Link to={`/repository/${issue.repoId || repoId}`}>
                 <ArrowLeft className="h-4 w-4" />
               </Link>
             </Button>
             <div className="flex items-center gap-2">
               <Github className="h-5 w-5" />
               <h1 className="text-xl font-bold tracking-tight truncate">
-                <Link to={`/repository/${repoId}`} className="hover:underline">
+                <Link
+                  to={`/repository/${issue.repoId || repoId}`}
+                  className="hover:underline"
+                >
                   {issue.repoName}
                 </Link>
                 <span className="mx-1">/</span>
@@ -232,12 +260,14 @@ export default function IssuePage() {
                         작성일: {issue.createdAt}
                       </span>
                     </div>
+                    {/* 마크다운 본문 렌더링 */}
                     <div className="mt-2 prose prose-sm max-w-none">
-                      {issue.body.split('\n\n').map((paragraph, idx) => (
-                        <p key={idx} className="mb-4">
-                          {paragraph}
-                        </p>
-                      ))}
+                      <ReactMarkdown
+                        remarkPlugins={[remarkGfm]}
+                        components={markdownComponents}
+                      >
+                        {issue.body || ''}
+                      </ReactMarkdown>
                     </div>
 
                     <div className="flex flex-wrap gap-1 mt-4">

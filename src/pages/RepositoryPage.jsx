@@ -37,6 +37,8 @@ import repositoryService from '../services/repositoryService';
 import issueService from '../services/issueService';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 const GUIDE_MESSAGE = {
   senderType: 'Agent',
@@ -154,7 +156,7 @@ export default function RepositoryPage() {
       };
       fetchConversation();
     }
-  }, [activeTab, repo, userId, accessToken, repoId]);
+  }, [activeTab, repo, userId, accessToken, repoId, navigate]);
 
   // 메시지 전송 시: 대화가 없으면 먼저 생성, 그 후 메시지 저장
   const handleSendMessage = async () => {
@@ -213,9 +215,9 @@ export default function RepositoryPage() {
 
       // answer가 있으면 챗봇 답변 메시지 추가
       if (res && res.answer) {
-        setChatMessages(prev => [
+        setChatMessages((prev) => [
           ...prev,
-          { senderType: 'Agent', content: res.answer }
+          { senderType: 'Agent', content: res.answer },
         ]);
       }
     } catch {
@@ -345,6 +347,27 @@ export default function RepositoryPage() {
     return `${repo.htmlUrl}/blob/${defaultBranch}/${filename}`;
   };
 
+  // 코드 블록 렌더러 정의
+  const markdownComponents = {
+    code({ inline, className, children, ...props }) {
+      const match = /language-(\w+)/.exec(className || '');
+      return !inline && match ? (
+        <SyntaxHighlighter
+          style={oneDark}
+          language={match[1]}
+          PreTag="div"
+          {...props}
+        >
+          {String(children).replace(/\n$/, '')}
+        </SyntaxHighlighter>
+      ) : (
+        <code className={className} {...props}>
+          {children}
+        </code>
+      );
+    },
+  };
+
   return (
     <DashboardLayout>
       <div className="space-y-6 max-w-7xl mx-auto">
@@ -411,10 +434,13 @@ export default function RepositoryPage() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="prose prose-sm max-w-none">
-                    {/* README 요약을 마크다운으로 렌더링 (개행 보정) */}
-                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                    {/* README 요약을 마크다운으로 렌더링, 코드 하이라이트 적용 */}
+                    <ReactMarkdown
+                      remarkPlugins={[remarkGfm]}
+                      components={markdownComponents}
+                    >
                       {repo.readmeSummaryGpt
-                        ? repo.readmeSummaryGpt.replace(/\n{2,}/g, '\n\n')
+                        ? repo.readmeSummaryGpt
                         : repo.description || '분석된 README 요약이 없습니다.'}
                     </ReactMarkdown>
                   </div>
