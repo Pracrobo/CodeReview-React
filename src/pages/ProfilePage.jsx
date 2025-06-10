@@ -522,15 +522,15 @@ export default function ProfilePage() {
               <CardContent>
                 <div className="overflow-hidden rounded-lg border">
                   {/* 헤더 */}
-                  <div className="grid grid-cols-3 bg-muted/50">
-                    <div className="p-4 font-medium">기능</div>
-                    <div className="p-4 text-center font-medium border-l">
+                  <div className="grid grid-cols-3 bg-muted/50 text-center">
+                    <div className="p-4 font-medium flex items-center justify-center">기능</div>
+                    <div className="p-4 font-medium border-l flex flex-col items-center justify-center">
                       <div className="text-sm">무료 플랜</div>
                       <div className="text-xs text-muted-foreground mt-1">
                         ₩0/월
                       </div>
                     </div>
-                    <div className="p-4 text-center font-medium border-l bg-indigo-100 dark:bg-indigo-900/30">
+                    <div className="p-4 font-medium border-l bg-indigo-100 dark:bg-indigo-900/30 flex flex-col items-center justify-center">
                       <div className="text-sm text-indigo-700 dark:text-indigo-300">
                         Pro 플랜
                       </div>
@@ -541,13 +541,11 @@ export default function ProfilePage() {
                   </div>
 
                   {/* 저장소 분석 */}
-                  <div className="grid grid-cols-3 border-t">
-                    <div className="p-4 flex items-center">
-                      <div>
-                        <div className="font-medium">저장소 분석</div>
-                        <div className="text-xs text-muted-foreground mt-1">
-                          월간 분석 가능한 저장소 수
-                        </div>
+                  <div className="grid grid-cols-3 border-t text-center">
+                    <div className="p-4 flex flex-col items-center justify-center">
+                      <div className="font-medium">저장소 분석</div>
+                      <div className="text-xs text-muted-foreground mt-1">
+                        월간 분석 가능한 저장소 수
                       </div>
                     </div>
                     <div className="p-4 flex items-center justify-center border-l">
@@ -561,22 +559,18 @@ export default function ProfilePage() {
                   </div>
 
                   {/* 이슈-코드 매칭 */}
-                  <div className="grid grid-cols-3 border-t">
-                    <div className="p-4 flex items-center">
-                      <div>
-                        <div className="font-medium">이슈-코드 매칭</div>
-                        <div className="text-xs text-muted-foreground mt-1">
-                          이슈와 관련된 코드 분석 수준
-                        </div>
+                  <div className="grid grid-cols-3 border-t text-center">
+                    <div className="p-4 flex flex-col items-center justify-center">
+                      <div className="font-medium">이슈-코드 매칭</div>
+                      <div className="text-xs text-muted-foreground mt-1">
+                        이슈와 관련된 코드 분석 수준
                       </div>
                     </div>
                     <div className="p-4 flex items-center justify-center border-l">
-                      <div className="flex items-center">
-                        <span className="mr-2">기본 수준</span>
-                      </div>
+                      <span className="mr-2">기본 수준</span>
                     </div>
                     <div className="p-4 flex items-center justify-center border-l bg-indigo-50 dark:bg-indigo-900/30">
-                      <div className="flex items-center text-indigo-700 dark:text-indigo-300">
+                      <div className="flex items-center justify-center text-indigo-700 dark:text-indigo-300">
                         <span className="mr-2">고급 분석</span>
                         <div className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 bg-indigo-100 text-indigo-700 border-indigo-200 dark:bg-indigo-900/70 dark:text-indigo-300 dark:border-indigo-700">
                           고급
@@ -586,35 +580,27 @@ export default function ProfilePage() {
                   </div>
 
                   {/* AI 챗봇 */}
-                  <div className="grid grid-cols-3 border-t">
-                    <div className="p-4 flex items-center">
-                      <div>
-                        <div className="font-medium">AI 챗봇</div>
-                        <div className="text-xs text-muted-foreground mt-1">
-                          월간 사용 가능한 메시지 수
-                        </div>
+                  <div className="grid grid-cols-3 border-t text-center">
+                    <div className="p-4 flex flex-col items-center justify-center">
+                      <div className="font-medium">AI 챗봇</div>
+                      <div className="text-xs text-muted-foreground mt-1">
+                        월간 사용 가능한 메시지 수
                       </div>
                     </div>
                     <div className="p-4 flex items-center justify-center border-l">
-                      <div className="flex items-center">
-                        <span>100 메시지</span>
-                      </div>
+                      <span>100 메시지</span>
                     </div>
                     <div className="p-4 flex items-center justify-center border-l bg-indigo-50 dark:bg-indigo-900/30">
-                      <div className="flex items-center text-indigo-700 dark:text-indigo-300">
-                        <span className="font-medium">무제한</span>
-                      </div>
+                      <span className="font-medium text-indigo-700 dark:text-indigo-300">무제한</span>
                     </div>
                   </div>
 
                   {/* 비공개 저장소 */}
-                  <div className="grid grid-cols-3 border-t">
-                    <div className="p-4 flex items-center">
-                      <div>
-                        <div className="font-medium">비공개 저장소</div>
-                        <div className="text-xs text-muted-foreground mt-1">
-                          비공개 GitHub 저장소 지원
-                        </div>
+                  <div className="grid grid-cols-3 border-t text-center">
+                    <div className="p-4 flex flex-col items-center justify-center">
+                      <div className="font-medium">비공개 저장소</div>
+                      <div className="text-xs text-muted-foreground mt-1">
+                        비공개 GitHub 저장소 지원
                       </div>
                     </div>
                     <div className="p-4 flex items-center justify-center border-l">
@@ -626,13 +612,11 @@ export default function ProfilePage() {
                   </div>
 
                   {/* 우선 지원 */}
-                  <div className="grid grid-cols-3 border-t">
-                    <div className="p-4 flex items-center">
-                      <div>
-                        <div className="font-medium">우선 지원</div>
-                        <div className="text-xs text-muted-foreground mt-1">
-                          문의 및 지원 요청 우선 처리
-                        </div>
+                  <div className="grid grid-cols-3 border-t text-center">
+                    <div className="p-4 flex flex-col items-center justify-center">
+                      <div className="font-medium">우선 지원</div>
+                      <div className="text-xs text-muted-foreground mt-1">
+                        문의 및 지원 요청 우선 처리
                       </div>
                     </div>
                     <div className="p-4 flex items-center justify-center border-l">
