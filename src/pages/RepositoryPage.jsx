@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useContext, useCallback } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import {
   Tabs,
@@ -44,15 +44,17 @@ const GUIDE_MESSAGE = {
 };
 
 export default function RepositoryPage() {
+  const navigate = useNavigate();
   const { isConnected } = useContext(NotificationContext);
-  const { repoId } = useParams();
+  const { id: paramRepoId } = useParams();
+  const repoId = paramRepoId || localStorage.getItem('repoId');
   const accessToken = localStorage.getItem('accessToken');
   const userId = localStorage.getItem('userId');
 
   const [repo, setRepo] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [activeTab, setActiveTab] = useState(
+  const [activeTab] = useState(
     () => localStorage.getItem('repoActiveTab') || 'overview'
   );
 
@@ -64,13 +66,18 @@ export default function RepositoryPage() {
   const [conversationId, setConversationId] = useState(null);
   const chatEndRef = useRef(null);
 
+  // 언마운트 시 repoId 제거
+  useEffect(() => {
+    return () => {
+      localStorage.removeItem('repoId');
+    };
+  }, []);
   // 이슈 목록 상태
   const [issues, setIssues] = useState([]);
   const [loadingIssues, setLoadingIssues] = useState(false);
 
   // 저장소 정보 가져오기
   useEffect(() => {
-    console.log(`알림 연결 상태: ${isConnected ? '연결됨' : '끊김'}`);
     const loadRepositoryData = async () => {
       if (!repoId) {
         setError('저장소 ID가 필요합니다.');
@@ -136,7 +143,7 @@ export default function RepositoryPage() {
             setConversationId(result.conversationId);
             setChatMessages(result.messages || []);
           } else if (result.status === 401) {
-            window.location.replace('/login');
+            navigate('/login', { replace: true });
           } else {
             setChatError(result.message || '챗봇 대화 조회에 실패했습니다.');
           }
@@ -152,12 +159,13 @@ export default function RepositoryPage() {
   // 메시지 전송 시: 대화가 없으면 먼저 생성, 그 후 메시지 저장
   const handleSendMessage = async () => {
     if (!chatInput.trim()) return;
+
     setChatLoading(true);
 
     let conversationIdForSend = conversationId;
 
+    // 대화가 없으면 생성
     if (!conversationIdForSend) {
-      // 대화가 없으면 생성
       try {
         const createResult = await chatbotService.createConversation({
           repoId,
@@ -175,8 +183,6 @@ export default function RepositoryPage() {
           });
           if (fetchResult.success) {
             setChatMessages(fetchResult.messages || []);
-          } else {
-            setChatMessages([]);
           }
         } else {
           setChatError('챗봇 대화 생성에 실패했습니다.');
@@ -190,18 +196,28 @@ export default function RepositoryPage() {
       }
     }
 
-    // 메시지 전송
+    // 사용자 메시지 임시 추가
     const tempId = Date.now() + Math.random();
     const newMsg = { senderType: 'User', content: chatInput.trim(), tempId };
     setChatMessages((prev) => [...prev, newMsg]);
     setChatInput('');
     try {
-      await chatbotService.saveChatMessage({
+      // 메시지 저장 및 답변 요청
+      const res = await chatbotService.saveChatMessage({
         conversationId: conversationIdForSend,
         senderType: 'User',
         content: newMsg.content,
         accessToken,
+        repoId,
       });
+
+      // answer가 있으면 챗봇 답변 메시지 추가
+      if (res && res.answer) {
+        setChatMessages(prev => [
+          ...prev,
+          { senderType: 'Agent', content: res.answer }
+        ]);
+      }
     } catch {
       setChatMessages((prev) => prev.filter((msg) => msg.tempId !== tempId));
       setChatError('메시지 전송에 실패했습니다. 다시 시도해 주세요.');

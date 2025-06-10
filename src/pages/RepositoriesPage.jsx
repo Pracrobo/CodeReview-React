@@ -46,7 +46,6 @@ export default function RepositoriesPage() {
   // 저장소 목록 로드
   useEffect(() => {
     loadRepositories();
-    console.log(`알림 연결 상태: ${isConnected ? '연결됨' : '끊김'}`);
   }, [isConnected]);
 
   const loadRepositories = async () => {
@@ -151,7 +150,7 @@ export default function RepositoriesPage() {
   const renderRepositoryCard = (repo) => (
     <Card
       key={repo.id}
-      className="h-full min-h-[180px] transition-all hover:shadow-lg rounded-xl bg-white dark:bg-gray-900 group" // border 클래스 제거
+      className="flex flex-col h-[280px] min-h-[280px] transition-all hover:shadow-lg rounded-xl bg-white dark:bg-gray-900 group"
     >
       <CardHeader className="pb-2 relative">
         <div className="flex items-center min-w-0 gap-2 flex-nowrap">
@@ -172,21 +171,14 @@ export default function RepositoriesPage() {
           >
             <Github className="h-5 w-5" />
           </button>
-          <CardTitle className="text-base font-semibold group-hover:text-purple-700 dark:group-hover:text-purple-300 transition-colors">
+          <CardTitle
+            className="text-base font-semibold group-hover:text-purple-700 dark:group-hover:text-purple-300 transition-colors truncate max-w-[8rem] sm:max-w-[12rem] md:max-w-[14rem] lg:max-w-[16rem]"
+            title={repo.name}
+          >
             {repo.name}
           </CardTitle>
-          <div className="flex flex-wrap items-center gap-2 ml-1">
-            {repo.isNew && (
-              <Badge className="bg-green-500 text-white flex-shrink-0">
-                NEW
-              </Badge>
-            )}
-            <Badge
-              variant={repo.isPrivate ? 'outline' : 'secondary'}
-              className="flex-shrink-0"
-            >
-              {repo.isPrivate ? '비공개' : '공개'}
-            </Badge>
+          <div className="flex items-center gap-2 ml-1 flex-shrink-0">
+            {repo.isNew && <Badge className="bg-green-500 text-white flex-shrink-0">NEW</Badge>}
           </div>
           <div className="flex-1" />
           <Button
@@ -202,47 +194,44 @@ export default function RepositoriesPage() {
             />
           </Button>
         </div>
-        <CardDescription className="line-clamp-2 h-10 mt-3 text-gray-600 dark:text-gray-300">
+        <CardDescription className="line-clamp-2 h-10 mt-3 mb-5 text-gray-600 dark:text-gray-300">
           {repo.description}
         </CardDescription>
       </CardHeader>
-      <CardContent className="pb-4">
-        <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground mb-3 mt-0">
-          <div className="flex items-center gap-1">
-            <Star className="h-4 w-4" />
-            <span>{repo.stars}</span>
+      <CardContent className="!p-6 pb-0 flex-1 mb-0 p-0">
+        <div className="flex items-center gap-x-6 text-sm text-muted-foreground mb-0 mt-0 w-full">
+          <div className="flex items-center gap-2 min-w-0">
+            <Star className="h-4 w-4 flex-shrink-0" />
+            <span className="truncate">{repo.stars}</span>
           </div>
-          <div className="flex items-center gap-1">
-            <GitFork className="h-4 w-4" />
-            <span>{repo.forks}</span>
+          <div className="flex items-center gap-2 min-w-0">
+            <GitFork className="h-4 w-4 flex-shrink-0" />
+            <span className="truncate">{repo.forks}</span>
           </div>
-          <div className="flex items-center gap-1">
-            <AlertCircle className="h-4 w-4" />
-            <span>{repo.issues}개 이슈</span>
+          <div className="flex items-center gap-2 min-w-0">
+            <AlertCircle className="h-4 w-4 flex-shrink-0" />
+            <span className="truncate">{repo.issues}개 이슈</span>
           </div>
-          {/* 주요 언어 표시 */}
-          {repo.language && (
-            <div className="flex items-center gap-1 ml-2">
+          {repo.language ? (
+            <div className="flex items-center gap-2 min-w-0">
               <div
-                className="w-3 h-3 rounded-full"
-                style={{
-                  backgroundColor: languageUtils.getLanguageColor(
-                    repo.language
-                  ),
-                }}
+                className="w-3 h-3 rounded-full flex-shrink-0"
+                style={{ backgroundColor: languageUtils.getLanguageColor(repo.language) }}
               />
-              <span className="font-medium">{repo.language}</span>
+              <span className="font-medium truncate">{repo.language}</span>
               {repo.languagePercentage && (
-                <span className="text-muted-foreground">
+                <span className="text-muted-foreground truncate">
                   {repo.languagePercentage.toFixed(1)}%
                 </span>
               )}
             </div>
+          ) : (
+            <div className="w-[60px] h-5" />
           )}
         </div>
       </CardContent>
-      <hr className="border-gray-200 dark:border-gray-700" />
-      <CardFooter className="text-xs text-muted-foreground flex flex-col gap-1 pt-3 pb-3 pr-3 relative">
+      <hr className="border-gray-200 dark:border-gray-700 mb-3" />
+      <CardFooter className="text-xs text-muted-foreground flex flex-col gap-1 pb-3 pr-3 relative">
         {/* 버튼 위에만 구분선 - 카드 전체 너비로(음수 마진) */}
         <div className="flex w-full justify-between items-center">
           <div className="flex items-center gap-1">
@@ -321,9 +310,13 @@ export default function RepositoriesPage() {
           </TabsList>
           <TabsContent value="all" className="space-y-4">
             {filteredRepositories.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
                 {filteredRepositories.map((repo) => (
-                  <Link to={`/repository/${repo.id}`} key={repo.id}>
+                  <Link
+                    to={`/repository/${repo.id}`}
+                    key={repo.id}
+                    onClick={() => localStorage.setItem('repoId', repo.id)}
+                  >
                     {renderRepositoryCard(repo)}
                   </Link>
                 ))}
@@ -371,7 +364,7 @@ export default function RepositoriesPage() {
           </TabsContent>
           <TabsContent value="starred">
             {filteredFavoriteRepositories.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
                 {filteredFavoriteRepositories.map((repo) => (
                   <Link to={`/repository/${repo.id}`} key={repo.id}>
                     {renderRepositoryCard(repo)}

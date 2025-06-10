@@ -1,4 +1,4 @@
-import { useState, useCallback, useContext } from 'react';
+import { useState, useCallback } from 'react';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '../components/ui/card';
 import { Badge } from '../components/ui/badge';
@@ -143,8 +143,6 @@ function AccountDeleteButton() {
 }
 
 export default function SettingsPage() {
-  const { isConnected } = useContext(NotificationContext);
-  console.log(`알림 연결 상태: ${isConnected ? '연결됨' : '끊김'}`);
   const username = localStorage.getItem('username') || 'githubuser';
   const [emailNotifications, setEmailNotifications] = useState(false);
 

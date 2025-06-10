@@ -28,7 +28,7 @@ export default function IssuePage() {
   const [issue, setIssue] = useState(null);
   const [loading, setLoading] = useState(true);
   const [analyzing, setAnalyzing] = useState(false);
-  const [analysisComplete, setAnalysisComplete] = useState(false);
+  const [ setAnalysisComplete] = useState(false);
   const { isConnected } = useContext(NotificationContext);
   console.log(`알림 연결 상태: ${isConnected ? '연결됨' : '끊김'}`);
 
