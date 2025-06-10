@@ -240,59 +240,6 @@ export default function RepositoryPage() {
     }
   }, [chatMessages]);
 
-  // 라이선스 정보 및 의무사항
-  const licenseInfo = {
-    MIT: {
-      fullName: 'MIT License',
-      description:
-        '간단하고 관대한 라이선스로, 저작권 및 라이선스 고지만 필요합니다.',
-      permissions: ['상업적 사용', '수정', '배포', '개인 사용'],
-      conditions: ['라이선스 및 저작권 고지 포함'],
-      limitations: ['책임 면제', '보증 없음'],
-      color: 'blue',
-    },
-    'Apache-2.0': {
-      fullName: 'Apache License 2.0',
-      description:
-        '특허권 부여와 함께 사용자에게 자유를 제공하는 라이선스입니다.',
-      permissions: ['상업적 사용', '수정', '배포', '특허권 사용', '개인 사용'],
-      conditions: ['라이선스 및 저작권 고지 포함', '상태 변경 명시'],
-      limitations: ['상표권 사용 금지', '책임 면제', '보증 없음'],
-      color: 'orange',
-    },
-    'GPL-3.0': {
-      fullName: 'GNU General Public License v3.0',
-      description:
-        '수정된 코드를 동일한 라이선스로 공개해야 하는 강력한 카피레프트 라이선스입니다.',
-      permissions: ['상업적 사용', '수정', '배포', '특허권 사용', '개인 사용'],
-      conditions: [
-        '소스 코드 공개',
-        '라이선스 및 저작권 고지 포함',
-        '동일한 라이선스 사용',
-        '상태 변경 명시',
-      ],
-      limitations: ['책임 면제', '보증 없음'],
-      color: 'green',
-    },
-    'BSD-3-Clause': {
-      fullName: 'BSD 3-Clause License',
-      description:
-        '간단하고 관대한 라이선스로, 저작권 고지와 면책 조항이 필요합니다.',
-      permissions: ['상업적 사용', '수정', '배포', '개인 사용'],
-      conditions: ['라이선스 및 저작권 고지 포함'],
-      limitations: ['책임 면제', '보증 없음'],
-      color: 'blue',
-    },
-    ISC: {
-      fullName: 'ISC License',
-      description: 'MIT와 유사한 간단하고 관대한 라이선스입니다.',
-      permissions: ['상업적 사용', '수정', '배포', '개인 사용'],
-      conditions: ['라이선스 및 저작권 고지 포함'],
-      limitations: ['책임 면제', '보증 없음'],
-      color: 'blue',
-    },
-  };
-
   // 로딩 상태
   if (loading) {
     return (
@@ -337,17 +284,26 @@ export default function RepositoryPage() {
   }
 
   // 기본 라이선스 정보 (라이선스가 없거나 알 수 없는 경우)
-  const defaultLicense = {
+  const defaultLicenseDisplay = {
     fullName: repo?.licenseSpdxId || '라이선스 정보 없음',
     description: '이 저장소의 라이선스 정보를 확인할 수 없습니다.',
     permissions: [],
     conditions: [],
     limitations: [],
-    color: 'gray',
   };
 
-  // 현재 저장소의 라이선스 정보
-  const currentLicense = licenseInfo[repo.licenseSpdxId] || defaultLicense;
+  // 현재 저장소의 라이선스 정보 (API 응답에서 가져옴)
+  const currentLicense = repo.license
+    ? {
+        fullName: repo.license.name || repo.licenseSpdxId || '정보 없음',
+        description:
+          repo.license.descriptionSummaryHtml ||
+          '라이선스 설명을 찾을 수 없습니다.',
+        permissions: repo.license.permissions || [],
+        conditions: repo.license.conditions || [],
+        limitations: repo.license.limitations || [],
+      }
+    : defaultLicenseDisplay;
 
   // 날짜 포맷팅 함수
   const formatDate = (dateString) => {
