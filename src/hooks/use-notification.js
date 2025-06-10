@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import notificationService from '../services/notificationService';
 import api from '../services/api';
 
-function useNotification() {
+function useBrowserNotification() {
   const [isConnected, setIsConnected] = useState(false);
   const eventSourceRef = useRef(null);
 
@@ -120,4 +120,4 @@ function useNotification() {
   return { isConnected };
 }
 
-export default { useNotification };
+export default useBrowserNotification;

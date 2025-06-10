@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useContext } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import {
@@ -33,7 +33,7 @@ import {
   DialogHeader,
   DialogFooter,
 } from '../components/ui/dialog';
-import NotificationContext from '../contexts/notificationContext';
+import useNotification from '../hooks/use-notification';
 import authService from '../services/authService';
 import ModalBody from '../components/ui/ModalBody';
 import paymentService from '../services/paymentService';
@@ -68,7 +68,7 @@ function formatPeriod(start, end) {
 }
 
 export default function ProfilePage() {
-  const { isConnected } = useContext(NotificationContext);
+  const { isConnected } = useNotification();
   console.log(`알림 연결 상태: ${isConnected ? '연결됨' : '끊김'}`);
 
   // 쿼리 파라미터에서 tab 값 읽기

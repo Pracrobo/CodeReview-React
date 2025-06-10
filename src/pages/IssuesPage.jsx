@@ -1,4 +1,4 @@
-import { useState, useMemo, useContext } from 'react';
+import { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import {
@@ -19,13 +19,13 @@ import { Input } from '../components/ui/input';
 import { AlertCircle, Clock, Pin, PinOff, Search } from 'lucide-react';
 import DashboardLayout from '../components/dashboard-layout';
 import { mockIssues, mockRecentIssues } from '../lib/mock-data';
-import NotificationContext from '../contexts/notificationContext';
+import useNotification from '../hooks/use-notification';
 
 export default function IssuesPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [recentIssues, setRecentIssues] = useState(mockRecentIssues);
   const [allIssues, setAllIssues] = useState(mockIssues);
-  const { isConnected } = useContext(NotificationContext);
+  const { isConnected } = useNotification();
   console.log(`알림 연결 상태: ${isConnected ? '연결됨' : '끊김'}`);
 
   const togglePin = (issueId) => {

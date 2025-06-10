@@ -1,4 +1,6 @@
+import { useMemo } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
+import { NotificationContext } from '../contexts/notificationContext';
 import DashboardPage from '../pages/DashboardPage';
 import RepositoriesPage from '../pages/RepositoriesPage';
 import RepositoryPage from '../pages/RepositoryPage';
@@ -11,12 +13,13 @@ import TermsOfServicePage from '../pages/TermsOfServicePage';
 import CookiePolicyPage from '../pages/CookiePolicyPage';
 import PaymentResultPage from '../pages/PaymentResultPage';
 import useNotification from '../hooks/use-notification';
-import NotificationContext from '../contexts/notificationContext';
 
 export default function ProtectedRoutes() {
   const notification = useNotification();
+  const memoizedNotification = useMemo(() => notification, [notification.isConnected]);
+
   return (
-    <NotificationContext.Provider value={notification}>
+    <NotificationContext.Provider value={memoizedNotification}>
       <Routes>
         <Route path="/dashboard" element={<DashboardPage />} />
         <Route path="/repositories" element={<RepositoriesPage />} />

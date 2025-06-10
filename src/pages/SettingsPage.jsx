@@ -1,4 +1,4 @@
-import { useState, useCallback, useContext } from 'react';
+import { useState, useCallback } from 'react';
 import { Button } from '../components/ui/button';
 import {
   Card,
@@ -12,7 +12,7 @@ import { Badge } from '../components/ui/badge';
 import { Switch } from '../components/ui/switch';
 import { Label } from '../components/ui/label';
 import { Github, AlertTriangle } from 'lucide-react';
-import NotificationContext from '../contexts/notificationContext';
+import useBrowserNotification from '../hooks/use-notification';
 import authUtils from '../utils/auth';
 import authService from '../services/authService';
 import DashboardLayout from '../components/dashboard-layout';
@@ -150,17 +150,22 @@ function AccountDeleteButton() {
 }
 
 export default function SettingsPage() {
-  const { isConnected } = useContext(NotificationContext);
-  console.log(`알림 연결 상태: ${isConnected ? '연결됨' : '끊김'}`);
-  const username = localStorage.getItem('username') || 'githubuser';
-  const [emailNotifications, setEmailNotifications] = useState(false);
   // gmail 수신 관련
+  const [emailNotifications, setEmailNotifications] = useState(false);
   const handleEmailNotificationToggle = async (checked) => {
-    setEmailNotifications(checked);
-    await emailNotificationService.requestEmailService(checked);
+    if (checked) {
+      console.log('이메일 알림 키기');
+      setEmailNotifications(checked);
+      await emailNotificationService.requestEmailService(checked);
+    } else {
+      console.log('이메일 알림 끄기');
+    }
   };
 
   // 브라우저 알림 관련
+  const { isConnected } = useBrowserNotification();
+  const username = localStorage.getItem('username') || 'githubuser';
+  console.log(`브라우저 알림 연결 상태: ${isConnected ? '연결됨' : '끊김'}`);
   const NOTIFICATION_PERMISSION_KEY = 'notificationPermissionStatus';
   const currentStatus = localStorage.getItem(NOTIFICATION_PERMISSION_KEY);
   // 토글 버튼의 checked 상태를 제어하는 state

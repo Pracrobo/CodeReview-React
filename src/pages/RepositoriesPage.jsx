@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import {
@@ -27,14 +27,14 @@ import {
   Clock,
   Trash2,
 } from 'lucide-react';
-import NotificationContext from '../contexts/notificationContext';
+import useNotification from '../hooks/use-notification';
 import languageUtils from '../utils/languageUtils';
 import DashboardLayout from '../components/dashboard-layout';
 import dataTransformers from '../utils/dataTransformers';
 import repositoryService from '../services/repositoryService';
 
 export default function RepositoriesPage() {
-  const { isConnected } = useContext(NotificationContext);
+  const { isConnected } = useNotification();
   const [searchQuery, setSearchQuery] = useState('');
   const [repositories, setRepositories] = useState([]);
   const [favoriteRepositories, setFavoriteRepositories] = useState([]);
