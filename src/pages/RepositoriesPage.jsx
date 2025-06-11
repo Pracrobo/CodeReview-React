@@ -178,7 +178,11 @@ export default function RepositoriesPage() {
             {repo.name}
           </CardTitle>
           <div className="flex items-center gap-2 ml-1 flex-shrink-0">
-            {repo.isNew && <Badge className="bg-green-500 text-white flex-shrink-0">NEW</Badge>}
+            {repo.isNew && (
+              <Badge className="bg-green-500 text-white flex-shrink-0">
+                NEW
+              </Badge>
+            )}
           </div>
           <div className="flex-1" />
           <Button
@@ -199,7 +203,7 @@ export default function RepositoriesPage() {
         </CardDescription>
       </CardHeader>
       <CardContent className="!p-6 pb-0 flex-1 mb-0 p-0">
-        <div className="flex items-center gap-x-6 text-sm text-muted-foreground mb-0 mt-0 w-full">
+        <div className="flex items-center gap-x-2 text-sm text-muted-foreground mb-0 mt-0 w-full">
           <div className="flex items-center gap-2 min-w-0">
             <Star className="h-4 w-4 flex-shrink-0" />
             <span className="truncate">{repo.stars}</span>
@@ -216,7 +220,11 @@ export default function RepositoriesPage() {
             <div className="flex items-center gap-2 min-w-0">
               <div
                 className="w-3 h-3 rounded-full flex-shrink-0"
-                style={{ backgroundColor: languageUtils.getLanguageColor(repo.language) }}
+                style={{
+                  backgroundColor: languageUtils.getLanguageColor(
+                    repo.language
+                  ),
+                }}
               />
               <span className="font-medium truncate">{repo.language}</span>
               {repo.languagePercentage && (
@@ -261,7 +269,12 @@ export default function RepositoriesPage() {
     return (
       <DashboardLayout>
         <div className="flex items-center justify-center h-64">
-          <div className="text-lg">저장소 목록을 불러오는 중...</div>
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600 mx-auto mb-4"></div>
+            <p className="text-muted-foreground">
+              저장소 목록을 불러오는 중...
+            </p>
+          </div>
         </div>
       </DashboardLayout>
     );

@@ -35,8 +35,7 @@ import chatbotService from '../services/chatbotService';
 import DashboardLayout from '../components/dashboard-layout';
 import repositoryService from '../services/repositoryService';
 import issueService from '../services/issueService';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
+import MarkdownRenderer from '../components/markdown-renderer';
 
 const GUIDE_MESSAGE = {
   senderType: 'Agent',
@@ -46,7 +45,7 @@ const GUIDE_MESSAGE = {
 export default function RepositoryPage() {
   const navigate = useNavigate();
   const { isConnected } = useContext(NotificationContext);
-  const { id: paramRepoId } = useParams();
+  const { repoId: paramRepoId } = useParams();
   const repoId = paramRepoId || localStorage.getItem('repoId');
   const accessToken = localStorage.getItem('accessToken');
   const userId = localStorage.getItem('userId');
@@ -154,7 +153,7 @@ export default function RepositoryPage() {
       };
       fetchConversation();
     }
-  }, [activeTab, repo, userId, accessToken, repoId]);
+  }, [activeTab, repo, userId, accessToken, repoId, navigate]);
 
   // 메시지 전송 시: 대화가 없으면 먼저 생성, 그 후 메시지 저장
   const handleSendMessage = async () => {
@@ -419,12 +418,11 @@ export default function RepositoryPage() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="prose prose-sm max-w-none">
-                    {/* README 요약을 마크다운으로 렌더링 (개행 보정) */}
-                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                    <MarkdownRenderer>
                       {repo.readmeSummaryGpt
-                        ? repo.readmeSummaryGpt.replace(/\n{2,}/g, '\n\n')
+                        ? repo.readmeSummaryGpt
                         : repo.description || '분석된 README 요약이 없습니다.'}
-                    </ReactMarkdown>
+                    </MarkdownRenderer>
                   </div>
                   <Button variant="outline" size="sm" className="gap-1" asChild>
                     <a
@@ -802,9 +800,12 @@ export default function RepositoryPage() {
       }
     `}
                     >
-                      <p className="text-sm" style={{ whiteSpace: 'pre-line' }}>
-                        {msg.content}
-                      </p>
+                      {msg.senderType === 'Agent' ? (
+                        // 챗봇 메시지는 마크다운 렌더링
+                        <MarkdownRenderer>{msg.content}</MarkdownRenderer>
+                      ) : (
+                        <p className="text-sm">{msg.content}</p>
+                      )}
                     </div>
                   ))}
                   <div ref={chatEndRef} />
