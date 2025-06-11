@@ -549,7 +549,7 @@ export default function HomePage() {
                   {[
                     '월 3개 공개 저장소 분석',
                     '기본 수준 이슈-코드 매칭',
-                    'AI 챗봇 월 100 메시지 제한',
+                    'AI 챗봇 월 100개 메시지 제한',
                     '공개 저장소만 지원',
                   ].map((feature, index) => (
                     <li key={index} className="flex items-start">
@@ -631,8 +631,8 @@ export default function HomePage() {
                 {/* 기능 목록 */}
                 <ul className="space-y-4 mb-8">
                   {[
-                    '월 30개 이상 저장소 분석',
-                    '고급 이슈-코드 매칭 및 분석',
+                    '월 30개 저장소 분석',
+                    '고급 수준 이슈-코드 매칭 및 분석',
                     'AI 챗봇 무제한 사용',
                     '우선 지원 및 업데이트',
                   ].map((feature, index) => (
