@@ -3,11 +3,6 @@ import api from './api';
 
 async function requestEmailService(checked) {
   const userId = localStorage.getItem('userId');
-  const userEmail = localStorage.getItem('email');
-  if (!userEmail) {
-    console.error('사용자 이메일 정보를 찾을 수 없습니다.');
-    return { success: false, message: '로그인된 사용자 이메일 없음' };
-  }
   try {
     const response = await fetch(`${api.API_BASE_URL}/notification/email`, {
       method: 'POST',
@@ -17,7 +12,6 @@ async function requestEmailService(checked) {
       body: JSON.stringify({
         isEnable: checked,
         userId: userId,
-        userEmail: userEmail,
       }),
     });
     if (!response.ok) {
