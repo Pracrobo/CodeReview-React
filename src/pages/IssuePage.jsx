@@ -353,9 +353,14 @@ export default function IssuePage() {
                             variant="ghost"
                             size="sm"
                             onClick={() => handleAnalyzeIssue()}
+                            disabled={analyzing}
                             className="h-6 w-6 p-0 hover:bg-muted"
                           >
-                            <RefreshCw className="h-3 w-3" />
+                            <RefreshCw
+                              className={`h-3 w-3 ${
+                                analyzing ? 'animate-spin' : ''
+                              }`}
+                            />
                           </Button>
                         </div>
                         <div className="text-sm text-muted-foreground prose prose-sm max-w-none">
