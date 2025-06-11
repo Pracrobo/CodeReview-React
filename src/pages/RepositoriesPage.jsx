@@ -269,7 +269,12 @@ export default function RepositoriesPage() {
     return (
       <DashboardLayout>
         <div className="flex items-center justify-center h-64">
-          <div className="text-lg">저장소 목록을 불러오는 중...</div>
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600 mx-auto mb-4"></div>
+            <p className="text-muted-foreground">
+              저장소 목록을 불러오는 중...
+            </p>
+          </div>
         </div>
       </DashboardLayout>
     );
