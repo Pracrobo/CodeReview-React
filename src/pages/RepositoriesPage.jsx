@@ -203,7 +203,7 @@ export default function RepositoriesPage() {
         </CardDescription>
       </CardHeader>
       <CardContent className="!p-6 pb-0 flex-1 mb-0 p-0">
-        <div className="flex items-center gap-x-6 text-sm text-muted-foreground mb-0 mt-0 w-full">
+        <div className="flex items-center gap-x-2 text-sm text-muted-foreground mb-0 mt-0 w-full">
           <div className="flex items-center gap-2 min-w-0">
             <Star className="h-4 w-4 flex-shrink-0" />
             <span className="truncate">{repo.stars}</span>

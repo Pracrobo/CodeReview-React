@@ -35,10 +35,7 @@ import chatbotService from '../services/chatbotService';
 import DashboardLayout from '../components/dashboard-layout';
 import repositoryService from '../services/repositoryService';
 import issueService from '../services/issueService';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import MarkdownRenderer from '../components/markdown-renderer';
 
 const GUIDE_MESSAGE = {
   senderType: 'Agent',
@@ -347,27 +344,6 @@ export default function RepositoryPage() {
     return `${repo.htmlUrl}/blob/${defaultBranch}/${filename}`;
   };
 
-  // 코드 블록 렌더러 정의
-  const markdownComponents = {
-    code({ inline, className, children, ...props }) {
-      const match = /language-(\w+)/.exec(className || '');
-      return !inline && match ? (
-        <SyntaxHighlighter
-          style={oneDark}
-          language={match[1]}
-          PreTag="div"
-          {...props}
-        >
-          {String(children).replace(/\n$/, '')}
-        </SyntaxHighlighter>
-      ) : (
-        <code className={className} {...props}>
-          {children}
-        </code>
-      );
-    },
-  };
-
   return (
     <DashboardLayout>
       <div className="space-y-6 max-w-7xl mx-auto">
@@ -434,15 +410,11 @@ export default function RepositoryPage() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="prose prose-sm max-w-none">
-                    {/* README 요약을 마크다운으로 렌더링, 코드 하이라이트 적용 */}
-                    <ReactMarkdown
-                      remarkPlugins={[remarkGfm]}
-                      components={markdownComponents}
-                    >
+                    <MarkdownRenderer>
                       {repo.readmeSummaryGpt
                         ? repo.readmeSummaryGpt
                         : repo.description || '분석된 README 요약이 없습니다.'}
-                    </ReactMarkdown>
+                    </MarkdownRenderer>
                   </div>
                   <Button variant="outline" size="sm" className="gap-1" asChild>
                     <a
