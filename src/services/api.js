@@ -45,12 +45,7 @@ let refreshPromise = null;
 function isPublicPath() {
   // 브라우저 환경에서만 동작
   if (typeof window === 'undefined') return false;
-  const publicPaths = [
-    '/',
-    '/login',
-    '/auth/login',
-    '/oauth/callback',
-  ];
+  const publicPaths = ['/', '/login', '/auth/login', '/oauth/callback'];
   return publicPaths.includes(window.location.pathname);
 }
 
@@ -100,10 +95,18 @@ async function apiRequest(endpoint, options = {}) {
         'Content-Type': 'application/json',
         ...options.headers,
       },
+      credentials: 'include', // 쿠키 포함
       ...options,
     };
     const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
-    return await response.json();
+
+    // JSON 파싱 시 에러 처리 개선
+    try {
+      return await response.json();
+    } catch (parseError) {
+      console.error('JSON 파싱 오류:', parseError);
+      throw new Error('서버 응답을 파싱할 수 없습니다.');
+    }
   }
 
   // accessToken이 없으면 refresh 시도 (단, publicEndpoints는 제외)
@@ -118,6 +121,7 @@ async function apiRequest(endpoint, options = {}) {
       ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
       ...options.headers,
     },
+    credentials: 'include', // 쿠키 포함 - 중요!
     ...options,
   };
 
@@ -146,10 +150,7 @@ async function apiRequest(endpoint, options = {}) {
     }
 
     // 이하 기존 404, 기타 에러 처리 동일
-    if (
-      response.status === 404 &&
-      logoutEndpoints.includes(endpoint)
-    ) {
+    if (response.status === 404 && logoutEndpoints.includes(endpoint)) {
       await handleLogoutFlow();
       throw new Error(`유저 정보를 찾을 수 없습니다: ${endpoint}`);
     }
@@ -165,7 +166,12 @@ async function apiRequest(endpoint, options = {}) {
       throw error;
     }
 
-    return await response.json();
+    try {
+      return await response.json();
+    } catch (parseError) {
+      console.error('JSON 파싱 오류:', parseError);
+      throw new Error('서버 응답을 파싱할 수 없습니다.');
+    }
   }
 }
 
