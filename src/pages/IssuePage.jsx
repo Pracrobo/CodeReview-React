@@ -29,6 +29,7 @@ export default function IssuePage() {
   const [issue, setIssue] = useState(null);
   const [loading, setLoading] = useState(true);
   const [analyzing, setAnalyzing] = useState(false);
+  // eslint-disable-next-line no-unused-vars
   const [analysisComplete, setAnalysisComplete] = useState(false);
   const [activeTab, setActiveTab] = useState('issue'); // 탭 상태 추가
   const { isConnected } = useContext(NotificationContext);
@@ -72,7 +73,8 @@ export default function IssuePage() {
           aiAnalysis.summary.trim() !== '' &&
           aiAnalysis.summary !== 'AI 요약 정보 없음';
 
-        if (!hasAnalysis) {
+        // 분석 중이 아니고, 분석 결과가 없을 때만 분석 요청
+        if (!hasAnalysis && !analyzing) {
           handleAnalyzeIssue(issueData);
         } else {
           setAnalysisComplete(true);
@@ -85,10 +87,12 @@ export default function IssuePage() {
       setLoading(false);
     };
     fetchIssue();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [repoId, issueId]);
 
   const handleAnalyzeIssue = async (issueData = issue) => {
-    if (!issueData) return;
+    // 분석 중이면 중복 요청 방지
+    if (!issueData || analyzing) return;
 
     setAnalyzing(true);
     try {

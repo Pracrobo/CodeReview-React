@@ -96,6 +96,7 @@ async function getIssueDetail(repoId, githubIssueNumber) {
       success: true,
       data: response.data,
       message: response.message,
+      hasAnalysis: response.data?.hasAnalysis, // 분석 여부 전달
     };
   } catch (error) {
     return errorHandler.handleError(
