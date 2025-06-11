@@ -13,6 +13,16 @@ async function paymentStatus() {
   }
 }
 
+async function getMonthlyUsage() {
+  return api.apiRequest('/payment/monthly-usage', {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+    },
+  });
+}
+
 export default {
   paymentStatus,
+  getMonthlyUsage,
 };
