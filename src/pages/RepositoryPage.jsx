@@ -800,9 +800,12 @@ export default function RepositoryPage() {
       }
     `}
                     >
-                      <p className="text-sm" style={{ whiteSpace: 'pre-line' }}>
-                        {msg.content}
-                      </p>
+                      {msg.senderType === 'Agent' ? (
+                        // 챗봇 메시지는 마크다운 렌더링
+                        <MarkdownRenderer>{msg.content}</MarkdownRenderer>
+                      ) : (
+                        <p className="text-sm">{msg.content}</p>
+                      )}
                     </div>
                   ))}
                   <div ref={chatEndRef} />
