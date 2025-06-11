@@ -22,17 +22,7 @@ async function getMonthlyUsage() {
   });
 }
 
-async function increaseAiMessageCount() {
-  return api.apiRequest('/payment/increase-ai-message', {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
-    },
-  });
-}
-
 export default {
   paymentStatus,
   getMonthlyUsage,
-  increaseAiMessageCount,
 };
