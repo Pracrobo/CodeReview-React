@@ -38,7 +38,7 @@ async function deleteConversation({ repoId, userId, accessToken }) {
 }
 
 // 메시지 저장
-async function saveChatMessage({ conversationId, senderType, content, repoId, accessToken }) {
+async function saveChatMessage({ conversationId, senderType, content, repoId, accessToken, messages }) {
   return api.apiRequest('/chatbot/message', {
     method: 'POST',
     headers: {
@@ -50,6 +50,7 @@ async function saveChatMessage({ conversationId, senderType, content, repoId, ac
       senderType,
       content,
       repoId,
+      messages,
     }),
   });
 }
