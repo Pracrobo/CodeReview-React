@@ -326,205 +326,188 @@ export default function IssuePage() {
             </div>
           </TabsContent>
 
-          {/* AI 분석 탭 */}
           <TabsContent value="ai" className="mt-0">
-            <div className="border rounded-lg overflow-hidden bg-background">
-              <div className="md:w-full p-4">
-                <div className="space-y-6">
-                  {/* AI 분석 상태 표시 */}
-                  {analyzing && (
-                    <div className="flex items-center justify-center p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
-                      <div className="flex items-center space-x-2">
-                        <Loader2 className="h-4 w-4 animate-spin text-blue-600 dark:text-blue-400" />
-                        <span className="text-sm text-blue-600 dark:text-blue-400 font-medium">
-                          AI 분석 중...
-                        </span>
-                      </div>
-                    </div>
-                  )}
+            {analyzing && (
+              <div className="flex items-center justify-center p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+                <div className="flex items-center space-x-2">
+                  <Loader2 className="h-4 w-4 animate-spin text-blue-600 dark:text-blue-400" />
+                  <span className="text-sm text-blue-600 dark:text-blue-400 font-medium">
+                    AI 분석 중...
+                  </span>
+                </div>
+              </div>
+            )}
+            {!analyzing && (
+              <>
+                <div className="border rounded-lg overflow-hidden bg-background">
+                  <div className="md:w-full p-4">
+                    <div className="space-y-6">
+                      {/* 분석 중이 아닐 때만 결과 표시 */}
 
-                  <div>
-                    <div className="flex items-center justify-between mb-2">
-                      <h3 className="text-sm font-medium text-foreground">
-                        AI 분석 요약
-                      </h3>
-                      {!analyzing && (
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleAnalyzeIssue()}
-                          className="h-6 w-6 p-0 hover:bg-muted"
-                        >
-                          <RefreshCw className="h-3 w-3" />
-                        </Button>
-                      )}
-                    </div>
-                    <div className="text-sm text-muted-foreground prose prose-sm max-w-none">
-                      {analyzing ? (
-                        '이슈를 분석하고 있습니다...'
-                      ) : issue.aiAnalysis.summary ? (
-                        <MarkdownRenderer>
-                          {issue.aiAnalysis.summary}
-                        </MarkdownRenderer>
-                      ) : (
-                        'AI 분석이 완료되지 않았습니다.'
-                      )}
-                    </div>
-                  </div>
-
-                  <div>
-                    <h3 className="text-sm font-medium mb-2 text-foreground">
-                      관련 파일
-                    </h3>
-                    {analyzing ? (
-                      <div className="flex justify-center py-4">
-                        <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
-                      </div>
-                    ) : (
-                      <ul className="space-y-2">
-                        {issue.aiAnalysis.relatedFiles &&
-                        issue.aiAnalysis.relatedFiles.length > 0 ? (
-                          issue.aiAnalysis.relatedFiles.map((file, index) => (
-                            <li
-                              key={index}
-                              className="p-2 bg-muted/50 rounded-md border"
-                            >
-                              <a
-                                href={
-                                  file.githubUrl
-                                    ? file.githubUrl
-                                    : `https://github.com/${issue.repoFullName}/blob/main/${file.path}`
-                                }
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-sm text-primary hover:text-primary/80 hover:underline flex items-center gap-1"
-                              >
-                                <Code className="h-3.5 w-3.5" />
-                                <span className="truncate">{file.path}</span>
-                              </a>
-                              <p className="text-xs text-muted-foreground mt-1">
-                                관련도: {file.relevance}%
-                              </p>
-                            </li>
-                          ))
-                        ) : (
-                          <p className="text-sm text-muted-foreground p-2 text-center bg-muted/30 rounded-md">
-                            관련 파일이 없습니다.
-                          </p>
-                        )}
-                      </ul>
-                    )}
-                  </div>
-
-                  <div>
-                    <h3 className="text-sm font-medium mb-2 text-foreground">
-                      코드 스니펫
-                    </h3>
-                    {analyzing ? (
-                      <div className="flex justify-center py-4">
-                        <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
-                      </div>
-                    ) : issue.aiAnalysis.codeSnippets &&
-                      issue.aiAnalysis.codeSnippets.length > 0 ? (
-                      <Tabs defaultValue="snippet0" className="w-full">
-                        <TabsList className="w-full bg-muted">
-                          {issue.aiAnalysis.codeSnippets
-                            .slice(0, 3)
-                            .map((_, index) => (
-                              <TabsTrigger
-                                key={index}
-                                value={`snippet${index}`}
-                                className="flex-1 text-xs data-[state=active]:bg-background"
-                              >
-                                스니펫 {index + 1}
-                              </TabsTrigger>
-                            ))}
-                        </TabsList>
-
-                        {issue.aiAnalysis.codeSnippets
-                          .slice(0, 3)
-                          .map((snippet, index) => (
-                            <TabsContent
-                              key={index}
-                              value={`snippet${index}`}
-                              className="mt-2"
-                            >
-                              <div className="relative border rounded-lg bg-card">
-                                <div className="absolute top-2 right-2 z-10">
-                                  <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    className="h-6 w-6 bg-background/80 hover:bg-background"
-                                    onClick={() =>
-                                      navigator.clipboard.writeText(
-                                        snippet.code
-                                      )
-                                    }
-                                  >
-                                    <Copy className="h-3.5 w-3.5" />
-                                  </Button>
-                                </div>
-                                <div className="bg-muted/50 p-3 rounded-t-lg text-sm font-mono overflow-x-auto max-h-32">
-                                  <pre className="text-xs text-foreground">
-                                    <code>{snippet.code}</code>
-                                  </pre>
-                                </div>
-                                <div className="p-2 border-t bg-card rounded-b-lg">
-                                  <div className="flex justify-between items-center text-xs">
-                                    <span className="text-muted-foreground truncate mr-2">
-                                      {snippet.file}
-                                    </span>
-                                    <span className="text-primary font-medium">
-                                      {snippet.relevance}%
-                                    </span>
-                                  </div>
-                                  {snippet.explanation && (
-                                    <div className="mt-2 p-2 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded text-xs">
-                                      <strong className="text-foreground">
-                                        설명:
-                                      </strong>
-                                      <span className="text-muted-foreground ml-1">
-                                        {snippet.explanation}
-                                      </span>
-                                    </div>
-                                  )}
-                                </div>
-                              </div>
-                            </TabsContent>
-                          ))}
-                      </Tabs>
-                    ) : (
-                      <div className="text-xs text-muted-foreground p-2 text-center bg-muted/30 rounded-md">
-                        AI 코드 스니펫이 없습니다.
-                      </div>
-                    )}
-                  </div>
-
-                  <div>
-                    <h3 className="text-sm font-medium mb-2 text-foreground">
-                      AI 해결 제안
-                    </h3>
-                    {analyzing ? (
-                      <div className="flex justify-center py-4">
-                        <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
-                      </div>
-                    ) : (
-                      <div className="p-3 bg-muted/30 border rounded-lg">
-                        <div className="text-sm text-muted-foreground leading-relaxed prose prose-sm max-w-none">
-                          {issue.aiAnalysis.suggestion ? (
+                      <div>
+                        <div className="flex items-center justify-between mb-2">
+                          <h3 className="text-sm font-medium text-foreground">
+                            AI 분석 요약
+                          </h3>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleAnalyzeIssue()}
+                            className="h-6 w-6 p-0 hover:bg-muted"
+                          >
+                            <RefreshCw className="h-3 w-3" />
+                          </Button>
+                        </div>
+                        <div className="text-sm text-muted-foreground prose prose-sm max-w-none">
+                          {issue.aiAnalysis.summary ? (
                             <MarkdownRenderer>
-                              {issue.aiAnalysis.suggestion}
+                              {issue.aiAnalysis.summary}
                             </MarkdownRenderer>
                           ) : (
-                            'AI 해결 제안이 아직 준비되지 않았습니다.'
+                            'AI 분석이 완료되지 않았습니다.'
                           )}
                         </div>
                       </div>
-                    )}
+
+                      <div>
+                        <h3 className="text-sm font-medium mb-2 text-foreground">
+                          관련 파일
+                        </h3>
+                        <ul className="space-y-2">
+                          {issue.aiAnalysis.relatedFiles &&
+                          issue.aiAnalysis.relatedFiles.length > 0 ? (
+                            issue.aiAnalysis.relatedFiles.map((file, index) => (
+                              <li
+                                key={index}
+                                className="p-2 bg-muted/50 rounded-md border"
+                              >
+                                <a
+                                  href={
+                                    file.githubUrl
+                                      ? file.githubUrl
+                                      : `https://github.com/${issue.repoFullName}/blob/main/${file.path}`
+                                  }
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-sm text-primary hover:text-primary/80 hover:underline flex items-center gap-1"
+                                >
+                                  <Code className="h-3.5 w-3.5" />
+                                  <span className="truncate">{file.path}</span>
+                                </a>
+                                <p className="text-xs text-muted-foreground mt-1">
+                                  관련도: {file.relevance}%
+                                </p>
+                              </li>
+                            ))
+                          ) : (
+                            <p className="text-sm text-muted-foreground p-2 text-center bg-muted/30 rounded-md">
+                              관련 파일이 없습니다.
+                            </p>
+                          )}
+                        </ul>
+                      </div>
+
+                      <div>
+                        <h3 className="text-sm font-medium mb-2 text-foreground">
+                          코드 스니펫
+                        </h3>
+                        {issue.aiAnalysis.codeSnippets &&
+                        issue.aiAnalysis.codeSnippets.length > 0 ? (
+                          <Tabs defaultValue="snippet0" className="w-full">
+                            <TabsList className="w-full bg-muted">
+                              {issue.aiAnalysis.codeSnippets
+                                .slice(0, 3)
+                                .map((_, index) => (
+                                  <TabsTrigger
+                                    key={index}
+                                    value={`snippet${index}`}
+                                    className="flex-1 text-xs data-[state=active]:bg-background"
+                                  >
+                                    스니펫 {index + 1}
+                                  </TabsTrigger>
+                                ))}
+                            </TabsList>
+
+                            {issue.aiAnalysis.codeSnippets
+                              .slice(0, 3)
+                              .map((snippet, index) => (
+                                <TabsContent
+                                  key={index}
+                                  value={`snippet${index}`}
+                                  className="mt-2"
+                                >
+                                  <div className="relative border rounded-lg bg-card">
+                                    <div className="absolute top-2 right-2 z-10">
+                                      <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        className="h-6 w-6 bg-background/80 hover:bg-background"
+                                        onClick={() =>
+                                          navigator.clipboard.writeText(
+                                            snippet.code
+                                          )
+                                        }
+                                      >
+                                        <Copy className="h-3.5 w-3.5" />
+                                      </Button>
+                                    </div>
+                                    <div className="bg-muted/50 p-3 rounded-t-lg text-sm font-mono overflow-x-auto max-h-128">
+                                      <pre className="text-xs text-foreground">
+                                        <code>{snippet.code}</code>
+                                      </pre>
+                                    </div>
+                                    <div className="p-2 border-t bg-card rounded-b-lg">
+                                      <div className="flex justify-between items-center text-xs">
+                                        <span className="text-muted-foreground truncate mr-2">
+                                          {snippet.file}
+                                        </span>
+                                        <span className="text-primary font-medium">
+                                          {snippet.relevance}%
+                                        </span>
+                                      </div>
+                                      {snippet.explanation && (
+                                        <div className="mt-2 p-2 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded text-xs">
+                                          <strong className="text-foreground">
+                                            설명:
+                                          </strong>
+                                          <span className="text-muted-foreground ml-1">
+                                            {snippet.explanation}
+                                          </span>
+                                        </div>
+                                      )}
+                                    </div>
+                                  </div>
+                                </TabsContent>
+                              ))}
+                          </Tabs>
+                        ) : (
+                          <div className="text-xs text-muted-foreground p-2 text-center bg-muted/30 rounded-md">
+                            AI 코드 스니펫이 없습니다.
+                          </div>
+                        )}
+                      </div>
+
+                      <div>
+                        <h3 className="text-sm font-medium mb-2 text-foreground">
+                          AI 해결 제안
+                        </h3>
+                        <div className="p-3 bg-muted/30 border rounded-lg">
+                          <div className="text-sm text-muted-foreground leading-relaxed prose prose-sm max-w-none">
+                            {issue.aiAnalysis.suggestion ? (
+                              <MarkdownRenderer>
+                                {issue.aiAnalysis.suggestion}
+                              </MarkdownRenderer>
+                            ) : (
+                              'AI 해결 제안이 아직 준비되지 않았습니다.'
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </div>
+              </>
+            )}
           </TabsContent>
         </Tabs>
       </div>
