@@ -797,12 +797,14 @@ export default function RepositoryPage() {
       max-w-[80%] rounded-lg p-3
       ${
         msg.senderType === 'User'
-          ? 'self-end bg-blue-100 text-blue-900 dark:bg-blue-800 dark:text-blue-100 text-right'
+          ? 'self-end bg-blue-100 text-blue-900 dark:bg-blue-800 dark:text-blue-100 text-left'
           : 'self-start bg-primary-foreground text-gray-900 dark:bg-gray-700 dark:text-gray-200 text-left'
       }
     `}
                     >
-                      <p className="text-sm">{msg.content}</p>
+                      <p className="text-sm" style={{ whiteSpace: 'pre-line' }}>
+                        {msg.content}
+                      </p>
                     </div>
                   ))}
                   <div ref={chatEndRef} />
