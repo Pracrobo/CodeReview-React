@@ -383,7 +383,7 @@ export default function ProfilePage() {
                   <span className="text-xs text-slate-600 dark:text-slate-300 font-medium">
                     {currentPlan === 'free'
                       ? '월 3개 저장소 분석'
-                      : '월 30개 이상 저장소 분석'}
+                      : '월 30개 저장소 분석'}
                   </span>
                 </CardTitle>
               </CardHeader>
@@ -553,7 +553,7 @@ export default function ProfilePage() {
                     </div>
                     <div className="p-4 flex items-center justify-center border-l bg-indigo-50 dark:bg-indigo-900/30">
                       <span className="font-medium text-indigo-700 dark:text-indigo-300">
-                        30개 이상
+                        30개
                       </span>
                     </div>
                   </div>
@@ -588,7 +588,7 @@ export default function ProfilePage() {
                       </div>
                     </div>
                     <div className="p-4 flex items-center justify-center border-l">
-                      <span>100 메시지</span>
+                      <span>100개 메시지</span>
                     </div>
                     <div className="p-4 flex items-center justify-center border-l bg-indigo-50 dark:bg-indigo-900/30">
                       <span className="font-medium text-indigo-700 dark:text-indigo-300">무제한</span>
