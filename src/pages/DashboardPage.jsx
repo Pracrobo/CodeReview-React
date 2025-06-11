@@ -163,7 +163,7 @@ export default function DashboardPage() {
     if (analyzingRepositories.length > 0) {
       const interval = setInterval(() => {
         checkAnalysisProgress();
-      }, 5000); // 5초마다 상태 확인
+      }, 1000); // 1초마다 상태 확인
 
       return () => clearInterval(interval);
     }

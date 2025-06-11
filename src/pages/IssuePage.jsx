@@ -185,17 +185,14 @@ export default function IssuePage() {
         <div className="flex flex-col space-y-2">
           <div className="flex items-center gap-2">
             <Button variant="ghost" size="icon" asChild className="h-8 w-8">
-              <Link to={`/repository/${issue.repoId || repoId}`}>
+              <Link to={`/repository/${repoId}`}>
                 <ArrowLeft className="h-4 w-4" />
               </Link>
             </Button>
             <div className="flex items-center gap-2">
               <Github className="h-5 w-5" />
               <h1 className="text-xl font-bold tracking-tight truncate">
-                <Link
-                  to={`/repository/${issue.repoId || repoId}`}
-                  className="hover:underline"
-                >
+                <Link to={`/repository/${repoId}`} className="hover:underline">
                   {issue.repoName}
                 </Link>
                 <span className="mx-1">/</span>

@@ -1,7 +1,13 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
 import { Button } from '../components/ui/button';
-import { ChevronDown, Code, MessageSquare, BarChart, Globe } from 'lucide-react';
+import {
+  ChevronDown,
+  Code,
+  MessageSquare,
+  BarChart,
+  Globe,
+} from 'lucide-react';
 import Navbar from '../components/navbar';
 import Footer from '../components/footer';
 
@@ -35,13 +41,13 @@ export default function HomePage() {
   const handleProPayment = async () => {
     const accessToken = localStorage.getItem('accessToken');
     const username = localStorage.getItem('username');
-    
+
     if (!accessToken || !username || username.trim() === '') {
       alert('Pro 플랜은 로그인 후 결제하면 이용하실 수 있습니다.');
       navigate('/login');
       return;
     }
-    
+
     // 로그인된 사용자는 프로필 페이지의 구독 관리 탭으로 이동
     navigate('/profile?tab=subscription');
   };
@@ -346,7 +352,7 @@ export default function HomePage() {
                     <div className="space-y-4">
                       {[
                         '영문 README 및 문서 한글 번역',
-                        '이슈 및 PR 내용 자동 한글화',
+                        '이슈 내용 자동 한글화',
                         '기술 용어 맥락에 맞는 정확한 번역',
                       ].map((feature, index) => (
                         <div key={index} className="flex items-center">

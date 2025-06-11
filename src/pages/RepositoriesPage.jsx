@@ -178,7 +178,11 @@ export default function RepositoriesPage() {
             {repo.name}
           </CardTitle>
           <div className="flex items-center gap-2 ml-1 flex-shrink-0">
-            {repo.isNew && <Badge className="bg-green-500 text-white flex-shrink-0">NEW</Badge>}
+            {repo.isNew && (
+              <Badge className="bg-green-500 text-white flex-shrink-0">
+                NEW
+              </Badge>
+            )}
           </div>
           <div className="flex-1" />
           <Button
@@ -216,7 +220,11 @@ export default function RepositoriesPage() {
             <div className="flex items-center gap-2 min-w-0">
               <div
                 className="w-3 h-3 rounded-full flex-shrink-0"
-                style={{ backgroundColor: languageUtils.getLanguageColor(repo.language) }}
+                style={{
+                  backgroundColor: languageUtils.getLanguageColor(
+                    repo.language
+                  ),
+                }}
               />
               <span className="font-medium truncate">{repo.language}</span>
               {repo.languagePercentage && (
