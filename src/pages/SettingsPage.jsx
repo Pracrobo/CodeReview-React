@@ -156,10 +156,10 @@ export default function SettingsPage() {
     if (checked) {
       console.log('이메일 알림 키기');
       setEmailNotifications(checked);
-      await emailNotificationService.requestEmailService(checked);
     } else {
       console.log('이메일 알림 끄기');
     }
+    await emailNotificationService.requestEmailService(checked);
   };
 
   // 브라우저 알림 관련
