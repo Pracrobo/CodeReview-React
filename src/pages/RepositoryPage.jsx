@@ -35,6 +35,7 @@ import chatbotService from '../services/chatbotService';
 import DashboardLayout from '../components/dashboard-layout';
 import repositoryService from '../services/repositoryService';
 import issueService from '../services/issueService';
+import paymentService from '../services/paymentService';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
@@ -226,6 +227,7 @@ export default function RepositoryPage() {
           ...prev,
           { senderType: 'Agent', content: res.answer },
         ]);
+        await paymentService.increaseAiMessageCount();
       }
     } catch {
       setChatError('메시지 전송에 실패했습니다. 다시 시도해 주세요.');

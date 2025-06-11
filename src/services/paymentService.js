@@ -13,6 +13,26 @@ async function paymentStatus() {
   }
 }
 
+async function getMonthlyUsage() {
+  return api.apiRequest('/payment/monthly-usage', {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+    },
+  });
+}
+
+async function increaseAiMessageCount() {
+  return api.apiRequest('/payment/increase-ai-message', {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+    },
+  });
+}
+
 export default {
   paymentStatus,
+  getMonthlyUsage,
+  increaseAiMessageCount,
 };

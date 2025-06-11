@@ -61,6 +61,8 @@ export default function ProfilePage() {
   const [updatedAt, setUpdatedAt] = useState('');
   const [open, setOpen] = useState(false);
   const [logoutLoading, setLogoutLoading] = useState(false);
+  const [chatbotMessageCount, setChatbotMessageCount] = useState(0);
+  const [analyzedRepositoryCount, setAnalyzedRepositoryCount] = useState(0);
 
   // 자동 로그아웃 처리 함수
   const handleAutoLogout = useCallback(async () => {
@@ -168,6 +170,24 @@ export default function ProfilePage() {
     const params = new URLSearchParams(location.search);
     setTabValue(params.get('tab') || 'account');
   }, [location.search]);
+
+  // 월간 사용량 가져오기
+  useEffect(() => {
+    async function fetchUsage() {
+      try {
+        const res = await paymentService.getMonthlyUsage();
+        if (res.success) {
+          setChatbotMessageCount(res.chatbotMessageCount);
+          setAnalyzedRepositoryCount(res.analyzedRepositoryCount);
+        }
+      } catch (e) {
+        console.error('월간 사용량 조회 실패:', e);
+        setChatbotMessageCount(0);
+        setAnalyzedRepositoryCount(0);
+      }
+    }
+    fetchUsage();
+  }, []);
 
   return (
     <DashboardLayout>
@@ -401,13 +421,13 @@ export default function ProfilePage() {
                           저장소 분석
                         </span>
                         <span className="text-xs font-semibold text-slate-600 dark:text-white">
-                          2/3
+                          {analyzedRepositoryCount}/3
                         </span>
                       </div>
                       <div className="w-full h-2 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
                         <div
                           className="h-full bg-gradient-to-r from-purple-500 to-indigo-500 transition-all"
-                          style={{ width: `${(2 / 3) * 100}%` }}
+                          style={{ width: `${(analyzedRepositoryCount / 3) * 100}%` }}
                         />
                       </div>
                     </div>
@@ -418,13 +438,13 @@ export default function ProfilePage() {
                           AI 챗봇 메시지
                         </span>
                         <span className="text-xs font-semibold text-slate-600 dark:text-white">
-                          15/100
+                          {chatbotMessageCount}/100
                         </span>
                       </div>
                       <div className="w-full h-2 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
                         <div
                           className="h-full bg-gradient-to-r from-purple-500 to-indigo-500 transition-all"
-                          style={{ width: `${(15 / 100) * 100}%` }}
+                          style={{ width: `${(chatbotMessageCount / 100) * 100}%` }}
                         />
                       </div>
                     </div>
