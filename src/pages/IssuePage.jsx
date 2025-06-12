@@ -435,55 +435,90 @@ export default function IssuePage() {
 
                             {issue.aiAnalysis.codeSnippets
                               .slice(0, 3)
-                              .map((snippet, index) => (
-                                <TabsContent
-                                  key={index}
-                                  value={`snippet${index}`}
-                                  className="mt-2"
-                                >
-                                  <div className="relative border rounded-lg bg-card">
-                                    <div className="absolute top-2 right-2 z-10">
-                                      <Button
-                                        variant="ghost"
-                                        size="icon"
-                                        className="h-6 w-6 bg-background/80 hover:bg-background"
-                                        onClick={() =>
-                                          navigator.clipboard.writeText(
-                                            snippet.code
-                                          )
-                                        }
-                                      >
-                                        <Copy className="h-3.5 w-3.5" />
-                                      </Button>
-                                    </div>
-                                    <div className="bg-muted/50 p-3 rounded-t-lg text-sm font-mono overflow-x-auto max-h-128">
-                                      <pre className="text-xs text-foreground">
-                                        <code>{snippet.code}</code>
-                                      </pre>
-                                    </div>
-                                    <div className="p-2 border-t bg-card rounded-b-lg">
-                                      <div className="flex justify-between items-center text-xs">
-                                        <span className="text-muted-foreground truncate mr-2">
-                                          {snippet.file}
-                                        </span>
-                                        <span className="text-primary font-medium">
-                                          {snippet.relevance}%
-                                        </span>
+                              .map((snippet, index) => {
+                                // 파일 확장자 추출 (예: .py, .js 등)
+                                const ext = snippet.file?.split('.').pop()?.toLowerCase() || '';
+                                // 확장자별 언어 매핑
+                                const extToLang = {
+                                  js: 'javascript',
+                                  jsx: 'javascript',
+                                  ts: 'typescript',
+                                  tsx: 'typescript',
+                                  py: 'python',
+                                  java: 'java',
+                                  go: 'go',
+                                  rb: 'ruby',
+                                  php: 'php',
+                                  c: 'c',
+                                  cpp: 'cpp',
+                                  cs: 'csharp',
+                                  html: 'html',
+                                  css: 'css',
+                                  json: 'json',
+                                  md: 'markdown',
+                                  sh: 'bash',
+                                  yml: 'yaml',
+                                  yaml: 'yaml',
+                                  swift: 'swift',
+                                  kt: 'kotlin',
+                                  rs: 'rust',
+                                  dart: 'dart',
+                                  sql: 'sql',
+                                  // 필요시 추가
+                                };
+                                const lang = extToLang[ext] || '';
+
+                                return (
+                                  <TabsContent
+                                    key={index}
+                                    value={`snippet${index}`}
+                                    className="mt-2"
+                                  >
+                                    <div className="relative border rounded-lg bg-card">
+                                      <div className="absolute top-2 right-2 z-10">
+                                        <Button
+                                          variant="ghost"
+                                          size="icon"
+                                          className="h-6 w-6 bg-background/80 hover:bg-background"
+                                          onClick={() =>
+                                            navigator.clipboard.writeText(
+                                              snippet.code
+                                            )
+                                          }
+                                        >
+                                          <Copy className="h-3.5 w-3.5" />
+                                        </Button>
                                       </div>
-                                      {snippet.explanation && (
-                                        <div className="mt-2 p-2 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded text-xs">
-                                          <strong className="text-foreground">
-                                            설명:
-                                          </strong>
-                                          <span className="text-muted-foreground ml-1">
-                                            {snippet.explanation}
+                                      {/* 코드 스니펫을 마크다운 코드블록으로, 언어 지정 포함 */}
+                                      <div className="bg-muted/50 p-3 rounded-t-lg text-sm font-mono overflow-x-auto max-h-128">
+                                        <MarkdownRenderer>
+                                          {` \`\`\`${lang}\n${snippet.code}\n\`\`\` `}
+                                        </MarkdownRenderer>
+                                      </div>
+                                      <div className="p-2 border-t bg-card rounded-b-lg">
+                                        <div className="flex justify-between items-center text-xs">
+                                          <span className="text-muted-foreground truncate mr-2">
+                                            {snippet.file}
+                                          </span>
+                                          <span className="text-primary font-medium">
+                                            {snippet.relevance}%
                                           </span>
                                         </div>
-                                      )}
+                                        {snippet.explanation && (
+                                          <div className="mt-2 p-2 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded text-xs">
+                                            <strong className="text-foreground">
+                                              설명:
+                                            </strong>
+                                            <span className="text-muted-foreground ml-1">
+                                              {snippet.explanation}
+                                            </span>
+                                          </div>
+                                        )}
+                                      </div>
                                     </div>
-                                  </div>
-                                </TabsContent>
-                              ))}
+                                  </TabsContent>
+                                );
+                              })}
                           </Tabs>
                         ) : (
                           <div className="text-xs text-muted-foreground p-2 text-center bg-muted/30 rounded-md">
