@@ -40,6 +40,7 @@ async function getEmailStatus(userId) {
       return data.message;
     } else {
       console.error('DB 조회 실패');
+      return null;
     }
   } catch (error) {
     console.error('이메일 상태 조회 에러', error);
