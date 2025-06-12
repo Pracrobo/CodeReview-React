@@ -220,6 +220,12 @@ export default function RepositoryPage() {
         messages: messagesForAsk,
       });
 
+      if (!res.success && res.errorType === 'CHATBOT_MESSAGE_LIMIT_EXCEEDED') {
+        alert(res.message || 'AI 챗봇 메시지 한도를 초과했습니다.');
+        navigate('/profile?tab=subscription', { replace: true });
+        return;
+      }
+
       // answer가 있으면 답변 메시지를 추가 (질문은 그대로 두고)
       if (res && res.answer) {
         setChatMessages((prev) => [
