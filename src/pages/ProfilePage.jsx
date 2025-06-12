@@ -63,6 +63,7 @@ export default function ProfilePage() {
   const [logoutLoading, setLogoutLoading] = useState(false);
   const [chatbotMessageCount, setChatbotMessageCount] = useState(0);
   const [analyzedRepositoryCount, setAnalyzedRepositoryCount] = useState(0);
+  const [isProPlan, setIsProPlan] = useState(false); // ★ Pro 플랜 여부 상태 추가
 
   // 자동 로그아웃 처리 함수
   const handleAutoLogout = useCallback(async () => {
@@ -179,11 +180,13 @@ export default function ProfilePage() {
         if (res.success) {
           setChatbotMessageCount(res.chatbotMessageCount);
           setAnalyzedRepositoryCount(res.analyzedRepositoryCount);
+          setIsProPlan(res.isProPlan);
         }
       } catch (e) {
         console.error('월간 사용량 조회 실패:', e);
         setChatbotMessageCount(0);
         setAnalyzedRepositoryCount(0);
+        setIsProPlan(false);
       }
     }
     fetchUsage();
@@ -421,13 +424,19 @@ export default function ProfilePage() {
                           저장소 분석
                         </span>
                         <span className="text-xs font-semibold text-slate-600 dark:text-white">
-                          {analyzedRepositoryCount}/3
+                          {isProPlan
+                            ? `${analyzedRepositoryCount}/30`
+                            : `${analyzedRepositoryCount}/3`}
                         </span>
                       </div>
                       <div className="w-full h-2 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
                         <div
                           className="h-full bg-gradient-to-r from-purple-500 to-indigo-500 transition-all"
-                          style={{ width: `${(analyzedRepositoryCount / 3) * 100}%` }}
+                          style={{
+                            width: isProPlan
+                              ? `${(analyzedRepositoryCount / 30) * 100}%`
+                              : `${(analyzedRepositoryCount / 3) * 100}%`
+                          }}
                         />
                       </div>
                     </div>
@@ -438,13 +447,19 @@ export default function ProfilePage() {
                           AI 챗봇 메시지
                         </span>
                         <span className="text-xs font-semibold text-slate-600 dark:text-white">
-                          {chatbotMessageCount}/100
+                          {isProPlan
+                            ? `${chatbotMessageCount}/무제한`
+                            : `${chatbotMessageCount}/100`}
                         </span>
                       </div>
                       <div className="w-full h-2 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
                         <div
                           className="h-full bg-gradient-to-r from-purple-500 to-indigo-500 transition-all"
-                          style={{ width: `${(chatbotMessageCount / 100) * 100}%` }}
+                          style={{
+                            width: isProPlan
+                              ? '100%'
+                              : `${(chatbotMessageCount / 100) * 100}%`
+                          }}
                         />
                       </div>
                     </div>
