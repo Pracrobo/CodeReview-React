@@ -49,7 +49,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             cd ${{ secrets.SERVER_PROJECT_PATH }}
-            echo "Restarting PM2 process: aissue"
-            pm2 restart aissue
+            echo "Restarting PM2 process: aissue-react"
+            pm2 restart aissue-react
             echo "PM2 process status:"
             pm2 list
