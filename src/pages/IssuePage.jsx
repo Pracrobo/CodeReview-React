@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
@@ -20,7 +20,7 @@ import {
   RefreshCw,
 } from 'lucide-react';
 import DashboardLayout from '../components/dashboard-layout';
-import { NotificationContext } from '../contexts/notificationContext';
+import useNotification from '../hooks/use-notification';
 import issueService from '../services/issueService';
 import MarkdownRenderer from '../components/markdown-renderer';
 
@@ -32,7 +32,7 @@ export default function IssuePage() {
   // eslint-disable-next-line no-unused-vars
   const [analysisComplete, setAnalysisComplete] = useState(false);
   const [activeTab, setActiveTab] = useState('issue'); // 탭 상태 추가
-  const { isConnected } = useContext(NotificationContext);
+  const { isConnected } = useNotification();
   console.log(`알림 연결 상태: ${isConnected ? '연결됨' : '끊김'}`);
 
   useEffect(() => {

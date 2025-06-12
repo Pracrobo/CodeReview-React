@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useContext, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import {
@@ -29,7 +29,7 @@ import {
   FileText,
   Trash2,
 } from 'lucide-react';
-import { NotificationContext } from '../contexts/notificationContext';
+import useNotification from '../hooks/use-notification';
 import languageUtils from '../utils/languageUtils';
 import chatbotService from '../services/chatbotService';
 import DashboardLayout from '../components/dashboard-layout';
@@ -44,7 +44,7 @@ const GUIDE_MESSAGE = {
 
 export default function RepositoryPage() {
   const navigate = useNavigate();
-  const { isConnected } = useContext(NotificationContext);
+  const { isConnected } = useNotification();
   const { repoId: paramRepoId } = useParams();
   const repoId = paramRepoId || localStorage.getItem('repoId');
   const accessToken = localStorage.getItem('accessToken');

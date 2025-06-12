@@ -1,4 +1,4 @@
-import { useState, useMemo, useContext, useEffect, useCallback } from 'react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import {
@@ -18,7 +18,7 @@ import {
 import { Input } from '../components/ui/input';
 import { AlertCircle, Clock, Pin, PinOff, Search } from 'lucide-react';
 import DashboardLayout from '../components/dashboard-layout';
-import { NotificationContext } from '../contexts/notificationContext';
+import useNotification from '../hooks/use-notification';
 import repositoryService from '../services/repositoryService';
 import issueService from '../services/issueService';
 
@@ -32,7 +32,7 @@ export default function IssuesPage() {
   const [allIssuesHasMore, setAllIssuesHasMore] = useState(true);
   const [loadingAll, setLoadingAll] = useState(false);
   const [loadingRecent, setLoadingRecent] = useState(false);
-  const { isConnected } = useContext(NotificationContext);
+  const { isConnected } = useNotification();
   console.log(`알림 연결 상태: ${isConnected ? '연결됨' : '끊김'}`);
 
   // 여러 저장소 id를 가져오는 함수 (예시: 내 트래킹 저장소)

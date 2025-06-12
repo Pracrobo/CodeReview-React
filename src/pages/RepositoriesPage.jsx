@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import {
@@ -27,14 +27,14 @@ import {
   Clock,
   Trash2,
 } from 'lucide-react';
-import { NotificationContext } from '../contexts/notificationContext';
+import useNotification from '../hooks/use-notification';
 import languageUtils from '../utils/languageUtils';
 import DashboardLayout from '../components/dashboard-layout';
 import dataTransformers from '../utils/dataTransformers';
 import repositoryService from '../services/repositoryService';
 
 export default function RepositoriesPage() {
-  const { isConnected } = useContext(NotificationContext);
+  const { isConnected } = useNotification();
   const [searchQuery, setSearchQuery] = useState('');
   const [repositories, setRepositories] = useState([]);
   const [favoriteRepositories, setFavoriteRepositories] = useState([]);
@@ -164,6 +164,11 @@ export default function RepositoriesPage() {
                 '_blank',
                 'noopener,noreferrer'
               );
+              window.open(
+                repo.htmlUrl || repo.url,
+                '_blank',
+                'noopener,noreferrer'
+              );
             }}
             className="mr-1 p-0 bg-transparent border-0 flex-shrink-0 transition-colors text-gray-500 hover:text-gray-800 dark:hover:text-gray-200"
             tabIndex={-1}
@@ -180,6 +185,7 @@ export default function RepositoriesPage() {
           <div className="flex items-center gap-2 ml-1 flex-shrink-0">
             {repo.isNew && (
               <Badge className="bg-green-500 text-white flex-shrink-0">
+                {' '}
                 NEW
               </Badge>
             )}

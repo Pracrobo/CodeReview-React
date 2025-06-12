@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import notificationService from '../services/notificationService';
 import api from '../services/api';
 
-export function useNotification() {
+function useBrowserNotification() {
   const [isConnected, setIsConnected] = useState(false);
   const eventSourceRef = useRef(null);
 
@@ -28,9 +28,9 @@ export function useNotification() {
         eventSourceRef.current.close();
       }
 
-      const eventSourceUrl = `${api.API_BASE_URL}/notification/stream/?clientName=${encodeURIComponent(
-        username
-      )}`;
+      const eventSourceUrl = `${
+        api.API_BASE_URL
+      }/notification/stream/?clientName=${encodeURIComponent(username)}`;
       const es = new EventSource(eventSourceUrl, { withCredentials: false });
 
       es.onopen = () => {
@@ -40,10 +40,14 @@ export function useNotification() {
       es.onmessage = (event) => {
         try {
           const data = JSON.parse(event.data);
-          const updatedStatus = localStorage.getItem(NOTIFICATION_PERMISSION_KEY);
+          const updatedStatus = localStorage.getItem(
+            NOTIFICATION_PERMISSION_KEY
+          );
           if (
             updatedStatus === 'granted' &&
-            ['analysis_complete', 'analysis_failed', 'analysis_error'].includes(data.type)
+            ['analysis_complete', 'analysis_failed', 'analysis_error'].includes(
+              data.type
+            )
           ) {
             notificationService.sendNotification(data);
           }
@@ -109,3 +113,5 @@ export function useNotification() {
 
   return { isConnected };
 }
+
+export default useBrowserNotification;

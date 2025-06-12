@@ -1,14 +1,39 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/button';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '../components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '../components/ui/card';
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '../components/ui/tabs';
 import { Badge } from '../components/ui/badge';
 import { Input } from '../components/ui/input';
-import { AlertCircle, Github, LogOut, User, Check, X, AlertTriangle } from 'lucide-react';
+import {
+  AlertCircle,
+  Github,
+  LogOut,
+  User,
+  Check,
+  X,
+  AlertTriangle,
+} from 'lucide-react';
 import { Alert, AlertDescription } from '../components/ui/alert';
-import { Dialog, DialogContent, DialogHeader, DialogFooter } from '../components/ui/dialog';
-import { NotificationContext } from '../contexts/notificationContext';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogFooter,
+} from '../components/ui/dialog';
+import useNotification from '../hooks/use-notification';
 import authService from '../services/authService';
 import ModalBody from '../components/ui/ModalBody';
 import paymentService from '../services/paymentService';
@@ -43,6 +68,9 @@ function formatPeriod(start, end) {
 }
 
 export default function ProfilePage() {
+  const { isConnected } = useNotification();
+  console.log(`알림 연결 상태: ${isConnected ? '연결됨' : '끊김'}`);
+
   // 쿼리 파라미터에서 tab 값 읽기
   const location = useLocation();
   const navigate = useNavigate();
@@ -141,7 +169,6 @@ export default function ProfilePage() {
         customerEmail: email,
         customerName: username,
       });
-
     } catch (error) {
       console.error('결제 오류:', error);
       alert('결제 중 오류가 발생했습니다. 다시 시도해주세요.');
@@ -427,7 +454,9 @@ export default function ProfilePage() {
                       <div className="w-full h-2 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
                         <div
                           className="h-full bg-gradient-to-r from-purple-500 to-indigo-500 transition-all"
-                          style={{ width: `${(analyzedRepositoryCount / 3) * 100}%` }}
+                          style={{
+                            width: `${(analyzedRepositoryCount / 3) * 100}%`,
+                          }}
                         />
                       </div>
                     </div>
@@ -444,7 +473,9 @@ export default function ProfilePage() {
                       <div className="w-full h-2 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
                         <div
                           className="h-full bg-gradient-to-r from-purple-500 to-indigo-500 transition-all"
-                          style={{ width: `${(chatbotMessageCount / 100) * 100}%` }}
+                          style={{
+                            width: `${(chatbotMessageCount / 100) * 100}%`,
+                          }}
                         />
                       </div>
                     </div>
@@ -543,7 +574,9 @@ export default function ProfilePage() {
                 <div className="overflow-hidden rounded-lg border">
                   {/* 헤더 */}
                   <div className="grid grid-cols-3 bg-muted/50 text-center">
-                    <div className="p-4 font-medium flex items-center justify-center">기능</div>
+                    <div className="p-4 font-medium flex items-center justify-center">
+                      기능
+                    </div>
                     <div className="p-4 font-medium border-l flex flex-col items-center justify-center">
                       <div className="text-sm">무료 플랜</div>
                       <div className="text-xs text-muted-foreground mt-1">
@@ -611,7 +644,9 @@ export default function ProfilePage() {
                       <span>100개 메시지</span>
                     </div>
                     <div className="p-4 flex items-center justify-center border-l bg-indigo-50 dark:bg-indigo-900/30">
-                      <span className="font-medium text-indigo-700 dark:text-indigo-300">무제한</span>
+                      <span className="font-medium text-indigo-700 dark:text-indigo-300">
+                        무제한
+                      </span>
                     </div>
                   </div>
 
