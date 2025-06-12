@@ -8,7 +8,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from './ui/dropdown-menu';
+} from './ui/dropdownMenu';
 import authService from '../services/authService';
 import { Dialog, DialogContent, DialogHeader, DialogFooter } from './ui/dialog';
 import ModalBody from './ui/ModalBody';
@@ -18,6 +18,7 @@ export default function Navbar({ scrollToTop, scrollToSection, loggedIn }) {
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [open, setOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
 
   const username = localStorage.getItem('username');
   const avatarUrl = localStorage.getItem('avatarUrl');
@@ -38,24 +39,25 @@ export default function Navbar({ scrollToTop, scrollToSection, loggedIn }) {
   };
 
   // 로그인 상태에 따라 네비게이션 항목을 다르게(로그인 시 아무것도 안보임)
-  const navigationItems = isLoggedIn ? [] : [
-    {
-      key: 'home',
-      label: '홈',
-      action: () => handleNavigateToHome(),
-    },
-    {
-      key: 'features',
-      label: '기능',
-      action: () => handleNavigateToSection('features'),
-    },
-    {
-      key: 'pricing',
-      label: '가격 정책',
-      action: () => handleNavigateToSection('pricing'),
-    },
-  ];
-
+  const navigationItems = isLoggedIn
+    ? []
+    : [
+        {
+          key: 'home',
+          label: '홈',
+          action: () => handleNavigateToHome(),
+        },
+        {
+          key: 'features',
+          label: '기능',
+          action: () => handleNavigateToSection('features'),
+        },
+        {
+          key: 'pricing',
+          label: '가격 정책',
+          action: () => handleNavigateToSection('pricing'),
+        },
+      ];
 
   // 메뉴 항목 렌더링 함수 (데스크톱)
   const renderDesktopMenuItem = (item) => (
@@ -138,7 +140,7 @@ export default function Navbar({ scrollToTop, scrollToSection, loggedIn }) {
           <div className="flex items-center gap-2">
             <ModeToggle />
             {isLoggedIn ? (
-              <DropdownMenu>
+              <DropdownMenu open={profileOpen} onOpenChange={setProfileOpen}>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="icon" className="relative">
                     <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center overflow-hidden transition-all hover:ring-2 hover:ring-primary hover:ring-offset-2 dark:hover:ring-offset-background">
@@ -155,36 +157,47 @@ export default function Navbar({ scrollToTop, scrollToSection, loggedIn }) {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
-                  <div className="flex items-center gap-2 p-2 border-b border-border/50">
-                    <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center overflow-hidden">
-                      {avatarUrl ? (
-                        <img
-                          src={avatarUrl}
-                          alt={username}
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <User className="w-5 h-5 text-muted-foreground" />
-                      )}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium truncate">{username}</p>
-                      <p className="text-xs text-muted-foreground">
-                        @{username}
-                      </p>
-                    </div>
-                  </div>
-                  <DropdownMenuItem asChild>
-                    <Link
-                      to="/profile"
-                      className="flex items-center gap-2 cursor-pointer"
-                    >
-                      <User className="w-4 h-4" />내 프로필
-                    </Link>
-                  </DropdownMenuItem>
+                  {/* 프로필 정보 */}
                   <DropdownMenuItem
-                    onClick={() => setOpen(true)}
+                    disabled
+                    className="flex items-center gap-2 p-2 border-b border-border/50"
+                    style={{ pointerEvents: 'none', background: 'transparent' }}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center overflow-hidden">
+                        {avatarUrl ? (
+                          <img
+                            src={avatarUrl}
+                            alt={username}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <User className="w-5 h-5 text-muted-foreground" />
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium truncate">
+                          {username}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          @{username}
+                        </p>
+                      </div>
+                    </div>
+                  </DropdownMenuItem>
+                  {/* 내 프로필 */}
+                  <DropdownMenuItem
+                    className="px-3 py-2 flex items-center gap-2 cursor-pointer"
+                    onClick={() => {
+                      navigate('/profile');
+                    }}
+                  >
+                    <User className="w-4 h-4" />내 프로필
+                  </DropdownMenuItem>
+                  {/* 로그아웃 */}
+                  <DropdownMenuItem
                     className="flex items-center gap-2 cursor-pointer text-red-600 focus:text-red-600"
+                    onClick={() => setOpen(true)}
                   >
                     <User className="w-4 h-4" />
                     로그아웃
@@ -224,7 +237,11 @@ export default function Navbar({ scrollToTop, scrollToSection, loggedIn }) {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">
-                <div className="flex items-center gap-2 p-2 border-b border-border/50">
+                <DropdownMenuItem
+                  disabled
+                  className="flex items-center gap-2 border-b border-border/50 cursor-default select-text"
+                  style={{ pointerEvents: 'none', background: 'transparent' }}
+                >
                   <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center overflow-hidden">
                     {avatarUrl ? (
                       <img
@@ -240,20 +257,20 @@ export default function Navbar({ scrollToTop, scrollToSection, loggedIn }) {
                     <p className="text-sm font-medium truncate">{username}</p>
                     <p className="text-xs text-muted-foreground">@{username}</p>
                   </div>
-                </div>
-                <DropdownMenuItem asChild>
-                  <Link
-                    to="/profile"
-                    className="flex items-center gap-2 cursor-pointer"
-                  >
-                    <User className="w-4 h-4" />내 프로필
-                  </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem
-                  onClick={() => setOpen(true)}
-                  className="flex items-center gap-2 cursor-pointer text-red-600 focus:text-red-600"
+                  className="flex items-center gap-2 cursor-pointer"
+                  onClick={() => {
+                    navigate('/profile');
+                  }}
                 >
-                  <User className="w-4 h-4" />
+                  <User className="w-4 h-4" />내 프로필
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  className="flex items-center gap-2 cursor-pointer text-red-600 focus:text-red-600"
+                  onClick={() => setOpen(true)}
+                >
+                  <LogOut className="w-4 h-4" />
                   로그아웃
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -305,9 +322,19 @@ export default function Navbar({ scrollToTop, scrollToSection, loggedIn }) {
             description={`로그아웃 시, 이 서비스에서만 로그아웃되며\nGitHub 계정 연동은 유지됩니다.\n계속 진행하시겠습니까?`}
           />
           <DialogFooter>
-            <Button variant="outline" onClick={() => setOpen(false)} disabled={logoutLoading}>취소</Button>
-            <Button variant="destructive" onClick={handleLogout} disabled={logoutLoading}>
-              {logoutLoading ? "로그아웃 중..." : "로그아웃"}
+            <Button
+              variant="outline"
+              onClick={() => setOpen(false)}
+              disabled={logoutLoading}
+            >
+              취소
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleLogout}
+              disabled={logoutLoading}
+            >
+              {logoutLoading ? '로그아웃 중...' : '로그아웃'}
             </Button>
           </DialogFooter>
         </DialogContent>
