@@ -24,4 +24,26 @@ async function requestEmailService(checked) {
   }
 }
 
-export default { requestEmailService };
+async function getEmailStatus(userId) {
+  try {
+    const response = await fetch(
+      `${api.API_BASE_URL}/notification/email?userId=${userId}`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    const data = await response.json();
+    if (response.ok) {
+      return data.message;
+    } else {
+      console.error('DB 조회 실패');
+    }
+  } catch (error) {
+    console.error('이메일 상태 조회 에러', error);
+  }
+}
+
+export default { requestEmailService, getEmailStatus };

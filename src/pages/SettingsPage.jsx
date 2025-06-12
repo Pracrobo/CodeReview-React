@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { Button } from '../components/ui/button';
 import {
   Card,
@@ -151,14 +151,42 @@ function AccountDeleteButton() {
 
 export default function SettingsPage() {
   const [emailNotifications, setEmailNotifications] = useState(false);
+  const userId = localStorage.getItem('userId');
+  useEffect(() => {
+    const loadInitialNotificationSetting = async () => {
+      try {
+        const initialSetting = await emailNotificationService.getEmailStatus(
+          userId
+        );
+        setEmailNotifications(initialSetting);
+        console.log('초기 이메일 알림 설정 불러옴:', initialSetting);
+      } catch (error) {
+        console.error('초기 알림 설정 불러오기 실패:', error);
+      }
+    };
+    loadInitialNotificationSetting();
+  }, []);
+
   const handleEmailNotificationToggle = async (checked) => {
+    const previousState = emailNotifications;
+    setEmailNotifications(checked);
+    console.log(`UI 상태 변경: ${previousState} -> ${checked}`);
+
     if (checked) {
-      console.log('이메일 알림 키기');
-      setEmailNotifications(checked);
+      console.log('이메일 알림 켜는 중...');
     } else {
-      console.log('이메일 알림 끄기');
+      console.log('이메일 알림 끄는 중...');
     }
-    await emailNotificationService.requestEmailService(checked);
+    // 서비스 호출 (비동기 처리)
+    try {
+      await emailNotificationService.requestEmailService(checked);
+      console.log('이메일 알림 서비스 요청 성공');
+    } catch (error) {
+      console.error('이메일 알림 서비스 요청 실패:', error);
+      // UI 상태를 이전으로 되돌립니다.
+      setEmailNotifications(previousState);
+      console.log(`롤백: UI 상태를 ${checked} -> ${previousState}로 되돌림`);
+    }
   };
 
   // 브라우저 알림 관련
@@ -236,7 +264,7 @@ export default function SettingsPage() {
               <div className="space-y-0.5">
                 <Label htmlFor="email-notifications">이메일 알림</Label>
                 <p className="text-sm text-muted-foreground">
-                  새로운 분석 결과 및 업데이트 알림을 이메일로 받습니다
+                  분석 결과를 이메일로 받습니다
                 </p>
               </div>
               <Switch
