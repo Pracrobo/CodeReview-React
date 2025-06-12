@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import {
@@ -18,48 +18,138 @@ import {
 import { Input } from '../components/ui/input';
 import { AlertCircle, Clock, Pin, PinOff, Search } from 'lucide-react';
 import DashboardLayout from '../components/dashboard-layout';
-import { mockIssues, mockRecentIssues } from '../lib/mock-data';
 import useNotification from '../hooks/use-notification';
+import repositoryService from '../services/repositoryService';
+import issueService from '../services/issueService';
+
+const PAGE_SIZE = 20;
 
 export default function IssuesPage() {
   const [searchQuery, setSearchQuery] = useState('');
-  const [recentIssues, setRecentIssues] = useState(mockRecentIssues);
-  const [allIssues, setAllIssues] = useState(mockIssues);
+  const [recentIssues, setRecentIssues] = useState([]);
+  const [allIssues, setAllIssues] = useState([]);
+  const [allIssuesPage, setAllIssuesPage] = useState(0);
+  const [allIssuesHasMore, setAllIssuesHasMore] = useState(true);
+  const [loadingAll, setLoadingAll] = useState(false);
+  const [loadingRecent, setLoadingRecent] = useState(false);
   const { isConnected } = useNotification();
   console.log(`알림 연결 상태: ${isConnected ? '연결됨' : '끊김'}`);
 
-  const togglePin = (issueId) => {
-    // 최근 본 이슈 목록 업데이트
-    const updatedRecentIssues = recentIssues.map((issue) => {
-      if (issue.id === issueId) {
-        return { ...issue, isPinned: !issue.isPinned };
-      }
-      return issue;
-    });
-    setRecentIssues(updatedRecentIssues);
+  // 여러 저장소 id를 가져오는 함수 (예시: 내 트래킹 저장소)
+  const [repoIds, setRepoIds] = useState([]);
+  const [initialLoading, setInitialLoading] = useState(true);
 
-    // 전체 이슈 목록 업데이트
-    const updatedAllIssues = allIssues.map((issue) => {
-      if (issue.id === issueId) {
-        return { ...issue, isPinned: !issue.isPinned };
+  useEffect(() => {
+    // 내 저장소 목록에서 repoId만 추출
+    const fetchRepoIds = async () => {
+      const result = await repositoryService.getUserRepositories();
+      if (result.success) {
+        setRepoIds(result.data.map((repo) => repo.repoId));
       }
-      return issue;
+      setInitialLoading(false); // 저장소 목록 로딩 후 초기 로딩 해제
+    };
+    fetchRepoIds();
+  }, []);
+
+  // 모든 이슈 불러오기 (무한 스크롤/페이지네이션)
+  const fetchAllIssues = useCallback(
+    async (reset = false) => {
+      if (loadingAll || repoIds.length === 0) return;
+      setLoadingAll(true);
+      const page = reset ? 0 : allIssuesPage;
+      const result = await issueService.getIssuesByRepoIds({
+        repoIds,
+        limit: PAGE_SIZE,
+        offset: page * PAGE_SIZE,
+        search: searchQuery,
+      });
+      if (result.success) {
+        const newIssues = result.data.map((issue) => ({
+          ...issue,
+          repoName:
+            issue.repoName ||
+            (issue.repoFullName ? issue.repoFullName.split('/')[1] : ''), // 저장소명 보정
+          viewedAt: issue.viewedAt || issue.createdAtGithub || '',
+          isPinned: false,
+          labels: issue.labels || [],
+        }));
+        setAllIssues((prev) => (reset ? newIssues : [...prev, ...newIssues]));
+        setAllIssuesHasMore(newIssues.length === PAGE_SIZE);
+        setAllIssuesPage(reset ? 1 : page + 1);
+      }
+      setLoadingAll(false);
+    },
+    [repoIds, allIssuesPage, searchQuery, loadingAll]
+  );
+
+  // 최근 본 이슈 불러오기
+  const fetchRecentIssues = useCallback(async () => {
+    setLoadingRecent(true);
+    const result = await issueService.getRecentIssues({
+      limit: PAGE_SIZE,
+      offset: 0,
     });
-    setAllIssues(updatedAllIssues);
+    if (result.success) {
+      setRecentIssues(
+        result.data.map((issue) => ({
+          ...issue,
+          repoName:
+            issue.repoName ||
+            (issue.repoFullName ? issue.repoFullName.split('/')[1] : ''),
+          isPinned: false,
+          labels: issue.labels || [],
+        }))
+      );
+    }
+    setLoadingRecent(false);
+  }, []);
+
+  // 검색어 변경/저장소 변경 시 이슈 목록 초기화
+  useEffect(() => {
+    setAllIssues([]);
+    setAllIssuesPage(0);
+    setAllIssuesHasMore(true);
+    if (repoIds.length > 0) fetchAllIssues(true);
+  }, [repoIds, searchQuery]);
+
+  // 최근 본 이슈 최초 로딩
+  useEffect(() => {
+    fetchRecentIssues();
+  }, []);
+
+  // 핀 고정/해제 (localStorage 활용 예시)
+  const togglePin = (issueId) => {
+    setRecentIssues((prev) =>
+      prev.map((issue) =>
+        issue.issueId === issueId
+          ? { ...issue, isPinned: !issue.isPinned }
+          : issue
+      )
+    );
+    setAllIssues((prev) =>
+      prev.map((issue) =>
+        issue.issueId === issueId
+          ? { ...issue, isPinned: !issue.isPinned }
+          : issue
+      )
+    );
   };
 
   const filteredIssues = allIssues.filter(
     (issue) =>
       issue.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      issue.repoName.toLowerCase().includes(searchQuery.toLowerCase())
+      (issue.repoName || '').toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  // 고정된 이슈를 상단에 표시하기 위한 정렬 함수
+  // 고정된 이슈를 상단에 표시
   const sortIssues = (issues) => {
     return [...issues].sort((a, b) => {
       if (a.isPinned && !b.isPinned) return -1;
       if (!a.isPinned && b.isPinned) return 1;
-      return new Date(b.viewedAt).getTime() - new Date(a.viewedAt).getTime();
+      return (
+        new Date(b.viewedAt || b.createdAtGithub || 0).getTime() -
+        new Date(a.viewedAt || a.createdAtGithub || 0).getTime()
+      );
     });
   };
 
@@ -68,6 +158,22 @@ export default function IssuesPage() {
     () => sortIssues(filteredIssues),
     [filteredIssues]
   );
+
+  // 최초 로딩(저장소 목록+이슈) 상태 처리
+  if (initialLoading) {
+    return (
+      <DashboardLayout>
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600 mx-auto mb-4"></div>
+            <p className="text-muted-foreground">
+              이슈 페이지를 로드하는 중...
+            </p>
+          </div>
+        </div>
+      </DashboardLayout>
+    );
+  }
 
   return (
     <DashboardLayout>
@@ -99,11 +205,20 @@ export default function IssuesPage() {
             <TabsTrigger value="all">모든 이슈</TabsTrigger>
           </TabsList>
           <TabsContent value="recent" className="space-y-4">
-            {sortedRecentIssues.length > 0 ? (
+            {loadingRecent ? (
+              <div className="flex items-center justify-center h-64">
+                <div className="text-center">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600 mx-auto mb-4"></div>
+                  <p className="text-muted-foreground">
+                    최근 본 이슈를 로드하는 중...
+                  </p>
+                </div>
+              </div>
+            ) : sortedRecentIssues.length > 0 ? (
               <div className="grid grid-cols-1 gap-4">
                 {sortedRecentIssues.map((issue) => (
                   <Card
-                    key={issue.id}
+                    key={issue.issueId}
                     className="transition-all hover:shadow-md dark:hover:shadow-lg"
                   >
                     <CardHeader className="pb-2">
@@ -129,11 +244,11 @@ export default function IssuesPage() {
                               {issue.state === 'open' ? '열림' : '닫힘'}
                             </Badge>
                             <CardDescription className="dark:text-gray-400">
-                              #{issue.number}
+                              #{issue.githubIssueNumber}
                             </CardDescription>
                           </div>
                           <Link
-                            to={`/repository/${issue.repoId}/issue/${issue.number}`}
+                            to={`/repository/${issue.repoId}/issue/${issue.githubIssueNumber}`}
                           >
                             <CardTitle className="text-base font-medium hover:text-primary dark:text-white dark:hover:text-purple-400">
                               {issue.title}
@@ -147,7 +262,7 @@ export default function IssuesPage() {
                             className="h-8 w-8"
                             onClick={(e) => {
                               e.preventDefault();
-                              togglePin(issue.id);
+                              togglePin(issue.issueId);
                             }}
                           >
                             {issue.isPinned ? (
@@ -190,7 +305,7 @@ export default function IssuesPage() {
               </div>
             ) : (
               <Card>
-                <CardContent className="flex flex-col items-center justify-center p-6">
+                <CardContent className="flex flex-col items-center justify-center p-6 pt-4">
                   <div className="rounded-full bg-purple-100 p-3 mb-4 dark:bg-purple-900/30">
                     <AlertCircle className="h-6 w-6 text-purple-600 dark:text-purple-400" />
                   </div>
@@ -208,11 +323,20 @@ export default function IssuesPage() {
             )}
           </TabsContent>
           <TabsContent value="all" className="space-y-4">
-            {sortedAllIssues.length > 0 ? (
+            {loadingAll && allIssues.length === 0 ? (
+              <div className="flex items-center justify-center h-64">
+                <div className="text-center">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600 mx-auto mb-4"></div>
+                  <p className="text-muted-foreground">
+                    모든 이슈를 로드하는 중...
+                  </p>
+                </div>
+              </div>
+            ) : sortedAllIssues.length > 0 ? (
               <div className="grid grid-cols-1 gap-4">
                 {sortedAllIssues.map((issue) => (
                   <Card
-                    key={issue.id}
+                    key={issue.issueId}
                     className="transition-all hover:shadow-md"
                   >
                     <CardHeader className="pb-2">
@@ -238,11 +362,11 @@ export default function IssuesPage() {
                               {issue.state === 'open' ? '열림' : '닫힘'}
                             </Badge>
                             <CardDescription className="dark:text-gray-400">
-                              #{issue.number}
+                              #{issue.githubIssueNumber}
                             </CardDescription>
                           </div>
                           <Link
-                            to={`/repository/${issue.repoId}/issue/${issue.number}`}
+                            to={`/repository/${issue.repoId}/issue/${issue.githubIssueNumber}`}
                           >
                             <CardTitle className="text-base font-medium hover:text-primary dark:text-white dark:hover:text-purple-400">
                               {issue.title}
@@ -256,7 +380,7 @@ export default function IssuesPage() {
                             className="h-8 w-8"
                             onClick={(e) => {
                               e.preventDefault();
-                              togglePin(issue.id);
+                              togglePin(issue.issueId);
                             }}
                           >
                             {issue.isPinned ? (
@@ -289,16 +413,26 @@ export default function IssuesPage() {
                       </div>
                       <div className="text-xs text-muted-foreground">
                         <span className="dark:text-gray-400">
-                          {issue.user} 님이 {issue.createdAt}에 작성
+                          {issue.author} 님이 {issue.createdAtGithub}에 작성
                         </span>
                       </div>
                     </CardContent>
                   </Card>
                 ))}
+                {allIssuesHasMore && (
+                  <div className="text-center py-4">
+                    <Button
+                      onClick={() => fetchAllIssues()}
+                      disabled={loadingAll}
+                    >
+                      더 불러오기
+                    </Button>
+                  </div>
+                )}
               </div>
             ) : (
               <Card>
-                <CardContent className="flex flex-col items-center justify-center p-6">
+                <CardContent className="flex flex-col items-center justify-center p-6 pt-4">
                   <div className="rounded-full bg-purple-100 p-3 mb-4 dark:bg-purple-900/30">
                     <AlertCircle className="h-6 w-6 text-purple-600 dark:text-purple-400" />
                   </div>

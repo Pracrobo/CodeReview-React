@@ -20,7 +20,6 @@ function useBrowserNotification() {
 
       // 권한이 허용된 경우에만 연결 시도
       if (currentStatus !== 'granted') {
-        console.log('알림 권한이 허용되지 않아 SSE 연결을 생략합니다.');
         setIsConnected(false);
         return;
       }
@@ -29,15 +28,12 @@ function useBrowserNotification() {
         eventSourceRef.current.close();
       }
 
-      // 수정: api.js의 API_BASE_URL 활용
       const eventSourceUrl = `${
         api.API_BASE_URL
       }/notification/stream/?clientName=${encodeURIComponent(username)}`;
-      console.log('SSE 연결 시도:', eventSourceUrl);
       const es = new EventSource(eventSourceUrl, { withCredentials: false });
 
       es.onopen = () => {
-        console.log('SSE 연결 성공');
         setIsConnected(true);
       };
 
@@ -54,12 +50,10 @@ function useBrowserNotification() {
             )
           ) {
             notificationService.sendNotification(data);
-            console.log('알림 띄우기 시도:', data);
           }
         } catch (error) {
           console.error('알림 파싱 실패:', error);
         }
-        console.log('SSE 메시지 수신:', event.data);
       };
 
       es.onerror = (error) => {

@@ -150,7 +150,6 @@ function AccountDeleteButton() {
 }
 
 export default function SettingsPage() {
-  // gmail 수신 관련
   const [emailNotifications, setEmailNotifications] = useState(false);
   const handleEmailNotificationToggle = async (checked) => {
     if (checked) {

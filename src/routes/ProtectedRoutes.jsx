@@ -23,8 +23,11 @@ export default function ProtectedRoutes() {
       <Routes>
         <Route path="/dashboard" element={<DashboardPage />} />
         <Route path="/repositories" element={<RepositoriesPage />} />
-        <Route path="/repository/:id" element={<RepositoryPage />} />
-        <Route path="/repository/:id/issue/:issueId" element={<IssuePage />} />
+        <Route path="/repository/:repoId" element={<RepositoryPage />} />
+        <Route
+          path="/repository/:repoId/issue/:issueId"
+          element={<IssuePage />}
+        />
         <Route path="/issues" element={<IssuesPage />} />
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/settings" element={<SettingsPage />} />

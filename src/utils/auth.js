@@ -30,10 +30,10 @@ function removeAuthStorage() {
   itemsToRemove.forEach((item) => localStorage.removeItem(item));
 }
 
-// 로그인 상태 확인 (토큰 존재 및 만료 여부)
+// 로그인 상태 확인 (accessToken만으로 판단 X, App.jsx에서 refresh까지 시도)
 function isLoggedIn() {
   const token = localStorage.getItem('accessToken');
-  if (!token) return false;
+  if (!token) return false; // App.jsx에서 refresh 시도 후에도 없으면 false
   try {
     const [, payload] = token.split('.');
     if (!payload) return false;
