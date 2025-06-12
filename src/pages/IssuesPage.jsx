@@ -1,4 +1,4 @@
-import { useState, useMemo, useContext, useEffect, useCallback } from 'react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import {
@@ -18,7 +18,7 @@ import {
 import { Input } from '../components/ui/input';
 import { AlertCircle, Clock, Pin, PinOff, Search } from 'lucide-react';
 import DashboardLayout from '../components/dashboard-layout';
-import { NotificationContext } from '../contexts/notificationContext';
+import useNotification from '../hooks/use-notification';
 import repositoryService from '../services/repositoryService';
 import issueService from '../services/issueService';
 
@@ -32,11 +32,12 @@ export default function IssuesPage() {
   const [allIssuesHasMore, setAllIssuesHasMore] = useState(true);
   const [loadingAll, setLoadingAll] = useState(false);
   const [loadingRecent, setLoadingRecent] = useState(false);
-  const { isConnected } = useContext(NotificationContext);
+  const { isConnected } = useNotification();
   console.log(`알림 연결 상태: ${isConnected ? '연결됨' : '끊김'}`);
 
   // 여러 저장소 id를 가져오는 함수 (예시: 내 트래킹 저장소)
   const [repoIds, setRepoIds] = useState([]);
+  const [initialLoading, setInitialLoading] = useState(true);
 
   useEffect(() => {
     // 내 저장소 목록에서 repoId만 추출
@@ -45,6 +46,7 @@ export default function IssuesPage() {
       if (result.success) {
         setRepoIds(result.data.map((repo) => repo.repoId));
       }
+      setInitialLoading(false); // 저장소 목록 로딩 후 초기 로딩 해제
     };
     fetchRepoIds();
   }, []);
@@ -157,6 +159,22 @@ export default function IssuesPage() {
     [filteredIssues]
   );
 
+  // 최초 로딩(저장소 목록+이슈) 상태 처리
+  if (initialLoading) {
+    return (
+      <DashboardLayout>
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600 mx-auto mb-4"></div>
+            <p className="text-muted-foreground">
+              이슈 페이지를 로드하는 중...
+            </p>
+          </div>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
   return (
     <DashboardLayout>
       <div className="space-y-6">
@@ -188,8 +206,13 @@ export default function IssuesPage() {
           </TabsList>
           <TabsContent value="recent" className="space-y-4">
             {loadingRecent ? (
-              <div className="text-center py-8">
-                최근 본 이슈를 불러오는 중...
+              <div className="flex items-center justify-center h-64">
+                <div className="text-center">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600 mx-auto mb-4"></div>
+                  <p className="text-muted-foreground">
+                    최근 본 이슈를 로드하는 중...
+                  </p>
+                </div>
               </div>
             ) : sortedRecentIssues.length > 0 ? (
               <div className="grid grid-cols-1 gap-4">
@@ -301,7 +324,14 @@ export default function IssuesPage() {
           </TabsContent>
           <TabsContent value="all" className="space-y-4">
             {loadingAll && allIssues.length === 0 ? (
-              <div className="text-center py-8">이슈를 불러오는 중...</div>
+              <div className="flex items-center justify-center h-64">
+                <div className="text-center">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600 mx-auto mb-4"></div>
+                  <p className="text-muted-foreground">
+                    모든 이슈를 로드하는 중...
+                  </p>
+                </div>
+              </div>
             ) : sortedAllIssues.length > 0 ? (
               <div className="grid grid-cols-1 gap-4">
                 {sortedAllIssues.map((issue) => (
