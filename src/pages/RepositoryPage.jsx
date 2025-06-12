@@ -36,6 +36,7 @@ import DashboardLayout from '../components/dashboard-layout';
 import repositoryService from '../services/repositoryService';
 import issueService from '../services/issueService';
 import MarkdownRenderer from '../components/markdown-renderer';
+import paymentService from '../services/paymentService';
 
 const GUIDE_MESSAGE = {
   senderType: 'Agent',
@@ -75,6 +76,9 @@ export default function RepositoryPage() {
   const [issues, setIssues] = useState([]);
   const [loadingIssues, setLoadingIssues] = useState(false);
 
+  // 사용량 조회 상태
+  const [chatbotLimitExceeded, setChatbotLimitExceeded] = useState(false);
+
   // 저장소 정보 가져오기
   useEffect(() => {
     const loadRepositoryData = async () => {
@@ -112,14 +116,36 @@ export default function RepositoryPage() {
         result.data.map((issue) => ({
           ...issue,
           repoName:
-            issue.repoName ||
-            (issue.repoFullName ? issue.repoFullName.split('/')[1] : ''),
+          issue.repoName ||
+          (issue.repoFullName ? issue.repoFullName.split('/')[1] : ''),
           labels: issue.labels || [],
         }))
       );
     }
     setLoadingIssues(false);
   }, [repoId]);
+  
+  // 챗봇탭 진입 시마다 사용량 조회
+  useEffect(() => {
+    if (activeTab === 'chatbot') {
+      async function fetchUsage() {
+        try {
+          const res = await paymentService.getMonthlyUsage();
+          if (res.success) {
+            // 무료 플랜: 100개, Pro: 무제한
+            if (!res.isProPlan && res.chatbotMessageCount >= 100) {
+              setChatbotLimitExceeded(true);
+            } else {
+              setChatbotLimitExceeded(false);
+            }
+          }
+        } catch {
+          setChatbotLimitExceeded(false);
+        }
+      }
+      fetchUsage();
+    }
+  }, [activeTab]);
 
   // 저장소 상세 정보 조회 후 이슈 목록도 불러오기
   useEffect(() => {
@@ -157,6 +183,7 @@ export default function RepositoryPage() {
 
   // 메시지 전송 시: 대화가 없으면 먼저 생성, 그 후 메시지 저장
   const handleSendMessage = async () => {
+    if (chatbotLimitExceeded) return;
     if (!chatInput.trim()) return;
 
     setChatLoading(true);
@@ -220,17 +247,30 @@ export default function RepositoryPage() {
       });
 
       if (!res.success && res.errorType === 'CHATBOT_MESSAGE_LIMIT_EXCEEDED') {
-        alert(res.message || 'AI 챗봇 메시지 한도를 초과했습니다.');
-        navigate('/profile?tab=subscription', { replace: true });
+        setChatbotLimitExceeded(true);
+        setChatLoading(false);
         return;
       }
 
-      // answer가 있으면 답변 메시지를 추가 (질문은 그대로 두고)
+      // answer가 있으면 답변 메시지를 추가
       if (res && res.answer) {
         setChatMessages((prev) => [
           ...prev,
           { senderType: 'Agent', content: res.answer },
         ]);
+        // 답변이 왔을 때도 사용량을 다시 체크
+        try {
+          const usageRes = await paymentService.getMonthlyUsage();
+          if (usageRes.success) {
+            if (!usageRes.isProPlan && usageRes.chatbotMessageCount >= 100) {
+              setChatbotLimitExceeded(true);
+            } else {
+              setChatbotLimitExceeded(false);
+            }
+          }
+        } catch {
+          // 네트워크 오류 등은 무시(입력창은 그대로)
+        }
       }
     } catch {
       setChatError('메시지 전송에 실패했습니다. 다시 시도해 주세요.');
@@ -818,16 +858,20 @@ export default function RepositoryPage() {
                 </div>
                 <div className="flex gap-2">
                   <Input
-                    placeholder="질문을 입력하세요..."
+                    placeholder={
+                      chatbotLimitExceeded
+                        ? 'AI 챗봇 메시지 한도를 초과했습니다.'
+                        : '질문을 입력하세요.'
+                    }
                     className="flex-1"
                     value={chatInput}
                     onChange={(e) => setChatInput(e.target.value)}
                     onKeyDown={handleInputKeyDown}
-                    disabled={chatLoading}
+                    disabled={chatLoading || chatbotLimitExceeded}
                   />
                   <Button
                     onClick={handleSendMessage}
-                    disabled={chatLoading || !chatInput.trim()}
+                    disabled={chatLoading || !chatInput.trim() || chatbotLimitExceeded}
                   >
                     전송
                   </Button>

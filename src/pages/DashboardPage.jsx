@@ -300,13 +300,6 @@ export default function DashboardPage() {
         setErrorMessage(userFriendlyMessage);
         setShowError(true);
 
-        // 사용량 초과 에러 처리 추가
-        if (result.errorType === 'REPO_ANALYSIS_LIMIT_EXCEEDED') {
-          alert(userFriendlyMessage);
-          navigate('/profile?tab=subscription', { replace: true });
-          return;
-        }
-
         // 자동으로 에러 메시지 숨김 (크기 초과 오류는 더 오래 표시)
         const hideTimeout =
           result.errorType === 'REPOSITORY_SIZE_EXCEEDED' ? 8000 : 5000;
