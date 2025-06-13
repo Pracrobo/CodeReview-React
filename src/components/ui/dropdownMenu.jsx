@@ -1,7 +1,7 @@
 import React, {
   createContext,
   useContext,
-  useState,
+  // useState,
   useRef,
   useEffect,
 } from 'react';
@@ -13,10 +13,11 @@ const DropdownMenuContext = createContext({
   triggerRef: { current: null },
 });
 
-const DropdownMenu = ({ children }) => {
-  const [open, setOpen] = useState(false);
+const DropdownMenu = ({ children, open, onOpenChange }) => {
+  // const [open, setOpen] = useState(false);
+  // const triggerRef = useRef(null);
   const triggerRef = useRef(null);
-
+  const setOpen = onOpenChange || (() => {});
   return (
     <DropdownMenuContext.Provider value={{ open, setOpen, triggerRef }}>
       <div className="relative">{children}</div>
@@ -95,7 +96,7 @@ const DropdownMenuContent = React.forwardRef(
         document.removeEventListener('mousedown', handleClickOutside);
         document.removeEventListener('keydown', handleEscape);
       };
-    }, [open, setOpen]);
+    }, [open, setOpen, triggerRef]);
 
     if (!open) return null;
 
@@ -109,7 +110,7 @@ const DropdownMenuContent = React.forwardRef(
           contentRef.current = node;
         }}
         className={cn(
-          'z-50 min-w-[8rem] overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-md data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2',
+          'z-50 min-w-[8rem] overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-md data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2',
           align === 'end' ? 'right-0' : 'left-0',
           className
         )}
@@ -119,7 +120,7 @@ const DropdownMenuContent = React.forwardRef(
           marginTop: sideOffset + 'px',
           transform: open ? 'scale(1)' : 'scale(0.95)',
           opacity: open ? 1 : 0,
-          transition: 'all 0.15s ease-out',
+          //  transition: 'all 0.15s ease-out',
         }}
         data-state={open ? 'open' : 'closed'}
         data-side="bottom"
@@ -131,14 +132,18 @@ const DropdownMenuContent = React.forwardRef(
 DropdownMenuContent.displayName = 'DropdownMenuContent';
 
 const DropdownMenuItem = React.forwardRef(
-  ({ className, inset, ...props }, ref) => (
-    <div
+  ({ className, inset, onClick, ...props }, ref) => (
+    <button
       ref={ref}
+      type="button"
       className={cn(
-        'relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 hover:bg-accent hover:text-accent-foreground',
+        'relative flex w-full cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 hover:bg-accent hover:text-accent-foreground',
         inset && 'pl-8',
         className
       )}
+      tabIndex={0}
+      onMouseDown={(e) => e.preventDefault()} // 포커스 손실 방지
+      onClick={onClick}
       {...props}
     />
   )

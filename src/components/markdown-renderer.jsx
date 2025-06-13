@@ -53,9 +53,7 @@ export default function MarkdownRenderer({
       link.type = 'text/css';
       link.setAttribute('data-hljs-theme', 'true');
       link.href =
-        mode === 'dark'
-          ? '/node_modules/highlight.js/styles/github-dark.css'
-          : '/node_modules/highlight.js/styles/github.css';
+        mode === 'dark' ? '/styles/github-dark.css' : '/styles/github.css';
       document.head.appendChild(link);
     };
 
