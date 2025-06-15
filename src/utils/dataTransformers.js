@@ -10,6 +10,7 @@ function transformRepositoryData(dbRepo) {
     issues: dbRepo.issueTotalCount || 0,
     isPrivate: false,
     lastAnalyzed: formatDate(dbRepo.lastAnalyzedAt),
+    lastAnalyzedAt: dbRepo.lastAnalyzedAt,
     isFavorite: dbRepo.isFavorite || false,
     isNew: isNewRepository(dbRepo.createdAt),
     githubRepoId: dbRepo.githubRepoId,

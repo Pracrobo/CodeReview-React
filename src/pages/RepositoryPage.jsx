@@ -36,6 +36,7 @@ import DashboardLayout from '../components/dashboard-layout';
 import repositoryService from '../services/repositoryService';
 import issueService from '../services/issueService';
 import MarkdownRenderer from '../components/markdown-renderer';
+import paymentService from '../services/paymentService';
 
 const GUIDE_MESSAGE = {
   senderType: 'Agent',
@@ -63,7 +64,11 @@ export default function RepositoryPage() {
   const [chatError, setChatError] = useState('');
   const [chatLoading, setChatLoading] = useState(false);
   const [conversationId, setConversationId] = useState(null);
+  const lastQuestionRef = useRef(null);
   const chatEndRef = useRef(null);
+
+  // 질문 메시지 ref 추가
+  // const lastQuestionRef = useRef(null);
 
   // 언마운트 시 repoId 제거
   useEffect(() => {
@@ -74,6 +79,9 @@ export default function RepositoryPage() {
   // 이슈 목록 상태
   const [issues, setIssues] = useState([]);
   const [loadingIssues, setLoadingIssues] = useState(false);
+
+  // 사용량 조회 상태
+  const [chatbotLimitExceeded, setChatbotLimitExceeded] = useState(false);
 
   // 저장소 정보 가져오기
   useEffect(() => {
@@ -112,14 +120,36 @@ export default function RepositoryPage() {
         result.data.map((issue) => ({
           ...issue,
           repoName:
-            issue.repoName ||
-            (issue.repoFullName ? issue.repoFullName.split('/')[1] : ''),
+          issue.repoName ||
+          (issue.repoFullName ? issue.repoFullName.split('/')[1] : ''),
           labels: issue.labels || [],
         }))
       );
     }
     setLoadingIssues(false);
   }, [repoId]);
+  
+  // 챗봇탭 진입 시마다 사용량 조회
+  useEffect(() => {
+    if (activeTab === 'chatbot') {
+      async function fetchUsage() {
+        try {
+          const res = await paymentService.getMonthlyUsage();
+          if (res.success) {
+            // 무료 플랜: 100개, Pro: 무제한
+            if (!res.isProPlan && res.chatbotMessageCount >= 100) {
+              setChatbotLimitExceeded(true);
+            } else {
+              setChatbotLimitExceeded(false);
+            }
+          }
+        } catch {
+          setChatbotLimitExceeded(false);
+        }
+      }
+      fetchUsage();
+    }
+  }, [activeTab]);
 
   // 저장소 상세 정보 조회 후 이슈 목록도 불러오기
   useEffect(() => {
@@ -157,6 +187,7 @@ export default function RepositoryPage() {
 
   // 메시지 전송 시: 대화가 없으면 먼저 생성, 그 후 메시지 저장
   const handleSendMessage = async () => {
+    if (chatbotLimitExceeded) return;
     if (!chatInput.trim()) return;
 
     setChatLoading(true);
@@ -194,11 +225,18 @@ export default function RepositoryPage() {
       }
     }
 
-    // 기존 메시지 + 새 메시지로 messages 배열 생성
+    // 새 질문 메시지 추가
     const tempId = Date.now() + Math.random();
     const newMsg = { senderType: 'User', content: chatInput.trim(), tempId };
     setChatMessages((prev) => [...prev, newMsg]);
     setChatInput('');
+
+    // 질문 전송 후 맨 아래로 스크롤
+    setTimeout(() => {
+      if (chatEndRef.current) {
+        chatEndRef.current.scrollIntoView({ behavior: 'smooth' });
+      }
+    }, 100);
 
     try {
       // Express에 messages 배열로 전달
@@ -219,12 +257,18 @@ export default function RepositoryPage() {
         messages: messagesForAsk,
       });
 
-      // answer가 있으면 답변 메시지를 추가 (질문은 그대로 두고)
+      // 답변이 오면(새로운 메시지 추가 후)
       if (res && res.answer) {
         setChatMessages((prev) => [
           ...prev,
           { senderType: 'Agent', content: res.answer },
         ]);
+        // 질문 위치로 스크롤
+        setTimeout(() => {
+          if (lastQuestionRef.current) {
+            lastQuestionRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        }, 100);
       }
     } catch {
       setChatError('메시지 전송에 실패했습니다. 다시 시도해 주세요.');
@@ -800,18 +844,19 @@ export default function RepositoryPage() {
                   <div className="max-w-[80%] rounded-lg p-3 self-start bg-primary-foreground text-gray-900 dark:bg-gray-700 dark:text-gray-200 text-left">
                     <p className="text-sm">{GUIDE_MESSAGE.content}</p>
                   </div>
-                  {/* DB에서 불러온 메시지들 */}
+                  {/* 모든 질문/답변 표시 */}
                   {chatMessages.map((msg, idx) => (
                     <div
                       key={msg.messageId || msg.tempId || idx}
+                      ref={msg.senderType === 'User' && idx === chatMessages.length - 2 ? lastQuestionRef : null}
                       className={`
-      max-w-[80%] rounded-lg p-3
-      ${
-        msg.senderType === 'User'
-          ? 'self-end bg-blue-100 text-blue-900 dark:bg-blue-800 dark:text-blue-100 text-left'
-          : 'self-start bg-primary-foreground text-gray-900 dark:bg-gray-700 dark:text-gray-200 text-left'
-      }
-    `}
+        max-w-[80%] rounded-lg p-3
+        ${
+          msg.senderType === 'User'
+            ? 'self-end bg-blue-100 text-blue-900 dark:bg-blue-800 dark:text-blue-100 text-left'
+            : 'self-start bg-primary-foreground text-gray-900 dark:bg-gray-700 dark:text-gray-200 text-left'
+        }
+      `}
                     >
                       {msg.senderType === 'Agent' ? (
                         // 챗봇 메시지는 마크다운 렌더링
@@ -825,16 +870,20 @@ export default function RepositoryPage() {
                 </div>
                 <div className="flex gap-2">
                   <Input
-                    placeholder="질문을 입력하세요..."
+                    placeholder={
+                      chatbotLimitExceeded
+                        ? 'AI 챗봇 메시지 한도를 초과했습니다.'
+                        : '질문을 입력하세요.'
+                    }
                     className="flex-1"
                     value={chatInput}
                     onChange={(e) => setChatInput(e.target.value)}
                     onKeyDown={handleInputKeyDown}
-                    disabled={chatLoading}
+                    disabled={chatLoading || chatbotLimitExceeded}
                   />
                   <Button
                     onClick={handleSendMessage}
-                    disabled={chatLoading || !chatInput.trim()}
+                    disabled={chatLoading || !chatInput.trim() || chatbotLimitExceeded}
                   >
                     전송
                   </Button>

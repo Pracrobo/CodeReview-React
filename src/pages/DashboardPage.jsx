@@ -379,6 +379,22 @@ export default function DashboardPage() {
     }
   };
 
+  function formatKoreanTime(dateString) {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    let hour = date.getHours();
+    const minute = String(date.getMinutes()).padStart(2, '0');
+    const isPM = hour >= 12;
+    const period = isPM ? '오후' : '오전';
+    hour = hour % 12 || 12;
+
+    return `${year}-${month}-${day} ${period} ${hour}:${minute}`;
+  }
+
   if (loading) {
     return (
       <DashboardLayout>
@@ -509,50 +525,56 @@ export default function DashboardPage() {
           <div className="space-y-4">
             <h2 className="text-xl font-semibold">새로 분석된 저장소</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {newRepositories.map((repo) => (
-                <Card
-                  key={repo.id}
-                  className="h-full transition-all hover:shadow-md dark:hover:shadow-lg cursor-pointer"
-                  onClick={() => handleRepositoryClick(repo)}
-                >
-                  <CardHeader className="pb-2">
-                    <div className="flex justify-between items-start">
-                      <div className="flex items-center gap-2">
-                        <CardTitle className="text-base font-medium dark:text-white">
-                          {repo.name}
-                        </CardTitle>
-                        <Badge className="bg-green-500 dark:bg-green-600">
-                          NEW
-                        </Badge>
+              {newRepositories.map((repo) => {
+                const completedTime = repo.lastAnalyzedAt
+                  ? formatKoreanTime(repo.lastAnalyzedAt)
+                  : '';
+
+                return (
+                  <Card
+                    key={repo.id}
+                    className="h-full transition-all hover:shadow-md dark:hover:shadow-lg cursor-pointer"
+                    onClick={() => handleRepositoryClick(repo)}
+                  >
+                    <CardHeader className="pb-2">
+                      <div className="flex justify-between items-start">
+                        <div className="flex items-center gap-2">
+                          <CardTitle className="text-base font-medium dark:text-white">
+                            {repo.name}
+                          </CardTitle>
+                          <Badge className="bg-green-500 dark:bg-green-600">
+                            NEW
+                          </Badge>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <CheckCircle className="h-4 w-4 text-green-500" />
+                          <Badge
+                            variant={repo.isPrivate ? 'outline' : 'secondary'}
+                            className={
+                              repo.isPrivate
+                                ? 'dark:border-gray-600 dark:text-gray-300'
+                                : 'dark:bg-gray-600 dark:text-gray-200'
+                            }
+                          >
+                            {repo.isPrivate ? '비공개' : '공개'}
+                          </Badge>
+                        </div>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <CheckCircle className="h-4 w-4 text-green-500" />
-                        <Badge
-                          variant={repo.isPrivate ? 'outline' : 'secondary'}
-                          className={
-                            repo.isPrivate
-                              ? 'dark:border-gray-600 dark:text-gray-300'
-                              : 'dark:bg-gray-600 dark:text-gray-200'
-                          }
-                        >
-                          {repo.isPrivate ? '비공개' : '공개'}
-                        </Badge>
+                      <CardDescription className="line-clamp-2 h-10 dark:text-gray-300">
+                        {repo.description}
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className="text-xs text-muted-foreground dark:text-gray-400">
+                      <div className="flex items-center gap-1 mb-2">
+                        <Clock className="h-4 w-4" />
+                        <span>
+                          분석 완료 시간 : {completedTime || '알 수 없음'}
+                        </span>
                       </div>
-                    </div>
-                    <CardDescription className="line-clamp-2 h-10 dark:text-gray-300">
-                      {repo.description}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="text-xs text-muted-foreground dark:text-gray-400">
-                    <div className="flex items-center gap-1">
-                      <Clock className="h-3.5 w-3.5" />
-                      <span>
-                        분석 완료: {repo.lastAnalyzed || repo.completedAt}
-                      </span>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+                    </CardContent>
+                  </Card>
+                );
+              })}
             </div>
           </div>
         )}

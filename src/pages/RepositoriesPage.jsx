@@ -26,6 +26,7 @@ import {
   GitFork,
   Clock,
   Trash2,
+  Calendar,
 } from 'lucide-react';
 import useNotification from '../hooks/use-notification';
 import languageUtils from '../utils/languageUtils';
@@ -147,6 +148,12 @@ export default function RepositoriesPage() {
       repo.description.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  function formatDateOnly(dateString) {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    return `${date.getFullYear()}.${String(date.getMonth() + 1).padStart(2, '0')}.${String(date.getDate()).padStart(2, '0')}`;
+  }
+
   const renderRepositoryCard = (repo) => (
     <Card
       key={repo.id}
@@ -177,7 +184,7 @@ export default function RepositoriesPage() {
             <Github className="h-5 w-5" />
           </button>
           <CardTitle
-            className="text-base font-semibold group-hover:text-purple-700 dark:group-hover:text-purple-300 transition-colors truncate max-w-[8rem] sm:max-w-[12rem] md:max-w-[14rem] lg:max-w-[16rem]"
+            className="text-base text-2xl font-semibold leading-tight tracking-tight text-base font-semibold group-hover:text-purple-700 dark:group-hover:text-purple-300 transition-colors truncate max-w-[8rem] sm:max-w-[12rem] md:max-w-[14rem] lg:max-w-[16rem]"
             title={repo.name}
           >
             {repo.name}
@@ -246,11 +253,23 @@ export default function RepositoriesPage() {
       </CardContent>
       <hr className="border-gray-200 dark:border-gray-700 mb-3" />
       <CardFooter className="text-xs text-muted-foreground flex flex-col gap-1 pb-3 pr-3 relative">
-        {/* 버튼 위에만 구분선 - 카드 전체 너비로(음수 마진) */}
         <div className="flex w-full justify-between items-center">
           <div className="flex items-center gap-1">
             <Clock className="h-3.5 w-3.5" />
-            <span>마지막 분석: {repo.lastAnalyzed}</span>
+            <span className="flex items-center gap-1">
+              마지막 분석:
+              {repo.lastAnalyzedAt && (
+                <span className="ml-1 text-xs font-semibold">
+                  {formatDateOnly(repo.lastAnalyzedAt)}
+                </span>
+              )}
+              <Badge
+                variant="outline"
+                className="ml-1 px-2 py-0.5 flex items-center gap-1"
+              >
+                {repo.lastAnalyzed}
+              </Badge>
+            </span>
           </div>
           <Button
             variant="destructive"
