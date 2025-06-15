@@ -292,11 +292,12 @@ export default function RepositoryPage() {
 
   // 기본 라이선스 정보 (라이선스가 없거나 알 수 없는 경우)
   const defaultLicenseDisplay = {
-    fullName: repo?.licenseSpdxId || '라이선스 정보 없음',
-    description: '이 저장소의 라이선스 정보를 확인할 수 없습니다.',
+    fullName: '해당 없음 (All Rights Reserved - 저작권법 기본 원칙)',
+    description:
+      '이 저장소에는 명시적인 라이선스가 없습니다. 저작권법에 따라 모든 권리가 보호됩니다.',
     permissions: [],
     conditions: [],
-    limitations: [],
+    limitations: ['상업적 사용 제한', '수정 및 배포 제한'],
   };
 
   // 현재 저장소의 라이선스 정보 (API 응답에서 가져옴)
@@ -524,7 +525,11 @@ export default function RepositoryPage() {
                         <div className="flex items-center gap-2 mb-2">
                           <Badge
                             variant="outline"
-                            className="bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-600"
+                            className={
+                              repo.license
+                                ? 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-600'
+                                : 'bg-orange-50 text-orange-700 border-orange-200 dark:bg-orange-900/30 dark:text-orange-300 dark:border-orange-600'
+                            }
                           >
                             {currentLicense.fullName}
                           </Badge>
@@ -535,78 +540,86 @@ export default function RepositoryPage() {
                         </p>
 
                         <div className="space-y-2">
-                          <div>
-                            <div className="flex items-center gap-1 text-xs font-medium text-green-600 mb-1 dark:text-green-400">
-                              <Shield className="h-3 w-3" />
-                              <span>허용 사항</span>
+                          {currentLicense.permissions.length > 0 && (
+                            <div>
+                              <div className="flex items-center gap-1 text-xs font-medium text-green-600 mb-1 dark:text-green-400">
+                                <Shield className="h-3 w-3" />
+                                <span>허용 사항</span>
+                              </div>
+                              <div className="flex flex-wrap gap-1">
+                                {currentLicense.permissions.map(
+                                  (permission, index) => (
+                                    <Badge
+                                      key={index}
+                                      variant="outline"
+                                      className="text-xs bg-green-50 text-green-700 border-green-200 dark:bg-green-900/30 dark:text-green-300 dark:border-green-600"
+                                    >
+                                      {permission}
+                                    </Badge>
+                                  )
+                                )}
+                              </div>
                             </div>
-                            <div className="flex flex-wrap gap-1">
-                              {currentLicense.permissions.map(
-                                (permission, index) => (
-                                  <Badge
-                                    key={index}
-                                    variant="outline"
-                                    className="text-xs bg-green-50 text-green-700 border-green-200 dark:bg-green-900/30 dark:text-green-300 dark:border-green-600"
-                                  >
-                                    {permission}
-                                  </Badge>
-                                )
-                              )}
-                            </div>
-                          </div>
+                          )}
 
-                          <div>
-                            <div className="flex items-center gap-1 text-xs font-medium text-amber-600 mb-1 dark:text-amber-400">
-                              <Info className="h-3 w-3" />
-                              <span>조건</span>
+                          {currentLicense.conditions.length > 0 && (
+                            <div>
+                              <div className="flex items-center gap-1 text-xs font-medium text-amber-600 mb-1 dark:text-amber-400">
+                                <Info className="h-3 w-3" />
+                                <span>조건</span>
+                              </div>
+                              <div className="flex flex-wrap gap-1">
+                                {currentLicense.conditions.map(
+                                  (condition, index) => (
+                                    <Badge
+                                      key={index}
+                                      variant="outline"
+                                      className="text-xs bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-900/30 dark:text-amber-300 dark:border-amber-600"
+                                    >
+                                      {condition}
+                                    </Badge>
+                                  )
+                                )}
+                              </div>
                             </div>
-                            <div className="flex flex-wrap gap-1">
-                              {currentLicense.conditions.map(
-                                (condition, index) => (
-                                  <Badge
-                                    key={index}
-                                    variant="outline"
-                                    className="text-xs bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-900/30 dark:text-amber-300 dark:border-amber-600"
-                                  >
-                                    {condition}
-                                  </Badge>
-                                )
-                              )}
-                            </div>
-                          </div>
+                          )}
 
-                          <div>
-                            <div className="flex items-center gap-1 text-xs font-medium text-red-600 mb-1 dark:text-red-400">
-                              <AlertCircle className="h-3 w-3" />
-                              <span>제한 사항</span>
+                          {currentLicense.limitations.length > 0 && (
+                            <div>
+                              <div className="flex items-center gap-1 text-xs font-medium text-red-600 mb-1 dark:text-red-400">
+                                <AlertCircle className="h-3 w-3" />
+                                <span>제한 사항</span>
+                              </div>
+                              <div className="flex flex-wrap gap-1">
+                                {currentLicense.limitations.map(
+                                  (limitation, index) => (
+                                    <Badge
+                                      key={index}
+                                      variant="outline"
+                                      className="text-xs bg-red-50 text-red-700 border-red-200 dark:bg-red-900/30 dark:text-red-300 dark:border-red-600"
+                                    >
+                                      {limitation}
+                                    </Badge>
+                                  )
+                                )}
+                              </div>
                             </div>
-                            <div className="flex flex-wrap gap-1">
-                              {currentLicense.limitations.map(
-                                (limitation, index) => (
-                                  <Badge
-                                    key={index}
-                                    variant="outline"
-                                    className="text-xs bg-red-50 text-red-700 border-red-200 dark:bg-red-900/30 dark:text-red-300 dark:border-red-600"
-                                  >
-                                    {limitation}
-                                  </Badge>
-                                )
-                              )}
-                            </div>
-                          </div>
+                          )}
                         </div>
 
-                        <div className="mt-3 text-xs text-center">
-                          <a
-                            href={getGitHubFileUrl('license')}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-primary hover:underline inline-flex items-center gap-1 dark:text-purple-400"
-                          >
-                            전체 라이선스 보기
-                            <ExternalLink className="h-3 w-3" />
-                          </a>
-                        </div>
+                        {repo.license && (
+                          <div className="mt-3 text-xs text-center">
+                            <a
+                              href={getGitHubFileUrl('license')}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-primary hover:underline inline-flex items-center gap-1 dark:text-purple-400"
+                            >
+                              전체 라이선스 보기
+                              <ExternalLink className="h-3 w-3" />
+                            </a>
+                          </div>
+                        )}
                       </div>
                     </div>
 
