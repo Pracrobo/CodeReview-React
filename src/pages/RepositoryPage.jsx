@@ -64,7 +64,11 @@ export default function RepositoryPage() {
   const [chatError, setChatError] = useState('');
   const [chatLoading, setChatLoading] = useState(false);
   const [conversationId, setConversationId] = useState(null);
+  const lastQuestionRef = useRef(null);
   const chatEndRef = useRef(null);
+
+  // 질문 메시지 ref 추가
+  // const lastQuestionRef = useRef(null);
 
   // 언마운트 시 repoId 제거
   useEffect(() => {
@@ -221,11 +225,18 @@ export default function RepositoryPage() {
       }
     }
 
-    // 기존 메시지 + 새 메시지로 messages 배열 생성
+    // 새 질문 메시지 추가
     const tempId = Date.now() + Math.random();
     const newMsg = { senderType: 'User', content: chatInput.trim(), tempId };
     setChatMessages((prev) => [...prev, newMsg]);
     setChatInput('');
+
+    // 질문 전송 후 맨 아래로 스크롤
+    setTimeout(() => {
+      if (chatEndRef.current) {
+        chatEndRef.current.scrollIntoView({ behavior: 'smooth' });
+      }
+    }, 100);
 
     try {
       // Express에 messages 배열로 전달
@@ -246,31 +257,18 @@ export default function RepositoryPage() {
         messages: messagesForAsk,
       });
 
-      if (!res.success && res.errorType === 'CHATBOT_MESSAGE_LIMIT_EXCEEDED') {
-        setChatbotLimitExceeded(true);
-        setChatLoading(false);
-        return;
-      }
-
-      // answer가 있으면 답변 메시지를 추가
+      // 답변이 오면(새로운 메시지 추가 후)
       if (res && res.answer) {
         setChatMessages((prev) => [
           ...prev,
           { senderType: 'Agent', content: res.answer },
         ]);
-        // 답변이 왔을 때도 사용량을 다시 체크
-        try {
-          const usageRes = await paymentService.getMonthlyUsage();
-          if (usageRes.success) {
-            if (!usageRes.isProPlan && usageRes.chatbotMessageCount >= 100) {
-              setChatbotLimitExceeded(true);
-            } else {
-              setChatbotLimitExceeded(false);
-            }
+        // 질문 위치로 스크롤
+        setTimeout(() => {
+          if (lastQuestionRef.current) {
+            lastQuestionRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
           }
-        } catch {
-          // 네트워크 오류 등은 무시(입력창은 그대로)
-        }
+        }, 100);
       }
     } catch {
       setChatError('메시지 전송에 실패했습니다. 다시 시도해 주세요.');
@@ -833,18 +831,19 @@ export default function RepositoryPage() {
                   <div className="max-w-[80%] rounded-lg p-3 self-start bg-primary-foreground text-gray-900 dark:bg-gray-700 dark:text-gray-200 text-left">
                     <p className="text-sm">{GUIDE_MESSAGE.content}</p>
                   </div>
-                  {/* DB에서 불러온 메시지들 */}
+                  {/* 모든 질문/답변 표시 */}
                   {chatMessages.map((msg, idx) => (
                     <div
                       key={msg.messageId || msg.tempId || idx}
+                      ref={msg.senderType === 'User' && idx === chatMessages.length - 2 ? lastQuestionRef : null}
                       className={`
-      max-w-[80%] rounded-lg p-3
-      ${
-        msg.senderType === 'User'
-          ? 'self-end bg-blue-100 text-blue-900 dark:bg-blue-800 dark:text-blue-100 text-left'
-          : 'self-start bg-primary-foreground text-gray-900 dark:bg-gray-700 dark:text-gray-200 text-left'
-      }
-    `}
+        max-w-[80%] rounded-lg p-3
+        ${
+          msg.senderType === 'User'
+            ? 'self-end bg-blue-100 text-blue-900 dark:bg-blue-800 dark:text-blue-100 text-left'
+            : 'self-start bg-primary-foreground text-gray-900 dark:bg-gray-700 dark:text-gray-200 text-left'
+        }
+      `}
                     >
                       {msg.senderType === 'Agent' ? (
                         // 챗봇 메시지는 마크다운 렌더링
