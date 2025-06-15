@@ -379,6 +379,22 @@ export default function DashboardPage() {
     }
   };
 
+  function formatKoreanTime(dateString) {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    let hour = date.getHours();
+    const minute = String(date.getMinutes()).padStart(2, '0');
+    const isPM = hour >= 12;
+    const period = isPM ? '오후' : '오전';
+    hour = hour % 12 || 12;
+
+    return `${year}-${month}-${day} ${period} ${hour}:${minute}`;
+  }
+
   if (loading) {
     return (
       <DashboardLayout>
@@ -547,7 +563,7 @@ export default function DashboardPage() {
                     <div className="flex items-center gap-1">
                       <Clock className="h-3.5 w-3.5" />
                       <span>
-                        분석 완료: {repo.lastAnalyzed || repo.completedAt}
+                        분석 완료 : {formatKoreanTime(repo.lastAnalyzed || repo.completedAt)}
                       </span>
                     </div>
                   </CardContent>
