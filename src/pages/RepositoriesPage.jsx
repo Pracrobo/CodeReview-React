@@ -184,7 +184,7 @@ export default function RepositoriesPage() {
             <Github className="h-5 w-5" />
           </button>
           <CardTitle
-            className="text-base font-semibold group-hover:text-purple-700 dark:group-hover:text-purple-300 transition-colors truncate max-w-[8rem] sm:max-w-[12rem] md:max-w-[14rem] lg:max-w-[16rem]"
+            className="text-base text-2xl font-semibold leading-tight tracking-tight text-base font-semibold group-hover:text-purple-700 dark:group-hover:text-purple-300 transition-colors truncate max-w-[8rem] sm:max-w-[12rem] md:max-w-[14rem] lg:max-w-[16rem]"
             title={repo.name}
           >
             {repo.name}
