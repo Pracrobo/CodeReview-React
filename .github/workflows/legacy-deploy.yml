@@ -22,12 +22,12 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
-      
+
       - name: Create .env file for production build
         run: |
           echo "VITE_API_BASE_URL=${{ secrets.VITE_API_BASE_URL }}" > .env.production
           echo "VITE_TOSS_CLIENT_KEY=${{ secrets.VITE_TOSS_CLIENT_KEY }}" >> .env.production
-      
+
       - name: Build project
         run: npm run build
 
@@ -37,8 +37,8 @@ jobs:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: "dist" # 로컬(러너)의 dist 폴더
-          target: "${{ secrets.SERVER_PROJECT_PATH }}" # 서버의 프로젝트 경로 (이곳에 dist 폴더가 생성됨)
+          source: 'dist' # 로컬(러너)의 dist 폴더
+          target: '${{ secrets.SERVER_PROJECT_PATH }}' # 서버의 프로젝트 경로 (이곳에 dist 폴더가 생성됨)
           overwrite: true
 
       - name: Restart PM2 process on server
@@ -49,7 +49,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             cd ${{ secrets.SERVER_PROJECT_PATH }}
-            echo "Restarting PM2 process: aissue-react"
-            pm2 restart aissue-react
+            echo "Restarting PM2 process: CodeReview-react"
+            pm2 restart CodeReview-react
             echo "PM2 process status:"
             pm2 list

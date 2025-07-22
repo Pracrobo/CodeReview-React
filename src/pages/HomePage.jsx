@@ -83,7 +83,7 @@ export default function HomePage() {
             </h1>
 
             <p className="text-xl leading-relaxed text-white/90 mb-10 max-w-3xl dark:text-white/80">
-              AIssue는 AI를 활용하여 GitHub 저장소의 이슈를 분석하고, 관련
+              CodeReview는 AI를 활용하여 GitHub 저장소의 이슈를 분석하고, 관련
               코드를 추천하며, 컨트리뷰션 가이드를 제공하여 개발자의 생산성을
               향상시키는 서비스입니다.
             </p>
@@ -153,7 +153,7 @@ export default function HomePage() {
           {/* 섹션 헤더 */}
           <div className="text-center mb-20">
             <h2 className="text-4xl font-bold text-gray-900 mb-6 dark:text-white">
-              AIssue의 주요 기능
+              CodeReview의 주요 기능
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto dark:text-gray-300">
               AI 기술로 GitHub 이슈 해결을 혁신하는 4가지 핵심 기능을 소개합니다
@@ -526,7 +526,7 @@ export default function HomePage() {
                 </div>
 
                 <p className="text-gray-600 mb-6 text-lg dark:text-gray-300">
-                  AIssue의 핵심 기능을 체험해보세요.
+                  CodeReview의 핵심 기능을 체험해보세요.
                 </p>
 
                 {/* 가격 */}
@@ -673,11 +673,11 @@ export default function HomePage() {
       <section className="py-16 bg-gradient-to-r from-purple-700 to-indigo-800 text-white dark:from-purple-800 dark:to-indigo-900">
         <div className="container px-4 mx-auto text-center">
           <h2 className="text-3xl font-bold mb-6">
-            지금 바로 AIssue를 경험해보세요
+            지금 바로 CodeReview를 경험해보세요
           </h2>
           <p className="text-white/80 mb-8 max-w-2xl mx-auto dark:text-white/70">
             AI의 힘으로 GitHub 이슈 분석과 코드 기여를 더 효율적으로
-            만들어보세요. 무료 플랜으로 시작하여 AIssue의 가치를 직접
+            만들어보세요. 무료 플랜으로 시작하여 CodeReview의 가치를 직접
             확인하세요.
           </p>
           <Button

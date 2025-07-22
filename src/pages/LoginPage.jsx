@@ -1,7 +1,14 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '../components/ui/button';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '../components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '../components/ui/card';
 import { Github } from 'lucide-react';
 import Navbar from '../components/navbar';
 import Footer from '../components/footer';
@@ -29,7 +36,7 @@ export default function LoginPage() {
               로그인
             </CardTitle>
             <CardDescription className="text-center dark:text-gray-300">
-              GitHub 계정으로 로그인하여 AIssue를 이용하세요
+              GitHub 계정으로 로그인하여 CodeReview를 이용하세요
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -55,7 +62,7 @@ export default function LoginPage() {
 
             <div className="space-y-2">
               <p className="text-center text-sm text-gray-500 dark:text-gray-400">
-                AIssue는 GitHub 계정을 통한 로그인만 지원합니다.
+                CodeReview는 GitHub 계정을 통한 로그인만 지원합니다.
               </p>
               <p className="text-center text-sm text-gray-500 dark:text-gray-400">
                 GitHub 계정이 없으신가요?{' '}
@@ -72,7 +79,7 @@ export default function LoginPage() {
           </CardContent>
           <CardFooter>
             <p className="text-center text-xs text-gray-500 w-full dark:text-gray-400">
-              로그인함으로써 AIssue의{' '}
+              로그인함으로써 CodeReview의{' '}
               <Link
                 to="/terms-of-service"
                 className="text-purple-600 hover:underline dark:text-purple-400"

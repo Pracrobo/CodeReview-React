@@ -26,7 +26,9 @@ export default function TermsOfServicePage() {
             </Button>
             <FileText className="h-7 w-7 text-green-500 dark:text-green-400" />
             <div>
-              <h1 className="text-2xl sm:text-3xl font-bold mb-1">서비스 약관</h1>
+              <h1 className="text-2xl sm:text-3xl font-bold mb-1">
+                서비스 약관
+              </h1>
               <p className="text-muted-foreground text-sm">
                 최종 업데이트: 2025년 5월 20일
               </p>
@@ -36,9 +38,9 @@ export default function TermsOfServicePage() {
           {/* 본문 카드 */}
           <div className="max-w-none bg-background border border-border rounded-2xl shadow-lg p-8 transition-colors duration-200 text-foreground">
             <p className="mb-6">
-              본 서비스 약관은 Mai Nova(이하 "회사")가 운영하는 AIssue 서비스(이하
-              "서비스")의 이용과 관련하여 회사와 이용자 간의 권리, 의무 및 책임사항,
-              기타 필요한 사항을 규정함을 목적으로 합니다.
+              본 서비스 약관은 Mai Nova(이하 "회사")가 운영하는 CodeReview
+              서비스(이하 "서비스")의 이용과 관련하여 회사와 이용자 간의 권리,
+              의무 및 책임사항, 기타 필요한 사항을 규정함을 목적으로 합니다.
             </p>
 
             <hr className="my-8" />
@@ -47,7 +49,7 @@ export default function TermsOfServicePage() {
               제1조 (목적)
             </h2>
             <p className="mb-6">
-              본 약관은 Mai Nova(이하 "회사")가 제공하는 AIssue 서비스(이하
+              본 약관은 Mai Nova(이하 "회사")가 제공하는 CodeReview 서비스(이하
               "서비스")의 이용조건 및 절차, 회사와 회원간의 권리, 의무 및
               책임사항과 기타 필요한 사항을 규정함을 목적으로 합니다.
             </p>
@@ -55,7 +57,9 @@ export default function TermsOfServicePage() {
             <h2 className="text-xl font-bold mt-10 mb-3 border-b pb-1">
               제2조 (정의)
             </h2>
-            <p className="mb-2">본 약관에서 사용하는 용어의 정의는 다음과 같습니다:</p>
+            <p className="mb-2">
+              본 약관에서 사용하는 용어의 정의는 다음과 같습니다:
+            </p>
             <ul className="list-disc pl-6 space-y-2 mb-6">
               <li>
                 "서비스"라 함은 회사가 제공하는 AI 기반 GitHub 이슈 분석 및 코드
@@ -97,7 +101,9 @@ export default function TermsOfServicePage() {
             <h2 className="text-xl font-bold mt-10 mb-3 border-b pb-1">
               제5조 (서비스의 제공 및 변경)
             </h2>
-            <p className="mb-2">회사는 회원에게 아래와 같은 서비스를 제공합니다:</p>
+            <p className="mb-2">
+              회사는 회원에게 아래와 같은 서비스를 제공합니다:
+            </p>
             <ul className="list-disc pl-6 space-y-2 mb-6">
               <li>GitHub 저장소 분석 서비스</li>
               <li>AI 기반 이슈-코드 매칭 서비스</li>
@@ -126,10 +132,18 @@ export default function TermsOfServicePage() {
               <li>신청 또는 변경시 허위 내용의 등록</li>
               <li>타인의 정보 도용</li>
               <li>회사가 게시한 정보의 변경</li>
-              <li>회사가 정한 정보 이외의 정보(컴퓨터 프로그램 등) 등의 송신 또는 게시</li>
+              <li>
+                회사가 정한 정보 이외의 정보(컴퓨터 프로그램 등) 등의 송신 또는
+                게시
+              </li>
               <li>회사 기타 제3자의 저작권 등 지적재산권에 대한 침해</li>
-              <li>회사 기타 제3자의 명예를 손상시키거나 업무를 방해하는 행위</li>
-              <li>외설 또는 폭력적인 메시지, 화상, 음성, 기타 공서양속에 반하는 정보를 서비스에 공개 또는 게시하는 행위</li>
+              <li>
+                회사 기타 제3자의 명예를 손상시키거나 업무를 방해하는 행위
+              </li>
+              <li>
+                외설 또는 폭력적인 메시지, 화상, 음성, 기타 공서양속에 반하는
+                정보를 서비스에 공개 또는 게시하는 행위
+              </li>
             </ul>
 
             <h2 className="text-xl font-bold mt-10 mb-3 border-b pb-1">
@@ -147,7 +161,8 @@ export default function TermsOfServicePage() {
               제9조 (개인정보보호)
             </h2>
             <p className="mb-6">
-              회사는 관련법령이 정하는 바에 따라 회원의 개인정보를 보호하기 위해 노력합니다. 개인정보의 보호 및 이용에 대해서는 관련법령 및 회사의
+              회사는 관련법령이 정하는 바에 따라 회원의 개인정보를 보호하기 위해
+              노력합니다. 개인정보의 보호 및 이용에 대해서는 관련법령 및 회사의
               개인정보처리방침이 적용됩니다.
             </p>
 
@@ -155,7 +170,8 @@ export default function TermsOfServicePage() {
               제10조 (회사의 의무)
             </h2>
             <p className="mb-6">
-              회사는 법령과 본 약관이 금지하거나 공서양속에 반하는 행위를 하지 않으며 본 약관이 정하는 바에 따라 지속적이고, 안정적으로 서비스를
+              회사는 법령과 본 약관이 금지하거나 공서양속에 반하는 행위를 하지
+              않으며 본 약관이 정하는 바에 따라 지속적이고, 안정적으로 서비스를
               제공하기 위해서 노력합니다.
             </p>
 
@@ -163,22 +179,26 @@ export default function TermsOfServicePage() {
               제11조 (면책조항)
             </h2>
             <p className="mb-6">
-              회사는 천재지변 또는 이에 준하는 불가항력으로 인하여 서비스를 제공할 수 없는 경우에는 서비스 제공에 관한 책임이 면제됩니다.
+              회사는 천재지변 또는 이에 준하는 불가항력으로 인하여 서비스를
+              제공할 수 없는 경우에는 서비스 제공에 관한 책임이 면제됩니다.
             </p>
 
             <h2 className="text-xl font-bold mt-10 mb-3 border-b pb-1">
               제12조 (분쟁해결)
             </h2>
             <p className="mb-6">
-              서비스 이용으로 발생한 분쟁에 대해 소송이 제기되는 경우 회사의 본사소재지를 관할하는 법원을 관할 법원으로 합니다.
+              서비스 이용으로 발생한 분쟁에 대해 소송이 제기되는 경우 회사의
+              본사소재지를 관할하는 법원을 관할 법원으로 합니다.
             </p>
 
             <h2 className="text-xl font-bold mt-10 mb-3 border-b pb-1">
               제13조 (기타)
             </h2>
             <p className="mb-6">
-              본 약관에서 정하지 아니한 사항과 본 약관의 해석에 관하여는 전자상거래 등에서의 소비자보호에 관한 법률, 약관의 규제 등에 관한
-              법률, 공정거래 위원회가 정하는 전자상거래 등에서의 소비자 보호지침 및 관계법령 또는 상관례에 따릅니다.
+              본 약관에서 정하지 아니한 사항과 본 약관의 해석에 관하여는
+              전자상거래 등에서의 소비자보호에 관한 법률, 약관의 규제 등에 관한
+              법률, 공정거래 위원회가 정하는 전자상거래 등에서의 소비자 보호지침
+              및 관계법령 또는 상관례에 따릅니다.
             </p>
 
             <div className="mt-10 p-4 rounded-lg border text-center font-semibold">

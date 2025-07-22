@@ -24,7 +24,7 @@ export default function Navbar({ scrollToTop, scrollToSection, loggedIn }) {
   const avatarUrl = localStorage.getItem('avatarUrl');
   const isLoggedIn = loggedIn;
 
-  // 홈으로 이동하는 함수 (AIssue 로고 클릭)
+  // 홈으로 이동하는 함수 (CodeReview 로고 클릭)
   const handleNavigateToHome = () => {
     if (isLoggedIn) {
       navigate('/dashboard');
@@ -127,7 +127,7 @@ export default function Navbar({ scrollToTop, scrollToSection, loggedIn }) {
             className="flex items-center gap-2 hover:opacity-80 transition-opacity cursor-pointer"
           >
             <span className="font-bold text-xl bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-indigo-600">
-              AIssue
+              CodeReview
             </span>
           </button>
         </div>

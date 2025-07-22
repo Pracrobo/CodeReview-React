@@ -50,7 +50,7 @@ export default function IssuePage() {
             result.data?.solutionSuggestion ||
             '',
         };
-        console.log('[AIssue] 백엔드에서 받은 AI 분석 결과:', aiAnalysis);
+        console.log('[CodeReview] 백엔드에서 받은 AI 분석 결과:', aiAnalysis);
 
         const issueData = {
           ...result.data,
@@ -437,7 +437,11 @@ export default function IssuePage() {
                               .slice(0, 3)
                               .map((snippet, index) => {
                                 // 파일 확장자 추출 (예: .py, .js 등)
-                                const ext = snippet.file?.split('.').pop()?.toLowerCase() || '';
+                                const ext =
+                                  snippet.file
+                                    ?.split('.')
+                                    .pop()
+                                    ?.toLowerCase() || '';
                                 // 확장자별 언어 매핑
                                 const extToLang = {
                                   js: 'javascript',

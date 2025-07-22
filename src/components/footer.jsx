@@ -9,7 +9,7 @@ export default function Footer() {
           <div>
             <Link to="/" className="flex items-center gap-1 mb-4">
               <span className="font-bold text-xl bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-indigo-600">
-                AIssue
+                CodeReview
               </span>
             </Link>
             <p className="text-sm text-muted-foreground mb-4 max-w-md">

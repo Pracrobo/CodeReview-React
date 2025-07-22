@@ -164,7 +164,7 @@ export default function ProfilePage() {
       await tossPayments.requestPayment('카드', {
         amount: 10000,
         orderId: `${username}-${Date.now()}`,
-        orderName: 'AIssue Pro 플랜 월간 구독',
+        orderName: 'CodeReview Pro 플랜 월간 구독',
         successUrl: `${window.location.origin}/payment/success`,
         failUrl: `${window.location.origin}/payment/fail`,
         customerEmail: email,
@@ -462,7 +462,7 @@ export default function ProfilePage() {
                           style={{
                             width: isProPlan
                               ? `${(analyzedRepositoryCount / 30) * 100}%`
-                              : `${(analyzedRepositoryCount / 3) * 100}%`
+                              : `${(analyzedRepositoryCount / 3) * 100}%`,
                           }}
                         />
                       </div>
@@ -485,7 +485,7 @@ export default function ProfilePage() {
                           style={{
                             width: isProPlan
                               ? '100%'
-                              : `${(chatbotMessageCount / 100) * 100}%`
+                              : `${(chatbotMessageCount / 100) * 100}%`,
                           }}
                         />
                       </div>

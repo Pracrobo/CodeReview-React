@@ -49,10 +49,14 @@ export default function PrivacyPolicyPage() {
             <h2 className="text-xl font-bold mt-10 mb-3 border-b pb-1">
               1. 개인정보의 처리목적
             </h2>
-            <p className="mb-2">회사는 다음의 목적을 위하여 개인정보를 처리합니다:</p>
+            <p className="mb-2">
+              회사는 다음의 목적을 위하여 개인정보를 처리합니다:
+            </p>
             <ul className="list-disc pl-6 space-y-2 mb-6">
               <li>회원가입 및 관리: 회원가입 의사 확인, 회원제 서비스 제공</li>
-              <li>서비스 제공: AIssue 서비스 이용, GitHub 연동 서비스 제공</li>
+              <li>
+                서비스 제공: CodeReview 서비스 이용, GitHub 연동 서비스 제공
+              </li>
               <li>결제 및 정산: 유료 서비스 이용에 따른 결제 처리</li>
               <li>고객지원: 문의사항 및 불만 처리, 공지사항 전달</li>
               <li>서비스 개선: 이용자 행태 분석을 통한 서비스 품질 향상</li>
@@ -152,7 +156,7 @@ export default function PrivacyPolicyPage() {
               <li>
                 연락처:{' '}
                 <span className="font-mono font-semibold">
-                  privacy@mainova.com
+                  privacy@Pracrobo.com
                 </span>
               </li>
             </ul>
